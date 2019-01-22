@@ -44,11 +44,6 @@ Setup(context =>
                 "./nuget.config");
     }
 
-    if (parameters.Git.IsMasterBranch && context.Log.Verbosity != Verbosity.Diagnostic) {
-        Information("Increasing verbosity to diagnostic.");
-        context.Log.Verbosity = Verbosity.Diagnostic;
-    }
-
     msBuildSettings = new DotNetCoreMSBuildSettings()
                         .WithProperty("RepositoryBranch", parameters.Git.Branch)        // gitflow branch
                         .WithProperty("RepositoryCommit", parameters.Git.Sha)           // full sha
