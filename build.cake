@@ -30,20 +30,6 @@ DotNetCoreMSBuildSettings msBuildSettings = null;
 
 Setup(context =>
 {
-    // We patch the local nuget.config in the repo root with the encrypted
-    // credentials in order to access private myget feed on appveyor
-    if (!parameters.IsLocalBuild) {
-        Information("Store credentials to private MyGet feed in local nuget.config...");
-
-        parameters.GetTool("nuget.exe")
-            .Command("sources update -Name {0} -Source {1} -Username {2} -Password {3} -configFile {4}",
-                "BrfCi",
-                @"https://www.myget.org/F/brf-ci/api/v3/index.json",
-                parameters.MyGet.UserName,
-                parameters.MyGet.GetRequiredPassword(),
-                "./nuget.config");
-    }
-
     msBuildSettings = new DotNetCoreMSBuildSettings()
                         .WithProperty("RepositoryBranch", parameters.Git.Branch)        // gitflow branch
                         .WithProperty("RepositoryCommit", parameters.Git.Sha)           // full sha
