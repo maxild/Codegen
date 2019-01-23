@@ -15,6 +15,7 @@ tools/*
 !tools/nuget.exe
 
 src/CommonAssemblyInfo.cs
+*.Generated.cs
 
 # User-specific files
 *.suo
