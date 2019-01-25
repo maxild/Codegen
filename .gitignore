@@ -15,6 +15,10 @@ tools/*
 !tools/nuget.exe
 
 src/CommonAssemblyInfo.cs
+
+# generated code (Razor)
+*.g.cshtml.cs
+# generated code (Razor + Roslyn + Engine)
 *.Generated.cs
 
 # User-specific files
