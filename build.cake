@@ -118,7 +118,8 @@ Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var testProjects = GetFiles($"./{parameters.Paths.Directories.Test}/**/*.Tests.csproj");
+    var testProjects = GetFiles($"./{parameters.Paths.Directories.Test}/**/*.Tests.csproj") +
+                       GetFiles($"./{parameters.Paths.Directories.Test}/RazorLearningTests/RazorLearningTests.csproj");
     foreach(var project in testProjects)
     {
         foreach (var tfm in new [] {"net472", "netcoreapp2.1"})
