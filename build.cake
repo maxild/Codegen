@@ -23,7 +23,7 @@ var parameters = CakeScripts.GetParameters(
     },
     new BuildPathSettings
     {
-        SolutionFileName = "Codegen.sln"
+        SolutionFileName = "Domus.All.sln"
     });
 bool publishingError = false;
 DotNetCoreMSBuildSettings msBuildSettings = null;
