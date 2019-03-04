@@ -14,12 +14,16 @@
 var parameters = CakeScripts.GetParameters(
     Context,            // ICakeContext
     BuildSystem,        // BuildSystem alias
-    new BuildSettings   // My personal overrides
+    new BuildSettings
     {
         MainRepositoryOwner = "maxild",
         RepositoryName = "Domus",
         DeployToCIFeedUrl = "https://www.myget.org/F/brf-ci/api/v2/package", // MyGet CI feed url
         DeployToProdFeedUrl = "https://www.myget.org/F/brf/api/v2/package"   // MyGet feed url
+    },
+    new BuildPathSettings
+    {
+        SolutionFileName = "Codegen.sln"
     });
 bool publishingError = false;
 DotNetCoreMSBuildSettings msBuildSettings = null;
@@ -92,7 +96,6 @@ Task("Clean")
 Task("Restore")
     .Does(() =>
 {
-    Information($"sln: {parameters.Paths.Files.Solution.FullPath}");
     DotNetCoreRestore(parameters.Paths.Files.Solution.FullPath, new DotNetCoreRestoreSettings
     {
         Verbosity = DotNetCoreVerbosity.Minimal,
