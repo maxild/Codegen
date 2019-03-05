@@ -19,7 +19,7 @@ src/CommonAssemblyInfo.cs
 # generated code (Razor)
 *.g.cshtml.cs
 # generated code (Razor + Roslyn + Engine)
-*.Generated.cs
+*.generated.cs
 
 # User-specific files
 *.suo
