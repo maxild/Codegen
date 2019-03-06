@@ -15,6 +15,7 @@ tools/*
 !tools/nuget.exe
 
 src/CommonAssemblyInfo.cs
+src/GitVersionInfo.cs
 
 # generated code (Razor)
 *.g.cshtml.cs
