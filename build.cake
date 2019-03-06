@@ -204,9 +204,9 @@ namespace Codegen
 {{
     public static class Git
     {{
-        private static readonly Lazy<Codegen.Library.GitVersion> VERSION = new Lazy<Codegen.Library.GitVersion>(()
-            => new Codegen.Library.GitVersion(""{0}"", ""{1}"", ""{2}"", ""{3}"", ""{4}"", ""{5}""));
-        public static Codegen.Library.GitVersion CurrentVersion => VERSION.Value;
+        private static readonly Lazy<Library.GitVersion> s_version = new Lazy<Library.GitVersion>(()
+            => new Library.GitVersion(""{0}"", ""{1}"", ""{2}"", ""{3}"", ""{4}"", ""{5}""));
+        public static Library.GitVersion CurrentVersion => s_version.Value;
     }}
 }}", parameters.VersionInfo.SemVer, parameters.VersionInfo.NuGetVersion, parameters.VersionInfo.BuildVersion,
      parameters.Git.Sha, parameters.Git.CommitDate, parameters.Git.Branch);
