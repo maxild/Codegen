@@ -1,9 +1,4 @@
 ///////////////////////////////////////////////////////////////////////////////
-// TOOLS
-///////////////////////////////////////////////////////////////////////////////
-#tool "nuget:?package=gitreleasemanager&version=0.8.0"
-
-///////////////////////////////////////////////////////////////////////////////
 // SCRIPTS
 ///////////////////////////////////////////////////////////////////////////////
 #load "./tools/Maxfire.CakeScripts/content/all.cake"
@@ -43,26 +38,13 @@ Setup(context =>
                         .WithProperty("FileVersion", parameters.VersionInfo.AssemblyFileVersion);
                         //.WithProperty("PackageReleaseNotes", string.Concat("\"", releaseNotes, "\""));
 
-    // See https://github.com/dotnet/sdk/issues/335#issuecomment-346951034
-    if (false == parameters.IsRunningOnWindows)
-    {
-        // Since Cake runs on Mono, it is straight forward to resolve the path to the Mono libs (reference assemblies).
-        // Find where .../mono/5.2/mscorlib.dll is on your machine.
-        var frameworkPathOverride = new FilePath(typeof(object).Assembly.Location).GetDirectory().FullPath + "/";
-
-        // Use FrameworkPathOverride when not running on Windows. MSBuild uses
-        // this property to locate the Framework libraries required to build your code.
-        Information("Build will use FrameworkPathOverride={0} since not building on Windows.", frameworkPathOverride);
-        msBuildSettings.WithProperty("FrameworkPathOverride", frameworkPathOverride);
-    }
-
-    Information("Build with id '{0}' is creating version {1} of {2} ({3}, {4}) using version {5} of Cake. (IsTagPush: {6})",
-        parameters.VersionInfo.BuildVersion,
+    Information("Building version {0} of {1} ({2}, {3}) using version {4} of Cake and '{5}' of GitVersion. (IsTagPush: {6})",
         parameters.VersionInfo.SemVer,
         parameters.ProjectName,
         parameters.Configuration,
         parameters.Target,
         parameters.VersionInfo.CakeVersion,
+        parameters.VersionInfo.GitVersionVersion,
         parameters.IsTagPush);
 });
 
@@ -72,6 +54,13 @@ Setup(context =>
 
 Task("Default")
     .IsDependentOn("Package");
+
+Task("Setup")
+    .IsDependentOn("Generate-CommonAssemblyInfo");
+
+Task("Travis")
+    .IsDependentOn("Show-Info")
+    .IsDependentOn("Test");
 
 Task("AppVeyor")
     .IsDependentOn("Show-Info")
@@ -123,11 +112,10 @@ Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var testProjects = GetFiles($"./{parameters.Paths.Directories.Test}/**/*.Tests.csproj") +
-                       GetFiles($"./{parameters.Paths.Directories.Test}/RazorLearningTests/RazorLearningTests.csproj");
+    var testProjects = GetFiles($"./{parameters.Paths.Directories.Test}/**/*.Tests.csproj");
     foreach(var project in testProjects)
     {
-        foreach (var tfm in new [] {"net472", "netcoreapp2.1"})
+        foreach (var tfm in new [] {"net472", "netcoreapp3.1"})
         {
             DotNetCoreTest(project.ToString(), new DotNetCoreTestSettings
             {
