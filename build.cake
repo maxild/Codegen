@@ -115,7 +115,7 @@ Task("Test")
     var testProjects = GetFiles($"./{parameters.Paths.Directories.Test}/**/*.Tests.csproj");
     foreach(var project in testProjects)
     {
-        foreach (var tfm in new [] {"net472", "netcoreapp3.1"})
+        foreach (var tfm in new [] {"netcoreapp3.1"})
         {
             DotNetCoreTest(project.ToString(), new DotNetCoreTestSettings
             {
@@ -125,15 +125,6 @@ Task("Test")
                 Configuration = parameters.Configuration
             });
         }
-
-        // NOTE: .NET Framework / Mono (net472 on *nix and Mac OSX)
-        // ========================================================
-        // Microsoft does not officially support Mono via .NET Core SDK. Their support for .NET Core
-        // on Linux and OS X starts and ends with .NET Core. Anyway we test on Mono for now, and maybe
-        // remove Mono support soon.
-        //
-        // For Mono to support dotnet-xunit we have to put { "appDomain": "denied" } in config
-        // See https://github.com/xunit/xunit/issues/1357#issuecomment-314416426
     }
 });
 
