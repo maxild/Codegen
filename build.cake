@@ -38,6 +38,11 @@ Setup(context =>
                         .WithProperty("FileVersion", parameters.VersionInfo.AssemblyFileVersion);
                         //.WithProperty("PackageReleaseNotes", string.Concat("\"", releaseNotes, "\""));
 
+    // Deterministic builds: normalize stored file paths
+    if (parameters.IsRunningOnAppVeyor) {
+        msBuildSettings = msBuildSettings.WithProperty("ContinuousIntegrationBuild", "true");
+    }
+
     Information("Building version {0} of {1} ({2}, {3}) using version {4} of Cake and '{5}' of GitVersion. (IsTagPush: {6})",
         parameters.VersionInfo.SemVer,
         parameters.ProjectName,
