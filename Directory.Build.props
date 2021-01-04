@@ -1,25 +1,25 @@
 <Project>
 
-    <Import Project="build\dependencies.props" />
+  <Import Project="build\dependencies.props" />
 
-    <!-- Compiler properties -->
-    <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
-        <LangVersion>9.0</LangVersion>
-        <Nullable>enable</Nullable>
-        <NoWarn>$(NoWarn);CS1591</NoWarn>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    </PropertyGroup>
+  <!-- Compiler properties -->
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
 
-    <!-- AssemblyInfo properties -->
-    <PropertyGroup>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    </PropertyGroup>
+  <!-- AssemblyInfo properties -->
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="$(JetBrainsAnnotationsPackageVersion)">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="$(JetBrainsAnnotationsPackageVersion)">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
 
 </Project>
