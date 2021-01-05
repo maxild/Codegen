@@ -18,7 +18,7 @@ var parameters = CakeScripts.GetParameters(
     },
     new BuildPathSettings
     {
-        SolutionFileName = "Domus.All.sln"
+        SolutionFileName = "Domus.sln"
     });
 bool publishingError = false;
 DotNetCoreMSBuildSettings msBuildSettings = null;
@@ -117,7 +117,9 @@ Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var testProjects = GetFiles($"./{parameters.Paths.Directories.Test}/**/*.Tests.csproj");
+    // TODO: Should be possible to use the single master solution (Domus.sln)
+    // Only testable projects (<IsTestProject>true</IsTestProject>) will be test-executed
+    var testProjects = GetFiles($"./{parameters.Paths.Directories.Src}/**/*.csproj");
     foreach(var project in testProjects)
     {
         foreach (var tfm in new [] {"net5.0"})
@@ -143,9 +145,9 @@ Task("Create-Packages")
     .IsDependentOn("Clear-Artifacts")
     .Does(() =>
 {
-    // Only packable projects will produce nupkg's
+    // Only packable projects (<IsPackable>true</IsPackable>) will produce nupkg's
     var projects = GetFiles($"{parameters.Paths.Directories.Src}/**/*.csproj");
-    foreach(var project in projects)
+    foreach (var project in projects)
     {
         DotNetCorePack(project.FullPath, new DotNetCorePackSettings {
             Configuration = parameters.Configuration,

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <RootNamespace>Codegen.Database.CLI</RootNamespace>
+    <AssemblyName>dotnet-cgdata</AssemblyName>
+    <Description>A tool to generate json data/model documents from simple SQL query result sets.</Description>
+    <ToolCommandName>cgdata</ToolCommandName>
+    <!--
+    [OPTIONAL] Where the NuGet package will be produced.
+    The NuGet package is what the .NET Core CLI Global Tools uses to install your tool.
+
+    dotnet pack
+
+    The codegen.0.1.0.nupkg file is created in the folder identified by the <PackageOutputPath>
+
+    dotnet tool install -g codegen
+
+    with add-source switch to artifacts folder
+    -->
+    <PackageOutputPath>./../../../../artifacts</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\GitVersionInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="$(McMasterExtensionsCommandLineUtilsPackageVersion)" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="$(MicrosoftDataSqlClientPackageVersion)" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="$(MicrosoftCodeAnalysisCSharpScriptingPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Codegen.Library\Codegen.Library.csproj" />
+  </ItemGroup>
+
+</Project>
