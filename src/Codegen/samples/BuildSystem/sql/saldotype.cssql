@@ -1,0 +1,12 @@
+@cg-Namespace Brf.Domus.Models
+@cg-TypeName Saldotype
+@cg-XmlDoc Saldotype angiver om der er tale om restgaeld  etc.
+@cg-Template dataenum
+###
+SELECT SALDO_TYPE,SALDO_TYPE_TXT FROM Info.brfa.PA70_SALDO_TYPE
+###
+using System.Collections.Generic;
+
+reader => new KeyValuePair<string, string>(
+    reader.GetString(reader.GetOrdinal("SALDO_TYPE")),
+    reader.GetString(reader.GetOrdinal("SALDO_TYPE_TXT")).Trim())

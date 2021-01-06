@@ -18,7 +18,7 @@ var parameters = CakeScripts.GetParameters(
     },
     new BuildPathSettings
     {
-        SolutionFileName = "Domus.All.sln"
+        SolutionFileName = "Domus.sln"
     });
 bool publishingError = false;
 DotNetCoreMSBuildSettings msBuildSettings = null;
@@ -91,6 +91,12 @@ Task("Clean")
 Task("Restore")
     .Does(() =>
 {
+    // This is required in order to build RazorLearningTests that has a ProjectReference to
+    // ./submodules/aspnetcore/src/Razor/Microsoft.AspNetCore.Razor.Language/src/Microsoft.AspNetCore.Razor.Language.csproj
+    //       dotnet restore src/submodules/aspnetcore/eng/tools/RepoTasks/RepoTasks.csproj
+    var project = Directory("./src/submodules/aspnetcore/eng/tools/RepoTasks") + File("RepoTasks.csproj");
+    DotNetCoreRestore(project);
+
     DotNetCoreRestore(parameters.Paths.Files.Solution.FullPath, new DotNetCoreRestoreSettings
     {
         Verbosity = DotNetCoreVerbosity.Minimal,
@@ -117,19 +123,18 @@ Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var testProjects = GetFiles($"./{parameters.Paths.Directories.Test}/**/*.Tests.csproj");
-    foreach(var project in testProjects)
+    // Only testable projects (<IsTestProject>true</IsTestProject>) will be test-executed
+    // We do not need to exclude everything under 'src/submodules',
+    // because we use the single master solution
+    foreach (var tfm in new [] {"net5.0"})
     {
-        foreach (var tfm in new [] {"net5.0"})
+        DotNetCoreTest(parameters.Paths.Files.Solution.FullPath, new DotNetCoreTestSettings
         {
-            DotNetCoreTest(project.ToString(), new DotNetCoreTestSettings
-            {
-                Framework = tfm,
-                NoBuild = true,
-                NoRestore = true,
-                Configuration = parameters.Configuration
-            });
-        }
+            Framework = tfm,
+            NoBuild = true,
+            NoRestore = true,
+            Configuration = parameters.Configuration
+        });
     }
 });
 
@@ -143,18 +148,16 @@ Task("Create-Packages")
     .IsDependentOn("Clear-Artifacts")
     .Does(() =>
 {
-    // Only packable projects will produce nupkg's
-    var projects = GetFiles($"{parameters.Paths.Directories.Src}/**/*.csproj");
-    foreach(var project in projects)
-    {
-        DotNetCorePack(project.FullPath, new DotNetCorePackSettings {
-            Configuration = parameters.Configuration,
-            OutputDirectory = parameters.Paths.Directories.Artifacts,
-            NoBuild = true,
-            NoRestore = true,
-            MSBuildSettings = msBuildSettings
-        });
-    }
+    // Only packable projects (<IsPackable>true</IsPackable>) will produce nupkg's
+    // We do not need to exclude everything under 'src/submodules',
+    // because we use the single master solution
+    DotNetCorePack(parameters.Paths.Files.Solution.FullPath, new DotNetCorePackSettings {
+        Configuration = parameters.Configuration,
+        OutputDirectory = parameters.Paths.Directories.Artifacts,
+        NoBuild = true,
+        NoRestore = true,
+        MSBuildSettings = msBuildSettings
+    });
 });
 
 Task("Publish")

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <RootNamespace>Codegen.CSharp.CLI</RootNamespace>
+    <AssemblyName>dotnet-cgcsharp</AssemblyName>
+    <Description>A tool to generate C# code from Razor templates and json data/model documents.</Description>
+    <ToolCommandName>cgcsharp</ToolCommandName>
+    <!--
+    [OPTIONAL] Where the NuGet package will be produced.
+    The NuGet package is what the .NET Core CLI Global Tools uses to install your tool.
+
+    dotnet pack
+
+    The codegen.0.1.0.nupkg file is created in the folder identified by the <PackageOutputPath>
+
+    dotnet tool install -g codegen
+
+    with add-source switch to artifacts folder
+    -->
+    <PackageOutputPath>./../../../../artifacts</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\GitVersionInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Codegen.Library\Codegen.Library.csproj" />
+    <ProjectReference Include="..\CSharpRazor\CSharpRazor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="$(McMasterExtensionsCommandLineUtilsPackageVersion)" />
+  </ItemGroup>
+
+</Project>
