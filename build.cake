@@ -117,21 +117,18 @@ Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    // TODO: Should be possible to use the single master solution (Domus.sln)
     // Only testable projects (<IsTestProject>true</IsTestProject>) will be test-executed
-    var testProjects = GetFiles($"./{parameters.Paths.Directories.Src}/**/*.csproj");
-    foreach(var project in testProjects)
+    // We do not need to exclude everything under 'src/submodules',
+    // because we use the single master solution
+    foreach (var tfm in new [] {"net5.0"})
     {
-        foreach (var tfm in new [] {"net5.0"})
+        DotNetCoreTest(parameters.Paths.Files.Solution.FullPath, new DotNetCoreTestSettings
         {
-            DotNetCoreTest(project.ToString(), new DotNetCoreTestSettings
-            {
-                Framework = tfm,
-                NoBuild = true,
-                NoRestore = true,
-                Configuration = parameters.Configuration
-            });
-        }
+            Framework = tfm,
+            NoBuild = true,
+            NoRestore = true,
+            Configuration = parameters.Configuration
+        });
     }
 });
 
@@ -146,17 +143,15 @@ Task("Create-Packages")
     .Does(() =>
 {
     // Only packable projects (<IsPackable>true</IsPackable>) will produce nupkg's
-    var projects = GetFiles($"{parameters.Paths.Directories.Src}/**/*.csproj");
-    foreach (var project in projects)
-    {
-        DotNetCorePack(project.FullPath, new DotNetCorePackSettings {
-            Configuration = parameters.Configuration,
-            OutputDirectory = parameters.Paths.Directories.Artifacts,
-            NoBuild = true,
-            NoRestore = true,
-            MSBuildSettings = msBuildSettings
-        });
-    }
+    // We do not need to exclude everything under 'src/submodules',
+    // because we use the single master solution
+    DotNetCorePack(parameters.Paths.Files.Solution.FullPath, new DotNetCorePackSettings {
+        Configuration = parameters.Configuration,
+        OutputDirectory = parameters.Paths.Directories.Artifacts,
+        NoBuild = true,
+        NoRestore = true,
+        MSBuildSettings = msBuildSettings
+    });
 });
 
 Task("Publish")
