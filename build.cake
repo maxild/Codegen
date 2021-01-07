@@ -18,7 +18,7 @@ var parameters = CakeScripts.GetParameters(
     },
     new BuildPathSettings
     {
-        SolutionFileName = "Domus.sln"
+        SolutionFileName = "Brf.sln"
     });
 bool publishingError = false;
 DotNetCoreMSBuildSettings msBuildSettings = null;
