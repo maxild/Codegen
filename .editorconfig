@@ -19,13 +19,19 @@ root = true
 [*]
 indent_style = space
 charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
 # (Please don't specify an indent_size here; that has too many unintended consequences.)
 
 # Code files
 [*.{cs,csx}]
 indent_size = 4
-insert_final_newline = true
-# visual studio seems to have issues with utf-8
+# UTF-8 + BOM (aka preamble) is really the default encoding for C#-files.
+charset = utf-8-bom
+
+# Razor templates
+# TODO: add the correct extension
+[*.{razor,cshtml}]
 charset = utf-8-bom
 
 # XML project files
@@ -41,7 +47,7 @@ indent_size = 2
 indent_size = 2
 
 # PowerShell files
-[*.ps1]
+[*.{ps1,psm1}]
 indent_size = 2
 
 # Shell script files
