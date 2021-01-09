@@ -9,6 +9,12 @@
     <Nullable>enable</Nullable>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Roslyn Analyzers can always be turned off -->
+    <!--
+      <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+      <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+      <RunAnalyzers>false</RunAnalyzers>
+    -->
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <!--
       With the .NET 5.0 SDK and later versions, you can enable code-style analysis
