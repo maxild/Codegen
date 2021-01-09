@@ -17,17 +17,17 @@ namespace Codegen.Library
     {
         public string ToInfoString(string firstLine)
         {
-            var sb = new StringBuilder();
-            sb.AppendLine(firstLine);
-            sb.AppendLine("  Version information:");
-            sb.AppendLine($"    Version:        {Version}");
-            sb.AppendLine($"    NugetVersion:   {NuGetVersion}");
-            sb.AppendLine($"    Build:          {BuildVersion}");
-            sb.AppendLine("  GIT information:");
-            sb.AppendLine($"    Commit:         {CommitId}");
-            sb.AppendLine($"    Date:           {CommitDate}");
-            sb.AppendLine($"    Branch:         {BranchName}");
-            return sb.ToString();
+            return new StringBuilder()
+              .AppendLine(firstLine)
+              .AppendLine("  Version information:")
+              .AppendLine($"    Version:        {Version}")
+              .AppendLine($"    NugetVersion:   {NuGetVersion}")
+              .AppendLine($"    Build:          {BuildVersion}")
+              .AppendLine("  GIT information:")
+              .AppendLine($"    Commit:         {CommitId}")
+              .AppendLine($"    Date:           {CommitDate}")
+              .AppendLine($"    Branch:         {BranchName}")
+              .ToString();
         }
 
         public bool Equals(GitVersion? other, GitVersionComparison comparison)

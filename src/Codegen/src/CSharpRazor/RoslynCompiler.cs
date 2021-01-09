@@ -99,49 +99,47 @@ namespace CSharpRazor
             // Phase 2: Compiling into in-memory streams
             //
 
-            using (var assemblyStream = new MemoryStream())
-            using (var pdbStream = new MemoryStream())
+            using var assemblyStream = new MemoryStream();
+            using var pdbStream = new MemoryStream();
+            var emitResult = compilation.Emit(
+                assemblyStream,
+                pdbStream,
+                options: EmitOptions);
+
+            if (!emitResult.Success)
             {
-                var emitResult = compilation.Emit(
-                    assemblyStream,
-                    pdbStream,
-                    options: EmitOptions);
-
-                if (!emitResult.Success)
-                {
-                    throw new ApplicationException(source.SourceCSharpCode + Environment.NewLine +
-                                                   string.Join(Environment.NewLine,
-                                                       emitResult.Diagnostics.Select(x => x.ToString())));
-                }
-
-                //if (!emitResult.Success)
-                //{
-                //    List<Diagnostic> errorsDiagnostics = emitResult.Diagnostics
-                //        .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
-                //        .ToList();
-                //    foreach (Diagnostic diagnostic in errorsDiagnostics)
-                //    {
-                //        FileLinePositionSpan lineSpan =
-                //            diagnostic.Location.SourceTree.GetMappedLineSpan(
-                //                diagnostic.Location.SourceSpan);
-                //        string errorMessage = diagnostic.GetMessage();
-                //        string formattedMessage =
-                //            "("
-                //            + lineSpan.StartLinePosition.Line
-                //            + ":"
-                //            + lineSpan.StartLinePosition.Character
-                //            + ") "
-                //            + errorMessage;
-                //        Console.WriteLine(formattedMessage);
-                //    }
-                //    return;
-                //}
-
-                return new CompiledTemplateILSource(
-                    source,
-                    assemblyStream,
-                    pdbStream);
+                throw new ApplicationException(source.SourceCSharpCode + Environment.NewLine +
+                                               string.Join(Environment.NewLine,
+                                                   emitResult.Diagnostics.Select(x => x.ToString())));
             }
+
+            //if (!emitResult.Success)
+            //{
+            //    List<Diagnostic> errorsDiagnostics = emitResult.Diagnostics
+            //        .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
+            //        .ToList();
+            //    foreach (Diagnostic diagnostic in errorsDiagnostics)
+            //    {
+            //        FileLinePositionSpan lineSpan =
+            //            diagnostic.Location.SourceTree.GetMappedLineSpan(
+            //                diagnostic.Location.SourceSpan);
+            //        string errorMessage = diagnostic.GetMessage();
+            //        string formattedMessage =
+            //            "("
+            //            + lineSpan.StartLinePosition.Line
+            //            + ":"
+            //            + lineSpan.StartLinePosition.Character
+            //            + ") "
+            //            + errorMessage;
+            //        Console.WriteLine(formattedMessage);
+            //    }
+            //    return;
+            //}
+
+            return new CompiledTemplateILSource(
+                source,
+                assemblyStream,
+                pdbStream);
         }
     }
 }

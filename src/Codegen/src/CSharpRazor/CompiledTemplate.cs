@@ -69,13 +69,10 @@ namespace CSharpRazor
             }
 
             // We only need the base type without strongly typed TModel generic arg
-            if (!(rawInstance is TemplateBase templateInstance))
-            {
-                throw new InvalidOperationException(
-                    $"UNEXPECTED: Could not cast to {typeof(TemplateBase).FullName}. The actual page base type is {rawInstance.GetType().BaseType?.FullName}.");
-            }
-
-            return templateInstance;
+            return rawInstance is not TemplateBase templateInstance
+                ? throw new InvalidOperationException(
+                    $"UNEXPECTED: Could not cast to {typeof(TemplateBase).FullName}. The actual page base type is {rawInstance.GetType().BaseType?.FullName}.")
+                : templateInstance;
         }
     }
 }

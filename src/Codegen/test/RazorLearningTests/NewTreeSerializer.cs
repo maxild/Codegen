@@ -63,21 +63,20 @@ namespace RazorLearningTests
                 return GetTokenContent(token);
             }
 
-            var builder = new StringBuilder();
-            builder.Append($"{typeof(SyntaxKind).Name}.{node.Kind}");
-            builder.Append(" - ");
-            builder.Append($"[{node.Position}..{node.EndPosition})::{node.FullWidth}");
-
-            builder.Append(" - ");
-            builder.Append($"[{node.ToFullString()}]");
+            var builder = new StringBuilder()
+                .Append($"{nameof(SyntaxKind)}.{node.Kind}")
+                .Append(" - ")
+                .Append($"[{node.Position}..{node.EndPosition})::{node.FullWidth}")
+                .Append(" - ")
+                .Append($"[{node.ToFullString()}]");
 
             var annotation = node.GetAnnotations().FirstOrDefault(a => a.Kind == SyntaxConstants.SpanContextKind);
             if (annotation != null && annotation.Data is SpanContext context)
             {
-                builder.Append(" - ");
-                builder.Append($"Gen<{context.ChunkGenerator}>");
-                builder.Append(" - ");
-                builder.Append(context.EditHandler);
+                _ = builder.Append(" - ")
+                    .Append($"Gen<{context.ChunkGenerator}>")
+                    .Append(" - ")
+                    .Append(context.EditHandler);
             }
 
             return builder.ToString();
@@ -87,7 +86,7 @@ namespace RazorLearningTests
         {
             var content = token.IsMissing ? "<Missing>" : token.Content;
             var diagnostics = token.GetDiagnostics();
-            var tokenString = $"{typeof(SyntaxKind).Name}.{token.Kind};[{content}];{string.Join(", ", diagnostics.Select(diagnostic => diagnostic.Id + diagnostic.Span))}";
+            var tokenString = $"{nameof(SyntaxKind)}.{token.Kind};[{content}];{string.Join(", ", diagnostics.Select(diagnostic => diagnostic.Id + diagnostic.Span))}";
             return tokenString;
         }
 

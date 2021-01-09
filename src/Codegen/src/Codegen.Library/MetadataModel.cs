@@ -29,12 +29,12 @@ namespace Codegen.Library
             using (var sw = new StringWriter(sb))
             using (var jtw = new JsonTextWriter(sw)
             {
-                Formatting= Formatting.Indented,
+                Formatting = Formatting.Indented,
                 Indentation = 2,
                 IndentChar = ' ',
             })
             {
-                new JsonSerializer {Converters = {new MetadataModelConverter()}}.Serialize(jtw, metadataModel);
+                new JsonSerializer { Converters = { new MetadataModelConverter() } }.Serialize(jtw, metadataModel);
             }
             return sb.ToString();
         }
@@ -43,7 +43,7 @@ namespace Codegen.Library
         {
             return JsonConvert.DeserializeObject<MetadataModel>(json, new JsonSerializerSettings
             {
-                Converters = {new MetadataModelConverter()}
+                Converters = { new MetadataModelConverter() }
             });
         }
 
@@ -51,7 +51,7 @@ namespace Codegen.Library
         {
             return JsonConvert.DeserializeObject<MetadataModel<TRecord>>(json, new JsonSerializerSettings
             {
-                Converters = {new MetadataModelConverter()}
+                Converters = { new MetadataModelConverter() }
             });
         }
 
@@ -60,7 +60,7 @@ namespace Codegen.Library
             Type modelType = typeof(MetadataModel<>).MakeGenericType(recordType);
             return JsonConvert.DeserializeObject(json, modelType, new JsonSerializerSettings
             {
-                Converters = {new MetadataModelConverter()}
+                Converters = { new MetadataModelConverter() }
             });
         }
 
@@ -95,7 +95,7 @@ namespace Codegen.Library
                 throw new ArgumentException($"The {recordTypeName} type cannot be found.", nameof(recordTypeName));
             }
             Type t = typeof(MetadataModel<>).MakeGenericType(rt);
-            return (MetadataModel) Activator.CreateInstance(t,
+            return (MetadataModel)Activator.CreateInstance(t,
                 toolVersion,
                 queryName,
                 templateName,

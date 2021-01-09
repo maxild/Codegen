@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -17,12 +17,12 @@ namespace Codegen.Database.CLI
         {
             var app = new CommandLineApplication();
 
-            app.HelpOption();
+            _ = app.HelpOption();
 
             var optionName =
                 app.Option("--name <NAME>", "Required. The name of the model/data to load.",
                     CommandOptionType.SingleValue);
-                        //.IsRequired();
+            //.IsRequired();
 
             var optionSqlDir =
                 app.Option("--sqlDir <SQLDIR>",
@@ -43,7 +43,7 @@ namespace Codegen.Database.CLI
 
             var optionInfo = app.Option("--info", "Display tool information.", CommandOptionType.NoValue);
 
-            app.VersionOption("--version", () => Git.CurrentVersion.Version);
+            _ = app.VersionOption("--version", () => Git.CurrentVersion.Version);
 
             app.ExtendedHelpText =
                 "This program will execute the SQL script referenced by the <SQL_PATH> and save the data locally to a file referenced by the <OUT> path.";
@@ -98,24 +98,26 @@ namespace Codegen.Database.CLI
                 const string CG_TEMPLATE_DIRECTIVE = "@cg-Template";
 
                 string? cgNamespace = null, cgTypeName = null, cgXmlDoc = null, cgTemplate = null;
-                using (var sr = new StringReader(segments[0])) {
+                using (var sr = new StringReader(segments[0]))
+                {
                     string? line;
-                    while ((line = await sr.ReadLineAsync()) is not null) {
+                    while ((line = await sr.ReadLineAsync()) is not null)
+                    {
                         if (line.StartsWith(CG_NAMESPACE_DIRECTIVE))
                         {
-                            cgNamespace = line.Substring(CG_NAMESPACE_DIRECTIVE.Length).Trim();
+                            cgNamespace = line[CG_NAMESPACE_DIRECTIVE.Length..].Trim();
                         }
                         if (line.StartsWith(CG_TYPENAME_DIRECTIVE))
                         {
-                             cgTypeName = line.Substring(CG_TYPENAME_DIRECTIVE.Length).Trim();
+                            cgTypeName = line[CG_TYPENAME_DIRECTIVE.Length..].Trim();
                         }
                         if (line.StartsWith(CG_XMLDOC_DIRECTIVE))
                         {
-                            cgXmlDoc = line.Substring(CG_XMLDOC_DIRECTIVE.Length).Trim();
+                            cgXmlDoc = line[CG_XMLDOC_DIRECTIVE.Length..].Trim();
                         }
                         if (line.StartsWith(CG_TEMPLATE_DIRECTIVE))
                         {
-                            cgTemplate = line.Substring(CG_TEMPLATE_DIRECTIVE.Length).Trim();
+                            cgTemplate = line[CG_TEMPLATE_DIRECTIVE.Length..].Trim();
                         }
                     }
                 }
@@ -194,7 +196,7 @@ namespace Codegen.Database.CLI
                 //
 
                 string dir = optionOutDir.Value() ?? throw new InvalidOperationException($"The required {optionOutDir.LongName} is missing.");
-                Directory.CreateDirectory(dir);// Ensure directories are created
+                _ = Directory.CreateDirectory(dir); // Ensure directories are created
                 WriteLineVerbose($"Writing {name} model/data to dir '{dir}'.");
                 var metadata = MetadataModel.Create(
                     toolVersion: Git.CurrentVersion.Version,

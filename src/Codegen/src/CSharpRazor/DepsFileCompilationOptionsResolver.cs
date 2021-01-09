@@ -69,14 +69,11 @@ namespace CSharpRazor
             if (dependencyContext is not null)
             {
                 var dependencyContextCompilationOptions = dependencyContext.CompilationOptions;
-                if (dependencyContextCompilationOptions is null)
-                {
-                    throw new InvalidOperationException(
+                return dependencyContextCompilationOptions is null
+                    ? throw new InvalidOperationException(
                         "Can't load compilation options from the entry assembly. " +
-                        "Make sure PreserveCompilationContext is set to true in *.csproj file");
-                }
-
-                return dependencyContextCompilationOptions;
+                        "Make sure PreserveCompilationContext is set to true in *.csproj file")
+                    : dependencyContextCompilationOptions;
             }
 
             throw new InvalidOperationException(
@@ -188,19 +185,14 @@ namespace CSharpRazor
                     dependencyContextOptions.AllowUnsafe.Value);
             }
 
-            OptimizationLevel optimizationLevel;
-            if (dependencyContextOptions.Optimize.HasValue)
-            {
-                optimizationLevel = dependencyContextOptions.Optimize.Value ?
+            var optimizationLevel = dependencyContextOptions.Optimize.HasValue
+                ? dependencyContextOptions.Optimize.Value ?
                     OptimizationLevel.Release :
-                    OptimizationLevel.Debug;
-            }
-            else
-            {
-                optimizationLevel = IsDevelopment ?
+                    OptimizationLevel.Debug
+                : IsDevelopment ?
                     OptimizationLevel.Debug :
                     OptimizationLevel.Release;
-            }
+
             csharpCompilationOptions = csharpCompilationOptions.WithOptimizationLevel(optimizationLevel);
 
             if (dependencyContextOptions.WarningsAsErrors.HasValue)
@@ -263,7 +255,7 @@ namespace CSharpRazor
                 if (type is not null)
                 {
                     // This line will throw if pdb generation is not supported.
-                    Activator.CreateInstance(type);
+                    _ = Activator.CreateInstance(type);
                     return true;
                 }
             }

@@ -32,7 +32,7 @@ namespace CSharpRazor
                                                            throw new ArgumentNullException(nameof(rootDirectoryPath)));
             var projectEngine = RazorProjectEngine.Create(RazorConfiguration.Default, fileSystem, builder =>
             {
-                builder
+                _ = builder
                     // This define global namespace and basetype common to all compilations
                     .SetNamespace(Namespace)
                     .SetBaseType(BaseType) // can be null...@inherits wil win...test that!

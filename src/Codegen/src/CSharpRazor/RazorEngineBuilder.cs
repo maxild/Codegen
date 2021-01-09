@@ -89,7 +89,7 @@ namespace CSharpRazor
 
             foreach (var reference in references)
             {
-                _metadataReferences.Add(reference);
+                _ = _metadataReferences.Add(reference);
             }
 
             return this;

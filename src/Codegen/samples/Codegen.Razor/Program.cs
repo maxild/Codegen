@@ -51,12 +51,12 @@ namespace Codegen.Razor
     {
         public static bool IsWeekend(this DayOfWeek d)
         {
-            return d == DayOfWeek.Saturday || d == DayOfWeek.Sunday;
+            return d is DayOfWeek.Saturday or DayOfWeek.Sunday;
         }
 
         public static bool IsNotWeekend(this DayOfWeek d)
         {
-            return d != DayOfWeek.Saturday && d != DayOfWeek.Sunday;
+            return d is not DayOfWeek.Saturday and not DayOfWeek.Sunday;
         }
     }
 

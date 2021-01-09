@@ -13,19 +13,15 @@ namespace Codegen.Library
             string sqlText,
             Func<IDataReader, object> factoryFunc)
         {
-            using (SqlConnection sqlConnection = new(connString))
-            {
-                sqlConnection.Open();
+            using SqlConnection sqlConnection = new(connString);
+            sqlConnection.Open();
 
-                using (SqlCommand command = sqlConnection.CreateCommand())
-                {
-                    command.CommandType = CommandType.Text;
-                    command.CommandText = sqlText;
-                    var dataReader = command.ExecuteReader();
+            using SqlCommand command = sqlConnection.CreateCommand();
+            command.CommandType = CommandType.Text;
+            command.CommandText = sqlText;
+            var dataReader = command.ExecuteReader();
 
-                    return ToList(dataReader, factoryFunc);
-                }
-            }
+            return ToList(dataReader, factoryFunc);
         }
 
         public static List<object> ToList(IDataReader dataReader, Func<IDataReader, object> factoryFunc)

@@ -47,12 +47,10 @@ namespace CSharpRazor
 
         public async Task<string> RenderAsync(object model)
         {
-            using (var writer = new StringWriter())
-            {
-                SetContext(writer, model);
-                await ExecuteAsync().ConfigureAwait(false);
-                return writer.ToString();
-            }
+            using var writer = new StringWriter();
+            SetContext(writer, model);
+            await ExecuteAsync().ConfigureAwait(false);
+            return writer.ToString();
         }
 
         void SetContext(TextWriter tw, object model)

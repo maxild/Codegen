@@ -14,7 +14,7 @@ namespace CSharpRazor
         }
 
         /// <summary>
-        /// Gets the reference paths of the entry <see cref="System.Reflection.Assembly"/> (i.e. the application),
+        /// Gets the reference paths of the entry <see cref="Assembly"/> (i.e. the application),
         /// that are resolved by reading the deps.json file of the application (appbase refs, package refs etc),
         /// that are to be used during runtime compilation of Razor pages.
         /// </summary>
@@ -27,14 +27,11 @@ namespace CSharpRazor
                     .SelectMany(library => library.ResolveReferencePaths())
                     .ToList();
 
-                if (paths.Count == 0)
-                {
-                    throw new InvalidOperationException(
+                return paths.Count == 0
+                    ? throw new InvalidOperationException(
                         "Can't load metadata reference from the entry assembly. " +
-                        "Make sure PreserveCompilationContext is set to true in *.csproj file");
-                }
-
-                return paths;
+                        "Make sure PreserveCompilationContext is set to true in *.csproj file")
+                    : paths;
             }
 
             throw new InvalidOperationException(

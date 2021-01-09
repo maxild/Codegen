@@ -13,12 +13,12 @@ namespace Codegen.CSharp.CLI
         {
             var app = new CommandLineApplication();
 
-            app.HelpOption();
+            _ = app.HelpOption();
 
             var optionName =
                 app.Option("--name <NAME>", "Required. The name of the model/data to load and turn into csharp.",
                     CommandOptionType.SingleValue);
-                        //.IsRequired();
+            //.IsRequired();
 
             var optionDataDir =
                 app.Option("--dataDir <DATADIR>", "Required. The path to the directory containing data files.",
@@ -44,7 +44,7 @@ namespace Codegen.CSharp.CLI
 
             var optionInfo = app.Option("--info", "Display tool information.", CommandOptionType.NoValue);
 
-            app.VersionOption("--version", () => Git.CurrentVersion.Version);
+            _ = app.VersionOption("--version", () => Git.CurrentVersion.Version);
 
             app.OnExecuteAsync(async cancellationToken =>
             {

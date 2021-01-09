@@ -36,7 +36,8 @@ Hello @Model.Name
 
             var document = RazorSourceDocument.Create(razorCode, fileName: null);
 
-            var options = RazorParserOptions.Create(builder => {
+            var options = RazorParserOptions.Create(builder =>
+            {
                 foreach (var directive in GetDirectives())
                 {
                     builder.Directives.Add(directive);
@@ -52,7 +53,7 @@ Hello @Model.Name
         public void Parse()
         {
             var razorCode =
-//0123456789012345678901234567
+                //0123456789012345678901234567
                 @"@inherits MyBase<MyModel>
 
 Hello @Model.Name
@@ -70,7 +71,8 @@ Hello @Model.Name
 
             var document = RazorSourceDocument.Create(razorCode, fileName: null);
 
-            var options = RazorParserOptions.Create(builder => {
+            var options = RazorParserOptions.Create(builder =>
+            {
                 foreach (var directive in GetDirectives())
                 {
                     builder.Directives.Add(directive);
@@ -99,7 +101,7 @@ Hello @Model.Name
         public void ParseIntermediateRepresentation()
         {
             var razorCode =
-//0123456789012345678901234567
+                //0123456789012345678901234567
                 @"@inherits MyBase<MyModel>
 
 Hello @Model.Name

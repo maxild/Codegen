@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,6 +15,7 @@ namespace Codegen.Tests
     public class ScriptTests
     {
         [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0050:Convert to tuple", Justification = "The test fails because DataReaderStub cannot use tuples.")]
         public async void CompileLambda()
         {
             var options = ScriptOptions.Default
@@ -33,7 +34,7 @@ namespace Codegen.Tests
             // Or we can set up a DataTable (complete with dummy rows) and call its
             // CreateDataReader() method. That is easier, and doesnt require us to depend
             // on Moq, Rhino or other Mocking library...
-            IDataReader dataReader = CreateDataReaderStub(new []
+            IDataReader dataReader = CreateDataReaderStub(new[]
             {
                 new { Key = "key1", Value = "value1" },
                 new { Key = "key2", Value = "value2" }
@@ -43,8 +44,8 @@ namespace Codegen.Tests
 
             var recordsAsList = records.ShouldBeOfType<List<object>>();
             recordsAsList.Count.ShouldBe(2);
-            recordsAsList[0].ShouldBe(new KeyValuePair<string,string>("key1", "value1"));
-            recordsAsList[1].ShouldBe(new KeyValuePair<string,string>("key2", "value2"));
+            recordsAsList[0].ShouldBe(new KeyValuePair<string, string>("key1", "value1"));
+            recordsAsList[1].ShouldBe(new KeyValuePair<string, string>("key2", "value2"));
         }
 
         private static IDataReader CreateDataReaderStub<T>(IEnumerable<T> records)
@@ -56,7 +57,7 @@ namespace Codegen.Tests
             foreach (PropertyDescriptor property in properties)
             {
                 var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                dataTable.Columns.Add(property.Name, type);
+                _ = dataTable.Columns.Add(property.Name, type);
             }
 
             object?[] propertyValues = new object?[properties.Count];

@@ -25,9 +25,8 @@ namespace Codegen.Library.JsonConverters
             {
                 writer.WriteNull();
             }
-            else if (value is MetadataModel)
+            else if (value is MetadataModel model)
             {
-                MetadataModel model = (MetadataModel)value;
                 writer.WriteStartObject();
 
                 writer.WritePropertyName(nameof(MetadataModel.ToolVersion));
@@ -93,7 +92,7 @@ namespace Codegen.Library.JsonConverters
             DateTimeOffset? queriedAt = null;
             List<object>? records = null;
 
-            reader.ReadStartObject();
+            _ = reader.ReadStartObject();
 
             while (reader.ReadPropertyName(out string? propertyName))
             {
@@ -138,7 +137,7 @@ namespace Codegen.Library.JsonConverters
                 }
             }
 
-            reader.ReadEndObject();
+            _ = reader.ReadEndObject();
 
             return MetadataModel.Create(
                 toolVersion: toolVersion ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.ToolVersion)} property."),
@@ -180,15 +179,15 @@ namespace Codegen.Library.JsonConverters
         public static T ReadPropertyValue<T>(this JsonReader reader, JsonSerializer serializer)
         {
             T value = reader.Value is T variable ? variable : serializer.Deserialize<T>(reader);
-            reader.Read();
+            _ = reader.Read();
             return value;
         }
 
         public static List<object> ReadListOfRecords(this JsonReader reader, JsonSerializer serializer, Type recordType)
         {
             object listOfRecords = serializer.Deserialize(reader, typeof(IList<>).MakeGenericType(recordType));
-            reader.Read();
-            var records = ((IEnumerable) listOfRecords).Cast<object>().ToList();
+            _ = reader.Read();
+            var records = ((IEnumerable)listOfRecords).Cast<object>().ToList();
             return records;
         }
     }

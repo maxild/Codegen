@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Codegen.Library;
@@ -13,7 +13,9 @@ namespace Codegen.Tests
         struct RecordTuple : IEquatable<RecordTuple>
 #pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
         {
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Remove when .editorconfig have been updated.")]
             public string Key;
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Remove when .editorconfig have neem updated.")]
             public string Value;
 
 #pragma warning disable 659
@@ -214,7 +216,7 @@ namespace Codegen.Tests
 }";
             MetadataModel model1 = MetadataModel.Deserialize(json);
             MetadataModel<RecordTuple> model2 = MetadataModel.Deserialize<RecordTuple>(json);
-            MetadataModel<RecordTuple> model3 = (MetadataModel<RecordTuple>) MetadataModel.Deserialize(json, typeof(RecordTuple));
+            MetadataModel<RecordTuple> model3 = (MetadataModel<RecordTuple>)MetadataModel.Deserialize(json, typeof(RecordTuple));
 
             model3.ToolVersion.ShouldBe("0.1.0");
             model1.QueryName.ShouldBe("betalingstype");
@@ -226,8 +228,8 @@ namespace Codegen.Tests
             model1.SqlText.ShouldBe("SELECT * FROM SOME_TABLE");
             model1.RecordTypeName.ShouldBe("Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
             model1.RecordType.ShouldBe(typeof(RecordTuple));
-            model1.Records.ElementAt(0).ShouldBe(new RecordTuple { Key = "key1", Value = "value1"});
-            model1.Records.ElementAt(1).ShouldBe(new RecordTuple { Key = "key2", Value = "value2"});
+            model1.Records.ElementAt(0).ShouldBe(new RecordTuple { Key = "key1", Value = "value1" });
+            model1.Records.ElementAt(1).ShouldBe(new RecordTuple { Key = "key2", Value = "value2" });
             model1.Records.Count().ShouldBe(2);
 
             model2.ShouldBe(model1);
