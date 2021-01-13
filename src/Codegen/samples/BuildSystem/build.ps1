@@ -1,5 +1,7 @@
 #! /usr/bin/env pwsh
 
+# TODO: Build All, Data, C# files
+
 [CmdletBinding()]
 Param()
 
@@ -8,14 +10,17 @@ if ($PSCmdlet.MyInvocation.BoundParameters["Verbose"].IsPresent) {
 }
 
 $SCRIPT_ROOT = split-path -parent $MyInvocation.MyCommand.Definition
-
-# Step 1: Create intermediate data files
 $SQL_FOLDER = Join-Path $SCRIPT_ROOT "sql" # cssql specifications are found here
+# TODO: json indent-size = 2 spaces
+#       data should be sorted according to?
+# TODO: Data dir should be under version control (git), such that
+#    1) data changes are visible in git
+#    2) dotnet-cgcsharp step can be performed outside JBMain
 $DATA_DIR = Join-Path $SCRIPT_ROOT "data"  # json data is saved here (MetadataModel)
-# Step 2: Transform data files into c# types
 $TEMPLATE_DIR = Join-Path $SCRIPT_ROOT "templates"  # Razor templates are found here
-$OUT_DIR = Join-Path $SCRIPT_ROOT "src" | Join-Path -ChildPath "Brf.Domus.SampleModels"
+
 $BUILD_DIR = Join-Path $SCRIPT_ROOT "build" # diagnostic files (g.cs) are saved here
+$OUT_DIR = Join-Path $SCRIPT_ROOT "src" | Join-Path -ChildPath "Brf.Domus.SampleModels"
 
 $table = @( `
     @{ Name = "betalingstype"; Template = "dataenum.cshtml" } `
@@ -25,7 +30,7 @@ $table = @( `
 $table | ForEach-Object {
 
     #
-    # Data
+    # Step 1: Create intermediate data files (dotnet-cgdata)
     #
 
     $name = $_.Name
@@ -45,7 +50,7 @@ $table | ForEach-Object {
     }
 
     #
-    # CSharp
+    # Step 2: Transform data files into c# types (dotnet-cgcsharp)
     #
 
     # ....men de benytter samme template
