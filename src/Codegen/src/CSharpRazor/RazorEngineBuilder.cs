@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
@@ -11,6 +12,8 @@ namespace CSharpRazor
     /// </summary>
     public class RazorEngineBuilder
     {
+        const string DefaultNamespace = "CSharpRazor.Views";
+        
         private Assembly? _entryAssembly;
         private string? _namespace;
         private string? _baseType;
@@ -18,7 +21,9 @@ namespace CSharpRazor
         private HashSet<MetadataReference>? _metadataReferences;
 
         /// <summary>
-        /// The <see cref="Assembly"/> used to resolve references and compilation options ().
+        /// The <see cref="Assembly"/> used to resolve references and compilation options. EntryAssembly
+        /// does not have to be set (i.e. is optional). It defaults to
+        /// <see cref="System.Reflection.Assembly.GetEntryAssembly()"/> in the BCL.
         /// </summary>
         /// <param name="entryAssembly">The 'root' <see cref="Assembly"/> with the CLR entry point.</param>
         public RazorEngineBuilder SetEntryAssembly(Assembly? entryAssembly)
@@ -27,8 +32,13 @@ namespace CSharpRazor
             return this;
         }
 
+        // TODO: Rename to SetDefaultNamespace
+        // TODO: Ensure '@cg-Namespace' directive will win over any configured default namespace.
         /// <summary>
-        /// Override the namespace of the generated 'printer' type..
+        /// Set the default namespace of the generated 'printer' type.
+        /// The default namespace does not have to be set (i.e. is optional).
+        /// The default namespace defaults to 'CSharpRazor.Views'.
+        /// The '*.cssql' sql files can define the namespace using the '@cg-Namespace' directive.
         /// </summary>
         /// <param name="namespace">The namespace of the generated 'printer' type.</param>
         public RazorEngineBuilder SetNamespace(string? @namespace)
@@ -37,8 +47,14 @@ namespace CSharpRazor
             return this;
         }
 
+        // TODO: Rename to SetDefaultBaseType
+        // TODO: Ensure that @inherits directive will win over any configured default base type!!!
+        // TODO: What is the base type if neither defined here or via @inherits directive?
         /// <summary>
-        /// Override the base type of the generated 'printer' type.
+        /// Set the default base type for the generated 'printer' type.
+        /// The default base type does not have to be set (i.e. is optional).
+        /// It defaults to empty/null.
+        /// The '*.cshtml' razor template files can define the base type using the '@inherits' directive.
         /// </summary>
         /// <param name="baseType">the base type of the generated 'printer' type.</param>
         public RazorEngineBuilder SetBaseType(string? baseType)
@@ -47,21 +63,23 @@ namespace CSharpRazor
             return this;
         }
 
-        /// <summary>
-        /// Override the base type of the generated 'printer' type.
-        /// </summary>
-        /// <typeparam name="TBaseType">the base type of the generated 'printer' type.</typeparam>
-        // ReSharper disable once UnusedTypeParameter
+        [SuppressMessage("ReSharper", "UnusedTypeParameter")]
         public RazorEngineBuilder SetBaseType<TBaseType>()
         {
             // TODO: Make unit test for TGeneric -> Typename
             throw new NotImplementedException();
         }
 
-        public RazorEngineBuilder SetRootDirectory(string? rootDirectoryPath)
+        // TODO: Rename to SetTemplateDirectory
+        /// <summary>
+        /// Set the root directory where (*.cshtml) razor template files can be found.
+        /// The root directory must be set (i.e. is required). 
+        /// </summary>
+        /// <param name="rootDirectoryPath">The directory where (*.cshtml) razor template files can be found.</param>
+        public RazorEngineBuilder SetRootDirectory(string rootDirectoryPath)
         {
-            // TODO: rootDirectoryDir, TemplatesFolderSubPath...only used in RazorCompiler to find templates
-            _rootDirectoryPath = rootDirectoryPath;
+            // Used in RazorCompiler to find templates
+            _rootDirectoryPath = rootDirectoryPath ?? throw new ArgumentNullException(nameof(rootDirectoryPath));
             return this;
         }
 
@@ -103,11 +121,6 @@ namespace CSharpRazor
                 throw new InvalidOperationException($"Uninitialized RootDirectory. You must always call {nameof(SetRootDirectory)} before calling {nameof(Build)}.");
             }
 
-            if (_baseType is null)
-            {
-                throw new InvalidOperationException($"Uninitialized BaseType. You must always call {nameof(SetBaseType)} before calling {nameof(Build)}.");
-            }
-
             Assembly? entryAssembly = _entryAssembly ?? Assembly.GetEntryAssembly();
 
             if (entryAssembly is null)
@@ -116,7 +129,7 @@ namespace CSharpRazor
             }
 
             // template (cshtml) compiler that generates the C# source code of the 'printer' type.
-            var razorCompiler = new RazorCompiler(_rootDirectoryPath, _namespace ?? "CSharpRazor.Views", _baseType);
+            var razorCompiler = new RazorCompiler(_rootDirectoryPath, _namespace ?? DefaultNamespace, _baseType);
 
             // .deps file info for the C# compiler
             var referencePathResolver = new DepsFileReferencePathResolver(entryAssembly);

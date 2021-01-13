@@ -71,13 +71,16 @@ namespace Codegen.CSharp.CLI
                 WriteLineVerbose($"Reading {name} model/data from dir '{optionDataDir.Value()}' completed.");
 
                 string templatePath = optionTemplate.Value() ?? throw new InvalidOperationException($"The required {optionTemplate.LongName} is missing.");
+                // The templateFilename is null if templatePath is null (The API have been annotated with [return: NotNullIfNotNull("path")]).
                 string templateFilename = Path.GetFileName(templatePath);
+                // templateDir is null if templatePath is null, empty, or a root (such as "\", "C:", or "\\server\share").
                 string? templateDir = Path.GetDirectoryName(templatePath);
-
+                string rootDir = templateDir ?? throw new InvalidOperationException($"The template directory cannot be null, empty, or a system root.");
+                
                 WriteLineVerbose($"Initializing Razor engine with root directory : '{templateDir}");
 
                 var engine = new RazorEngineBuilder()
-                    .SetRootDirectory(templateDir)
+                    .SetRootDirectory(rootDir)
                     .Build();
 
                 WriteLineVerbose($"Rendering '{templateFilename}' ...");

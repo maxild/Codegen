@@ -107,6 +107,8 @@ dotnet tool uninstall dotnet-cgdata 2>&1 | out-null
 dotnet tool uninstall dotnet-cgcsharp 2>&1>$null
 
 # Install the tools locally ('dotnet new tool-manifest' executed in curr dir)
+# NOTE: You need to clear the cache before invoking: dotnet nuget locals all --clear,
+#       if the version have not been bumped in a feature branch
 
 # 'dotnet tool run cgdata' or 'dotnet cgdata' to invoke
 dotnet tool install dotnet-cgdata --add-source $ARTIFACTS_DIR --version $VERSION
