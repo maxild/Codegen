@@ -80,7 +80,7 @@ if ! DOTNET_INSTALLED_VERSION=$(dotnet --version); then
   # Extract the first line of the message without making bash write any error messages
   echo "$DOTNET_INSTALLED_VERSION" | head -1
   echo "That is not problem, we will install the SDK version below."
-  DOTNET_INSTALLED_VERSION='' # Force installation of .NET Core SDK via dotnet-install script
+  DOTNET_INSTALLED_VERSION='0.0.000' # Force installation of .NET Core SDK via dotnet-install script
 else
   echo ".NET Core SDK version ${DOTNET_INSTALLED_VERSION} found."
 fi
