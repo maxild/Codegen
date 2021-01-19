@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Razor.Language;
@@ -194,7 +194,7 @@ namespace Codegen.Razor
         }
 
         /// <summary>
-        /// Gets the sequence of imports with the name specified by <see cref="RazorTemplateEngineOptions.ImportsFileName" />
+        /// Gets the sequence of imports with the name specified by "RazorTemplateEngineOptions.ImportsFileName"
         /// that apply to <paramref name="path"/>.
         /// </summary>
         /// <param name="path">The path to look up import items for.</param>
@@ -212,7 +212,7 @@ namespace Codegen.Razor
         }
 
         /// <summary>
-        /// Gets the sequence of imports with the name specified by <see cref="RazorTemplateEngineOptions.ImportsFileName" />
+        /// Gets the sequence of imports with the name specified by "RazorTemplateEngineOptions.ImportsFileName"
         /// that apply to <paramref name="projectItem"/>.
         /// </summary>
         /// <param name="projectItem">The <see cref="RazorProjectItem"/> to look up import items for.</param>

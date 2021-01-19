@@ -6,7 +6,6 @@
   <PropertyGroup>
     <IsTestProject>false</IsTestProject>
     <IsPackable>true</IsPackable>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <!-- NuGet metadata properties -->

@@ -12,6 +12,12 @@
     <!-- .NET code style analysis is disabled, by default -->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!--
+      Compiler does not report unused imports when XML doc comments are disabled (https://github.com/dotnet/roslyn/issues/41640)
+      Other tools (StyleCop) does enforce this too.
+      Therefore we generate xml docs even for test projects (and simply ignore both the xml doc file and CS1591)
+    -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
