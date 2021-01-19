@@ -11,7 +11,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Codegen.Database.CLI
 {
-    static class Program
+    internal static class Program
     {
         public static int Main(string[] args)
         {

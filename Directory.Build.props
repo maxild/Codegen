@@ -7,23 +7,12 @@
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <!-- Roslyn Analyzers can always be turned off -->
-    <!--
-      <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-      <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
-      <RunAnalyzers>false</RunAnalyzers>
-    -->
-    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
-    <!--
-      With the .NET 5.0 SDK and later versions, you can enable code-style analysis
-      when building from the command-line and in Visual Studio. However, for performance reasons,
-      a handful of code-style rules will still apply only in the Visual Studio IDE
-      See https://github.com/dotnet/roslyn/blob/9f87b444da9c48a4d492b19f8337339056bf2b95/src/Analyzers/Core/Analyzers/EnforceOnBuildValues.cs#L95
-      See https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview#enable-on-build
-    -->
+    <!-- Turn on `/features:strict` ("strict mode" in roslyn) -->
+    <Feature>strict</Feature>
+    <!-- .NET code style analysis is disabled, by default -->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <!-- AssemblyInfo properties -->

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -53,7 +53,7 @@ namespace CSharpRazor
             return writer.ToString();
         }
 
-        void SetContext(TextWriter tw, object model)
+        private void SetContext(TextWriter tw, object model)
         {
             Output = tw;
             Model = model;

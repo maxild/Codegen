@@ -67,7 +67,7 @@ namespace Codegen.Tests
                 {
                     propertyValues[i] = properties[i].GetValue(item);
                 }
-                dataTable.Rows.Add(propertyValues);
+                _ = dataTable.Rows.Add(propertyValues);
             }
 
             return dataTable.CreateDataReader();

@@ -10,17 +10,13 @@ namespace Codegen.Tests
     public class MetadataModelTests
     {
 #pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
-        struct RecordTuple : IEquatable<RecordTuple>
+        private struct RecordTuple : IEquatable<RecordTuple>
 #pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
         {
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Remove when .editorconfig have been updated.")]
             public string Key;
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Remove when .editorconfig have neem updated.")]
             public string Value;
 
-#pragma warning disable 659
             public override bool Equals(object? obj)
-#pragma warning restore 659
             {
                 return obj is RecordTuple recordTuple && Equals(recordTuple);
             }
@@ -115,8 +111,7 @@ namespace Codegen.Tests
                 recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
                 records);
 
-            Assert.Throws<InvalidCastException>(() =>
-                metadata.Records.ElementAt(0).ShouldBe(new KeyValuePair<string, string>("key1", "value1")));
+            _ = Assert.Throws<InvalidCastException>(() => metadata.Records.ElementAt(0).ShouldBe(new KeyValuePair<string, string>("key1", "value1")));
 
             // TODO: message is different on .NET Framework and .NET Core
             //.Message.ShouldBe("Unable to cast object of type 'RecordTuple' to type 'System.Collections.Generic.KeyValuePair`2[System.String,System.String]'.");

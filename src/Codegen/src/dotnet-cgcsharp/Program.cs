@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using Codegen.Library;
@@ -7,7 +7,7 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace Codegen.CSharp.CLI
 {
-    static class Program
+    internal static class Program
     {
         public static int Main(string[] args)
         {
@@ -93,7 +93,7 @@ namespace Codegen.CSharp.CLI
                     string diagDir = optionDiagDir.Value() ?? throw new InvalidOperationException($"The required {optionDataDir.LongName} is missing.");
                     string diagFilename = Path.GetFileNameWithoutExtension(templateFilename) + ".g.cshtml.cs";
                     string diagPath = Path.Combine(diagDir, diagFilename);
-                    Directory.CreateDirectory(diagDir);
+                    _ = Directory.CreateDirectory(diagDir);
                     await File.WriteAllTextAsync(diagPath, renderResult.SourceCSharpCode, Encoding.UTF8, cancellationToken);
                 }
 

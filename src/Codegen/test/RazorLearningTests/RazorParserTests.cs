@@ -1,4 +1,4 @@
-#nullable disable
+﻿#nullable disable
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -44,7 +44,7 @@ Hello @Model.Name
                 }
             });
 
-            RazorSyntaxTree syntaxTree = RazorSyntaxTree.Parse(document, options);
+            var syntaxTree = RazorSyntaxTree.Parse(document, options);
 
             syntaxTree.Source.FilePath.ShouldBeNull();
         }
@@ -142,7 +142,7 @@ Hello @Model.Name
             output.ShouldNotBeNull();
         }
 
-        static RazorSourceDocument CreateSourceDocument(
+        private static RazorSourceDocument CreateSourceDocument(
             string content = "Hello, world!",
             Encoding encoding = null,
             bool normalizeNewLines = false,
@@ -172,7 +172,7 @@ Hello @Model.Name
                     DirectiveKind.SingleLine,
                     builder =>
                     {
-                        builder
+                        _ = builder
                             .AddTypeToken()
                             .AddMemberToken();
 
@@ -183,7 +183,7 @@ Hello @Model.Name
                     DirectiveKind.SingleLine,
                     builder =>
                     {
-                        builder.AddTypeToken();
+                        _ = builder.AddTypeToken();
                         builder.Usage = DirectiveUsage.FileScopedSinglyOccurring;
                     }),
                 DirectiveDescriptor.CreateDirective(
@@ -191,7 +191,7 @@ Hello @Model.Name
                     DirectiveKind.SingleLine,
                     builder =>
                     {
-                        builder.AddNamespaceToken();
+                        _ = builder.AddNamespaceToken();
                         builder.Usage = DirectiveUsage.FileScopedSinglyOccurring;
                     }),
                 DirectiveDescriptor.CreateDirective(
@@ -199,7 +199,7 @@ Hello @Model.Name
                     DirectiveKind.SingleLine,
                     builder =>
                     {
-                        builder.AddOptionalStringToken();
+                        _ = builder.AddOptionalStringToken();
                         builder.Usage = DirectiveUsage.FileScopedSinglyOccurring;
                     }),
                 DirectiveDescriptor.CreateDirective(
@@ -207,7 +207,7 @@ Hello @Model.Name
                     DirectiveKind.SingleLine,
                     builder =>
                     {
-                        builder.AddTypeToken();
+                        _ = builder.AddTypeToken();
                         builder.Usage = DirectiveUsage.FileScopedSinglyOccurring;
                     }),
                 DirectiveDescriptor.CreateDirective(
@@ -215,16 +215,13 @@ Hello @Model.Name
                     DirectiveKind.SingleLine,
                     builder =>
                     {
-                        builder.AddTypeToken();
+                        _ = builder.AddTypeToken();
                         builder.Usage = DirectiveUsage.FileScopedSinglyOccurring;
                     }),
                 DirectiveDescriptor.CreateDirective(
                     "section",
                     DirectiveKind.RazorBlock,
-                    builder =>
-                    {
-                        builder.AddMemberToken();
-                    })
+                    builder => builder.AddMemberToken())
             };
 
             return directives;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -60,7 +60,7 @@ namespace Codegen.Razor
         }
     }
 
-    static class Program
+    internal static class Program
     {
         public static async Task<int> Main()
         {
