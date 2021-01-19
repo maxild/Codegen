@@ -97,7 +97,7 @@ if [[ "$major" != "$foundMajor" ]] || [[ "$minor" != "$foundMinor" ]] || [[ "$fe
   if [ ! -d "$SCRIPT_DIR/.dotnet" ]; then
     mkdir "$SCRIPT_DIR/.dotnet"
   fi
-  curl -Lsfo "$SCRIPT_DIR/.dotnet/dotnet-install.sh" https://dot.net/v1/dotnet-install.sh >/dev/null 2>&1
+  curl -Lsfo "$SCRIPT_DIR/.dotnet/dotnet-install.sh" https://dot.net/v1/dotnet-install.sh > /dev/null 2>&1
   bash "$SCRIPT_DIR/.dotnet/dotnet-install.sh" --version "$DOTNET_VERSION" --channel $DOTNET_CHANNEL --install-dir .dotnet --no-path >/dev/null 2>&1
   # Note: This PATH/DOTNET_ROOT will be visible only when sourcing script.
   # Note: But on travis CI or other *nix build machines the PATH does not have
