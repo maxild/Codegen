@@ -76,7 +76,7 @@ namespace Codegen.CSharp.CLI
                 // templateDir is null if templatePath is null, empty, or a root (such as "\", "C:", or "\\server\share").
                 string? templateDir = Path.GetDirectoryName(templatePath);
                 string rootDir = templateDir ?? throw new InvalidOperationException($"The template directory cannot be null, empty, or a system root.");
-                
+
                 WriteLineVerbose($"Initializing Razor engine with root directory : '{templateDir}");
 
                 var engine = new RazorEngineBuilder()

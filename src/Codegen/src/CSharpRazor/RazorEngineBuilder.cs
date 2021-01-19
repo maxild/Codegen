@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
@@ -12,8 +11,8 @@ namespace CSharpRazor
     /// </summary>
     public class RazorEngineBuilder
     {
-        const string DefaultNamespace = "CSharpRazor.Views";
-        
+        private const string DEFAULT_NAMESPACE = "CSharpRazor.Views";
+
         private Assembly? _entryAssembly;
         private string? _namespace;
         private string? _baseType;
@@ -23,7 +22,7 @@ namespace CSharpRazor
         /// <summary>
         /// The <see cref="Assembly"/> used to resolve references and compilation options. EntryAssembly
         /// does not have to be set (i.e. is optional). It defaults to
-        /// <see cref="System.Reflection.Assembly.GetEntryAssembly()"/> in the BCL.
+        /// <see cref="Assembly.GetEntryAssembly()"/> in the BCL.
         /// </summary>
         /// <param name="entryAssembly">The 'root' <see cref="Assembly"/> with the CLR entry point.</param>
         public RazorEngineBuilder SetEntryAssembly(Assembly? entryAssembly)
@@ -63,7 +62,6 @@ namespace CSharpRazor
             return this;
         }
 
-        [SuppressMessage("ReSharper", "UnusedTypeParameter")]
         public RazorEngineBuilder SetBaseType<TBaseType>()
         {
             // TODO: Make unit test for TGeneric -> Typename
@@ -73,7 +71,7 @@ namespace CSharpRazor
         // TODO: Rename to SetTemplateDirectory
         /// <summary>
         /// Set the root directory where (*.cshtml) razor template files can be found.
-        /// The root directory must be set (i.e. is required). 
+        /// The root directory must be set (i.e. is required).
         /// </summary>
         /// <param name="rootDirectoryPath">The directory where (*.cshtml) razor template files can be found.</param>
         public RazorEngineBuilder SetRootDirectory(string rootDirectoryPath)
@@ -129,7 +127,7 @@ namespace CSharpRazor
             }
 
             // template (cshtml) compiler that generates the C# source code of the 'printer' type.
-            var razorCompiler = new RazorCompiler(_rootDirectoryPath, _namespace ?? DefaultNamespace, _baseType);
+            var razorCompiler = new RazorCompiler(_rootDirectoryPath, _namespace ?? DEFAULT_NAMESPACE, _baseType);
 
             // .deps file info for the C# compiler
             var referencePathResolver = new DepsFileReferencePathResolver(entryAssembly);
