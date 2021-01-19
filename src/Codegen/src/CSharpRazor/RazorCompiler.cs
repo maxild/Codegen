@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.AspNetCore.Razor.Language;
-using Microsoft.AspNetCore.Razor.Language.Extensions;
 
 namespace CSharpRazor
 {
@@ -24,7 +23,7 @@ namespace CSharpRazor
         public RazorCompiler(
             string rootDirectoryPath,
             string @namespace,
-            string baseType)
+            string? baseType = null)
         {
             BaseType = baseType;
             Namespace = @namespace ?? throw new ArgumentNullException(nameof(@namespace));
@@ -54,14 +53,14 @@ namespace CSharpRazor
                 //    }
                 // }
                 //--------------------------------------------------------------------------------
-                FunctionsDirective.Register(builder);
+                // FunctionsDirective.Register(builder);
 
                 //--------------------------------------------------------------------------------
                 // The @inherits directive provides full control of the class the view inherits:
                 //
                 // @inherits RazorTemplate<SomeModel>
                 //--------------------------------------------------------------------------------
-                InheritsDirective.Register(builder);
+                // InheritsDirective.Register(builder);
 
                 //--------------------------------------------------------------------------------
                 // The @section directive is used in conjunction with the layout to enable views
@@ -93,7 +92,7 @@ namespace CSharpRazor
 
         public string Namespace { get; }
 
-        public string BaseType { get; }
+        public string? BaseType { get; }
 
         // TODO: Inline content for testing is not supported, only file content
         public CompiledTemplateCSharpSource CompileTemplate(string templatePath)

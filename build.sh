@@ -7,7 +7,7 @@ if [ ! -d "$TOOLS_DIR" ]; then
   mkdir "$TOOLS_DIR"
 fi
 
-# this one works inside command substitution, because it writes to stderr
+# this one works inside command substititution, because it writes to stderr
 error_exit() {
   echo "$1" 1>&2
   exit 1
@@ -54,6 +54,21 @@ fi
 # INSTALL .NET Core SDK
 ###########################################################################
 
+function parse_sdk_version() {
+  local major
+  local minor
+  local featureAndPatch
+  local feature
+  local patch
+  local version="$*"
+  major=$(echo "$version" | cut -d. -f1)
+  minor=$(echo "$version" | cut -d. -f2)
+  featureAndPatch=$(echo "$version" | cut -d. -f3)
+  feature=$(echo "$featureAndPatch" | cut -c1-1)
+  patch=$(echo "$featureAndPatch" | cut -c2-3)
+  echo "$major" "$minor" "$feature" "$patch"
+}
+
 DOTNET_CHANNEL='LTS'
 
 export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
@@ -65,12 +80,19 @@ if ! DOTNET_INSTALLED_VERSION=$(dotnet --version); then
   # Extract the first line of the message without making bash write any error messages
   echo "$DOTNET_INSTALLED_VERSION" | head -1
   echo "That is not problem, we will install the SDK version below."
-  DOTNET_INSTALLED_VERSION='' # Force installation of .NET Core SDK via dotnet-install script
+  DOTNET_INSTALLED_VERSION='0.0.000' # Force installation of .NET Core SDK via dotnet-install script
 else
   echo ".NET Core SDK version ${DOTNET_INSTALLED_VERSION} found."
 fi
 
-if [[ "$DOTNET_VERSION" != "$DOTNET_INSTALLED_VERSION" ]]; then
+echo ".NET Core SDK version ${DOTNET_VERSION} is required (with roll forward to latest patch policy)"
+
+# Parse the sdk versions into major, minor, feature and patch (x.y.znn)
+read -r major minor feature patch < <(parse_sdk_version "$DOTNET_VERSION")
+read -r foundMajor foundMinor foundFeature foundPatch < <(parse_sdk_version "$DOTNET_INSTALLED_VERSION")
+
+# latestPatch roll forward policy
+if [[ "$major" != "$foundMajor" ]] || [[ "$minor" != "$foundMinor" ]] || [[ "$feature" != "$foundFeature" ]] || [[ "$patch" -lt "$foundPatch" ]]; then
   echo "Installing .NET Core SDK version ${DOTNET_VERSION} ..."
   if [ ! -d "$SCRIPT_DIR/.dotnet" ]; then
     mkdir "$SCRIPT_DIR/.dotnet"

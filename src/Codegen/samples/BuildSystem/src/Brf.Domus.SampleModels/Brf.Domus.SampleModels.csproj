@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <LanguageVersion>9.0</LanguageVersion>
     <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+    <!-- .NET code style analysis is disabled, by default -->
+    <!-- <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild> -->
   </PropertyGroup>
 </Project>

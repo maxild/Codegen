@@ -41,7 +41,7 @@ $PSScriptRoot = split-path -parent $MyInvocation.MyCommand.Definition
 $TOOLS_DIR = Join-Path $PSScriptRoot "tools"
 
 # Make sure tools folder exists
-if ((Test-Path $PSScriptRoot) -and (-not(Test-Path $TOOLS_DIR))) {
+if ((Test-Path $PSScriptRoot) -and (-not (Test-Path $TOOLS_DIR))) {
   Write-Verbose -Message "Creating tools directory..."
   New-Item -Path $TOOLS_DIR -Type directory | out-null
 }
@@ -72,23 +72,24 @@ foreach ($line in Get-Content (Join-Path $PSScriptRoot 'build.config')) {
     $GitReleaseManagerVersion = $line.SubString(26)
   }
 }
-if ( [string]::IsNullOrEmpty($DotNetSdkVersion)) {
+
+if ([string]::IsNullOrEmpty($DotNetSdkVersion)) {
   'Failed to parse .NET Core SDK version'
   exit 1
 }
-if ( [string]::IsNullOrEmpty($CakeVersion)) {
+if ([string]::IsNullOrEmpty($CakeVersion)) {
   'Failed to parse Cake version'
   exit 1
 }
-if ( [string]::IsNullOrEmpty($CakeScriptsVersion)) {
+if ([string]::IsNullOrEmpty($CakeScriptsVersion)) {
   'Failed to parse CakeScripts version'
   exit 1
 }
-if ( [string]::IsNullOrEmpty($GitVersionVersion)) {
+if ([string]::IsNullOrEmpty($GitVersionVersion)) {
   'Failed to parse GitVersion version'
   exit 1
 }
-if ( [string]::IsNullOrEmpty($GitReleaseManagerVersion)) {
+if ([string]::IsNullOrEmpty($GitReleaseManagerVersion)) {
   'Failed to parse GitReleaseManager version'
   exit 1
 }
@@ -96,6 +97,18 @@ if ( [string]::IsNullOrEmpty($GitReleaseManagerVersion)) {
 # This will force the use of TLS 1.2 (you can also make it use 1.1 if you want for some reason).
 # To avoid the exception: "The underlying connection was closed: An unexpected error occurred on a send."
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+function ParseSdkVersion([string]$version) {
+  $major, $minor, $featureAndPatch = $version.split('.')
+  $feature = $featureAndPatch.SubString(0, 1)
+  $patch = $featureAndPatch.SubString(1)
+  return [PsCustomObject] @{
+    Major   = [int]$major
+    Minor   = [int]$minor
+    Feature = [int]$feature
+    Patch   = [int]$patch
+  }
+}
 
 ###########################################################################
 # Install .NET Core SDK
@@ -110,14 +123,14 @@ $DotNetChannel = 'LTS'
 Function Remove-PathVariable([string]$VariableToRemove) {
   $path = [Environment]::GetEnvironmentVariable("PATH", "User")
   if ($path -ne $null) {
-    $newItems = $path.Split(';', [StringSplitOptions]::RemoveEmptyEntries) | Where-Object { "$( $_ )" -inotlike $VariableToRemove }
-    [Environment]::SetEnvironmentVariable("PATH",[System.String]::Join(';', $newItems), "User")
+    $newItems = $path.Split(';', [StringSplitOptions]::RemoveEmptyEntries) | Where-Object { "$($_)" -inotlike $VariableToRemove }
+    [Environment]::SetEnvironmentVariable("PATH", [System.String]::Join(';', $newItems), "User")
   }
 
   $path = [Environment]::GetEnvironmentVariable("PATH", "Process")
   if ($path -ne $null) {
-    $newItems = $path.Split(';', [StringSplitOptions]::RemoveEmptyEntries) | Where-Object { "$( $_ )" -inotlike $VariableToRemove }
-    [Environment]::SetEnvironmentVariable("PATH",[System.String]::Join(';', $newItems), "Process")
+    $newItems = $path.Split(';', [StringSplitOptions]::RemoveEmptyEntries) | Where-Object { "$($_)" -inotlike $VariableToRemove }
+    [Environment]::SetEnvironmentVariable("PATH", [System.String]::Join(';', $newItems), "Process")
   }
 }
 
@@ -130,18 +143,29 @@ if (Get-Command dotnet -ErrorAction SilentlyContinue) {
     # Extract the first line of the message without making powershell write any error messages
     Write-Host ($FoundDotNetSdkVersion | ForEach-Object { "$_" } | select-object -first 1)
     Write-Host "That is not problem, we will install the SDK version below."
-    $FoundDotNetSdkVersion = "" # Force installation of .NET Core SDK via dotnet-install script
+    $FoundDotNetSdkVersion = "0.0.000" # Force installation of .NET Core SDK via dotnet-install script
   }
   else {
     Write-Host ".NET Core SDK version $FoundDotNetSdkVersion found."
   }
 }
 
-if ($FoundDotNetSdkVersion -ne $DotNetSdkVersion) {
+Write-Host ".NET Core SDK version $DotNetSdkVersion is required (with roll forward to latest patch policy)"
+
+# Parse the sdk versions into major, minor, feature and patch (x.y.znn)
+$ParsedFoundDotNetSdkVersion = ParseSdkVersion($FoundDotNetSdkVersion)
+$ParsedDotNetSdkVersion = ParseSdkVersion($DotNetSdkVersion)
+
+# latestPatch rollforward policy
+if (($ParsedFoundDotNetSdkVersion.Major -ne $ParsedDotNetSdkVersion.Major) -or `
+  ($ParsedFoundDotNetSdkVersion.Minor -ne $ParsedDotNetSdkVersion.Minor) -or `
+  ($ParsedFoundDotNetSdkVersion.Feature -ne $ParsedDotNetSdkVersion.Feature) -or `
+  ($ParsedFoundDotNetSdkVersion.Patch -lt $ParsedDotNetSdkVersion.Patch)) {
+
   Write-Verbose -Message "Installing .NET Core SDK version $DotNetSdkVersion ..."
 
   $InstallPath = Join-Path $PSScriptRoot ".dotnet"
-  if (-not(Test-Path $InstallPath)) {
+  if (-not (Test-Path $InstallPath)) {
     mkdir -Force $InstallPath | Out-Null
   }
 

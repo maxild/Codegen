@@ -115,7 +115,9 @@ Task("Build")
     {
         Configuration = parameters.Configuration,
         NoRestore = true,
-        MSBuildSettings = msBuildSettings
+        MSBuildSettings = msBuildSettings,
+        // https://github.com/dotnet/roslyn/issues/43051#issuecomment-758862927
+        ArgumentCustomization = args=>args.Append("-warnaserror")
     });
 });
 
