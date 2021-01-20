@@ -39,9 +39,9 @@ Setup(context =>
                         //.WithProperty("PackageReleaseNotes", string.Concat("\"", releaseNotes, "\""));
 
     // Deterministic builds: normalize stored file paths
-    // if (parameters.IsRunningOnAppVeyor) {
-    //     msBuildSettings = msBuildSettings.WithProperty("ContinuousIntegrationBuild", "true");
-    // }
+    if (parameters.IsRunningOnAppVeyor) {
+        msBuildSettings = msBuildSettings.WithProperty("ContinuousIntegrationBuild", "true");
+    }
 
     Information("Building version {0} of {1} ({2}, {3}) using version {4} of Cake and '{5}' of GitVersion. (IsTagPush: {6})",
         parameters.VersionInfo.SemVer,
@@ -111,13 +111,19 @@ Task("Build")
     .IsDependentOn("Restore")
     .Does(() =>
 {
+    // https://github.com/dotnet/roslyn/issues/43051#issuecomment-758862927
+    var extraArgs = "-warnaserror";
+    // TODO: For some unknown reason IDE0055 (Fix formatting) shows up on appveyor????
+    if (parameters.IsRunningOnAppVeyor)
+        extraArgs += " -nowarn:IDE0055";
+
     DotNetCoreBuild(parameters.Paths.Files.Solution.FullPath, new DotNetCoreBuildSettings()
     {
         Configuration = parameters.Configuration,
         NoRestore = true,
         MSBuildSettings = msBuildSettings,
-        // https://github.com/dotnet/roslyn/issues/43051#issuecomment-758862927
-        ArgumentCustomization = args=>args.Append("-warnaserror")
+
+        ArgumentCustomization = args => args.Append(extraArgs)
     });
 });
 
