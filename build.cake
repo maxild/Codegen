@@ -117,7 +117,7 @@ Task("Build")
     // TODO: For some unknown reason NETSDK1023 shows up when -p:ContinuousIntegrationBuild=true on appveyor (https://github.com/maxild/Domus/issues/43)
     // NOTE: /property:ContinuousIntegrationBuild=true is only added when building on appveyor (see above)
     if (parameters.IsRunningOnAppVeyor)
-        extraArgs += " -nowarn:IDE0055;NETSDK1023";
+        extraArgs += " -nowarn:NETSDK1023";
 
     DotNetCoreBuild(parameters.Paths.Files.Solution.FullPath, new DotNetCoreBuildSettings()
     {
