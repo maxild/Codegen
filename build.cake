@@ -111,11 +111,15 @@ Task("Build")
     .IsDependentOn("Restore")
     .Does(() =>
 {
+    // MSBUILD : error MSB1001: Unknown switch.
+    // Switch: /warnaserror+
+
     // https://github.com/dotnet/roslyn/issues/43051#issuecomment-758862927
-    var extraArgs = "/warnaserror+";
+    var extraArgs = "-warnAsError";
     // TODO: For some unknown reason IDE0055 (Fix formatting) shows up on appveyor???? (https://github.com/maxild/Domus/issues/46)
     // TODO: For some unknown reason NETSDK1023 shows up when -p:ContinuousIntegrationBuild=true on appveyor (https://github.com/maxild/Domus/issues/43)
     // NOTE: /property:ContinuousIntegrationBuild=true is only added when building on appveyor (see above)
+    // NOTE: NoWarn can only be used to disable built-in compiler warnings.
     if (parameters.IsRunningOnAppVeyor)
         extraArgs += " /nowarn:IDE0055;NETSDK1023";
 
