@@ -111,11 +111,20 @@ Task("Build")
     .IsDependentOn("Restore")
     .Does(() =>
 {
-    // https://github.com/dotnet/roslyn/issues/43051#issuecomment-758862927
-    var extraArgs = "-warnaserror";
-    // TODO: For some unknown reason IDE0055 (Fix formatting) shows up on appveyor???? (https://github.com/maxild/Domus/issues/46)
-    // TODO: For some unknown reason NETSDK1023 shows up when -p:ContinuousIntegrationBuild=true on appveyor (https://github.com/maxild/Domus/issues/43)
-    // NOTE: /property:ContinuousIntegrationBuild=true is only added when building on appveyor (see above)
+    // Needed to force warnings to error on github build
+    // See https://github.com/dotnet/roslyn/issues/43051#issuecomment-758862927
+    // NOTE: Both /warnAsError and -warnAsError work
+    var extraArgs = "-warnAsError";
+
+    // TODO: For some unknown reason IDE0055 (Fix formatting) shows up on appveyor,
+    //       when there are no IDE0055 warnigns/errors on gihub/local build ????
+    //       See https://github.com/maxild/Domus/issues/46
+    // TODO: For some unknown reason NETSDK1023 shows up when -p:ContinuousIntegrationBuild=true
+    //       on appveyor (not appveyor specific, but /property:ContinuousIntegrationBuild=true
+    //       is only added when building on appveyor (see above).
+    //       See https://github.com/maxild/Domus/issues/43
+    // NOTE: NoWarn can only be used to disable built-in compiler/sdk warnings.
+    // NOTE: Both /nowarn:IDE0055;NETSDK1023 and -nowarn:IDE0055;NETSDK1023 work
     if (parameters.IsRunningOnAppVeyor)
         extraArgs += " -nowarn:IDE0055;NETSDK1023";
 
