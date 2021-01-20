@@ -119,9 +119,11 @@ Task("Build")
     // TODO: For some unknown reason IDE0055 (Fix formatting) shows up on appveyor???? (https://github.com/maxild/Domus/issues/46)
     // TODO: For some unknown reason NETSDK1023 shows up when -p:ContinuousIntegrationBuild=true on appveyor (https://github.com/maxild/Domus/issues/43)
     // NOTE: /property:ContinuousIntegrationBuild=true is only added when building on appveyor (see above)
-    // NOTE: NoWarn can only be used to disable built-in compiler warnings.
+    // NOTE: NoWarn can only be used to disable built-in compiler/sdk warnings.
+    // NOTE: Both /warnAsError and -warnAsError work
+    // NOTE: Both /nowarn:IDE0055;NETSDK1023 and -nowarn:IDE0055;NETSDK1023 work
     if (parameters.IsRunningOnAppVeyor)
-        extraArgs += " /nowarn:IDE0055;NETSDK1023";
+        extraArgs += " -nowarn:IDE0055;NETSDK1023";
 
     DotNetCoreBuild(parameters.Paths.Files.Solution.FullPath, new DotNetCoreBuildSettings()
     {
