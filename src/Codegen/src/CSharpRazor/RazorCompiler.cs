@@ -12,7 +12,7 @@ namespace CSharpRazor
     /// </summary>
     public class RazorCompiler
     {
-        private readonly RazorProjectEngine _projectEngine;
+        private readonly RazorProjectEngine  _projectEngine;
 
         /// <summary>
         /// Create compiler
