@@ -2,7 +2,9 @@
 .config/
 
 # json data (intermediate results)
+# TODO: Uncomment/delete
 data/
 # *.g.cshtml.cs files are in build dir
 build/
+# TODO: Uncomment/delete
 *.generated.cs
