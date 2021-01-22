@@ -2,11 +2,11 @@
 
 $SCRIPT_ROOT = split-path -parent $MyInvocation.MyCommand.Definition
 
-$ARTIFACTS_DIR = Join-Path $SCRIPT_ROOT ".." | `
-                 Join-Path -ChildPath ".." | `
-                 Join-Path -ChildPath ".." | `
-                 Join-Path -ChildPath ".." | `
-                 Join-Path -ChildPath "artifacts"
+$NUGET_DIR = Join-Path $SCRIPT_ROOT ".." | `
+             Join-Path -ChildPath ".." | `
+             Join-Path -ChildPath ".." | `
+             Join-Path -ChildPath ".." | `
+             Join-Path -ChildPath ".nuget"
 
 # TODO: Should be removed soon...
 function Test-Assertion {
@@ -65,6 +65,7 @@ function Test-Assertion {
   }
 }
 
+# TODO: Can be removed
 function Resolve-Version() {
     $TOOLS_DIR = Join-Path $SCRIPT_ROOT ".." | `
                  Join-Path -ChildPath ".." | `
@@ -95,26 +96,38 @@ function Resolve-Version() {
     return $versionInfo.NuGetVersion
 }
 
-$VERSION = Resolve-Version
+# NOTE: We use publish to /.nuget folder strategy
+# $VERSION = Resolve-Version
 
 # Only create the tool-manifest once
 if (-not (Test-Path ".config")) {
     dotnet new tool-manifest
 }
 
+# This is not needed, because we do _not_ check `.config/dotnet-tools.json` into GIT
+#    dotnet tool restore 2>&1>$null
+
 # Uninstall the tools (NOTE: '2>&1>$null' and '2>&1 | out-null' are equivalent)
-dotnet tool uninstall dotnet-cgdata 2>&1 | out-null
+dotnet tool uninstall dotnet-cgdata 2>&1>$null
 dotnet tool uninstall dotnet-cgcsharp 2>&1>$null
+dotnet tool uninstall dotnet-format 2>&1>$null
 
 # Install the tools locally ('dotnet new tool-manifest' executed in curr dir)
 # NOTE: You need to clear the cache before invoking: dotnet nuget locals all --clear,
 #       if the version have not been bumped in a feature branch
 
 # 'dotnet tool run cgdata' or 'dotnet cgdata' to invoke
-dotnet tool install dotnet-cgdata --add-source $ARTIFACTS_DIR --version $VERSION
+dotnet tool install dotnet-cgdata --add-source $NUGET_DIR --version 0.1.*-*
 # 'dotnet tool run cgcsharp' or 'dotnet cgcsharp' to invoke
-dotnet tool install dotnet-cgcsharp --add-source $ARTIFACTS_DIR --version $VERSION
+dotnet tool install dotnet-cgcsharp --add-source $NUGET_DIR --version 0.1.*-*
+# Install development build v5.x
+# TODO: Change when v5 is published to nuget.org
+# https://dev.azure.com/dnceng/public/_packaging?_a=package&feed=dotnet-tools&package=dotnet-format&version=5.0.207201&protocolType=NuGet
+# dotnet tool install dotnet-format -version 5.0.207201
+dotnet tool install dotnet-format --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json --version 5.0.*
 
 # Test installation
-dotnet cgdata --info
-dotnet cgcsharp --info
+Write-Host "Cogegen toolchain versions:"
+Write-Host "  cgdata:    $(dotnet cgdata --version)"
+Write-Host "  cgcsharp:  $(dotnet cgcsharp --version)"
+Write-Host "  format:    $(dotnet format --version)"

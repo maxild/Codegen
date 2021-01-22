@@ -6,5 +6,13 @@
 # dotnet tool-manifest is configured here (for this demo we ignore it)
 .config/
 
+# we put diagnostics here (TODO: rename it)
+build/
+
 # only intermediate/diagnostic *.g.cs (printer-types) are ignored
 *.g.cshtml.cs
+
+# dotnet-format will produce a binlog when verbosity is set to detailed
+# See also https://github.com/dotnet/format/pull/605
+*.binlog
+format-report.json

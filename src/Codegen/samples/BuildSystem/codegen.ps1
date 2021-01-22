@@ -1,6 +1,5 @@
 #! /usr/bin/env pwsh
 
-# TODO: Maybe rename CSharp to Code
 [CmdletBinding()]
 Param(
   [ValidateSet("Data", "CSharp", "All")]
@@ -21,7 +20,7 @@ $OUT_DIR = Join-Path $SCRIPT_ROOT "src" | Join-Path -ChildPath "Brf.Domus.Sample
 
 $table = @( `
   @{ Name = "betalingstype"; Template = "dataenum.cshtml" } `
-    , @{ Name = "saldotype"; Template = "dataenum.cshtml" } `
+, @{ Name = "saldotype"; Template = "dataenum.cshtml" } `
 )
 
 $table | ForEach-Object {
@@ -75,7 +74,34 @@ $table | ForEach-Object {
       Write-Error "ERROR: cgcsharp returned a non-zero exit code = $LASTEXITCODE. Terminating script..."
       exit $LastExitCode
     }
+
   }
+
+}
+
+if (($Target -eq "CSharp") -or ($Target -eq "All")) {
+
+  #
+  # Step 3: Format generated C# files (Language and Naming rules are not used)
+  #
+
+  # TODO: Generated files in subfolder (and namespace error can be suppressed)
+
+  # The EditorConfigFinder simply determines a set of potential .editorconfig files
+  # that might apply to the code within a Project when using the --folder option.
+  # When working against a .csproj or .sln file (workspace) the potential .editorconfig
+  # files are determined by the SDK.
+
+  # NOTE: Does not fix codestyle analyzer errors (Cannot specify the '--folder' option when fixing style.).
+  if ($HasVerboseFlag) {
+    # globbing must be performed by dotnet-format (not the shell), because we want a single report with all changes
+    dotnet format --include-generated --exclude "./build/*.cs" --include "./src/Brf.Domus.SampleModels/*.cs"  --folder --report ./build --verbosity diagnostic
+  }
+  else {
+    # globbing must be performed by dotnet-format (not the shell), because we want a single report with all changes
+    dotnet format --include-generated --exclude "./build/*.cs" --include "./src/Brf.Domus.SampleModels/*.cs"  --folder --report ./build
+  }
+
 }
 
 # Building all generated code
