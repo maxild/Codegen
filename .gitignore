@@ -19,8 +19,6 @@ src/GitVersionInfo.cs
 
 # generated code (Razor)
 *.g.cshtml.cs
-# generated code (Razor + Roslyn + Engine)
-*.generated.cs
 
 # User-specific files
 *.suo

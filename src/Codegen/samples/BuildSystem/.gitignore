@@ -1,10 +1,10 @@
+.vs/
+.ionide/
+.idea/
+.dotnet/
+
 # dotnet tool-manifest is configured here (for this demo we ignore it)
 .config/
 
-# json data (intermediate results)
-# TODO: Uncomment/delete
-data/
-# *.g.cshtml.cs files are in build dir
-build/
-# TODO: Uncomment/delete
-*.generated.cs
+# only intermediate/diagnostic *.g.cs (printer-types) are ignored
+*.g.cshtml.cs

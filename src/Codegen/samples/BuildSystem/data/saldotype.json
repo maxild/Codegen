@@ -1,0 +1,141 @@
+﻿{
+  "ToolVersion": "0.1.0-dev.120",
+  "QueryName": "saldotype",
+  "TemplateName": "dataenum",
+  "Namespace": "Brf.Domus.Models",
+  "TypeName": "Saldotype",
+  "XmlDoc": "Saldotype angiver om der er tale om restgaeld  etc.",
+  "QueriedAt": "2021-01-13T18:39:10.070115+01:00",
+  "SqlText": "SELECT SALDO_TYPE,SALDO_TYPE_TXT FROM Info.brfa.PA70_SALDO_TYPE ORDER BY SALDO_TYPE",
+  "RecordTypeName": "System.Collections.Generic.KeyValuePair`2[[System.String, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=5.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e",
+  "Records": [
+    {
+      "Key": "S001",
+      "Value": "Kurstabshovedstol"
+    },
+    {
+      "Key": "S002",
+      "Value": "Kurstabsrestgæld"
+    },
+    {
+      "Key": "S003",
+      "Value": "Lånehovedstol"
+    },
+    {
+      "Key": "S004",
+      "Value": "Lånerestgæld"
+    },
+    {
+      "Key": "S005",
+      "Value": "Indekseret lånehovedstol"
+    },
+    {
+      "Key": "S007",
+      "Value": "Finansieringshovedstol"
+    },
+    {
+      "Key": "S008",
+      "Value": "Finansieringsrestgæld"
+    },
+    {
+      "Key": "S009",
+      "Value": "Indekseret finansieringshstol"
+    },
+    {
+      "Key": "S011",
+      "Value": "Finansierings VP-beløb"
+    },
+    {
+      "Key": "S012",
+      "Value": "Ingen saldo"
+    },
+    {
+      "Key": "S022",
+      "Value": "Indbetalt HKK-depositum"
+    },
+    {
+      "Key": "S023",
+      "Value": "Max-opkrævning HKK-depositum"
+    },
+    {
+      "Key": "S024",
+      "Value": "HKK Lånehovedstol"
+    },
+    {
+      "Key": "S025",
+      "Value": "HKK Fi-hovedstol"
+    },
+    {
+      "Key": "S026",
+      "Value": "StraksindfrielsesFi-restgæld"
+    },
+    {
+      "Key": "S027",
+      "Value": "Beregningstal"
+    },
+    {
+      "Key": "S031",
+      "Value": "Bidrag - gundlag"
+    },
+    {
+      "Key": "S032",
+      "Value": "IE Reguleringssaldo"
+    },
+    {
+      "Key": "S037",
+      "Value": "Restterminer"
+    },
+    {
+      "Key": "S038",
+      "Value": "Beregningstal - Stat"
+    },
+    {
+      "Key": "S039",
+      "Value": "Beregningstal - GI"
+    },
+    {
+      "Key": "S040",
+      "Value": "Beregningstal - Stat-5-8"
+    },
+    {
+      "Key": "S041",
+      "Value": "Konverteringsbesparelse"
+    },
+    {
+      "Key": "S042",
+      "Value": "Skyggelån hovedstol"
+    },
+    {
+      "Key": "S043",
+      "Value": "Skyggelån restgæld"
+    },
+    {
+      "Key": "S044",
+      "Value": "Udskudt afdrag"
+    },
+    {
+      "Key": "S045",
+      "Value": "Debitors uindekserede egenbet."
+    },
+    {
+      "Key": "S046",
+      "Value": "Kursskæringshovedstol"
+    },
+    {
+      "Key": "S047",
+      "Value": "Kursskæringsrestgæld"
+    },
+    {
+      "Key": "S048",
+      "Value": "Bidragshovedstol"
+    },
+    {
+      "Key": "S049",
+      "Value": "Kursværdi foranst. lån"
+    },
+    {
+      "Key": "S050",
+      "Value": "Belåningsværdi"
+    }
+  ]
+}
