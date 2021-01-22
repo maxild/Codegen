@@ -1,0 +1,8 @@
+# dotnet tool-manifest is configured here (for this demo we ignore it)
+.config/
+
+# json data (intermediate results)
+data/
+# *.g.cshtml.cs files are in build dir
+build/
+*.generated.cs

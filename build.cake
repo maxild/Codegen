@@ -1,9 +1,4 @@
 ///////////////////////////////////////////////////////////////////////////////
-// TOOLS
-///////////////////////////////////////////////////////////////////////////////
-#tool "nuget:?package=gitreleasemanager&version=0.8.0"
-
-///////////////////////////////////////////////////////////////////////////////
 // SCRIPTS
 ///////////////////////////////////////////////////////////////////////////////
 #load "./tools/Maxfire.CakeScripts/content/all.cake"
@@ -23,7 +18,7 @@ var parameters = CakeScripts.GetParameters(
     },
     new BuildPathSettings
     {
-        SolutionFileName = "Domus.All.sln"
+        SolutionFileName = "Brf.sln"
     });
 bool publishingError = false;
 DotNetCoreMSBuildSettings msBuildSettings = null;
@@ -43,26 +38,18 @@ Setup(context =>
                         .WithProperty("FileVersion", parameters.VersionInfo.AssemblyFileVersion);
                         //.WithProperty("PackageReleaseNotes", string.Concat("\"", releaseNotes, "\""));
 
-    // See https://github.com/dotnet/sdk/issues/335#issuecomment-346951034
-    if (false == parameters.IsRunningOnWindows)
-    {
-        // Since Cake runs on Mono, it is straight forward to resolve the path to the Mono libs (reference assemblies).
-        // Find where .../mono/5.2/mscorlib.dll is on your machine.
-        var frameworkPathOverride = new FilePath(typeof(object).Assembly.Location).GetDirectory().FullPath + "/";
-
-        // Use FrameworkPathOverride when not running on Windows. MSBuild uses
-        // this property to locate the Framework libraries required to build your code.
-        Information("Build will use FrameworkPathOverride={0} since not building on Windows.", frameworkPathOverride);
-        msBuildSettings.WithProperty("FrameworkPathOverride", frameworkPathOverride);
+    // Deterministic builds: normalize stored file paths
+    if (parameters.IsRunningOnAppVeyor) {
+        msBuildSettings = msBuildSettings.WithProperty("ContinuousIntegrationBuild", "true");
     }
 
-    Information("Build with id '{0}' is creating version {1} of {2} ({3}, {4}) using version {5} of Cake. (IsTagPush: {6})",
-        parameters.VersionInfo.BuildVersion,
+    Information("Building version {0} of {1} ({2}, {3}) using version {4} of Cake and '{5}' of GitVersion. (IsTagPush: {6})",
         parameters.VersionInfo.SemVer,
         parameters.ProjectName,
         parameters.Configuration,
         parameters.Target,
         parameters.VersionInfo.CakeVersion,
+        parameters.VersionInfo.GitVersionVersion,
         parameters.IsTagPush);
 });
 
@@ -72,6 +59,13 @@ Setup(context =>
 
 Task("Default")
     .IsDependentOn("Package");
+
+Task("Setup")
+    .IsDependentOn("Generate-CommonAssemblyInfo");
+
+Task("Travis")
+    .IsDependentOn("Show-Info")
+    .IsDependentOn("Test");
 
 Task("AppVeyor")
     .IsDependentOn("Show-Info")
@@ -97,6 +91,12 @@ Task("Clean")
 Task("Restore")
     .Does(() =>
 {
+    // This is required in order to build RazorLearningTests that has a ProjectReference to
+    // ./submodules/aspnetcore/src/Razor/Microsoft.AspNetCore.Razor.Language/src/Microsoft.AspNetCore.Razor.Language.csproj
+    //       dotnet restore src/submodules/aspnetcore/eng/tools/RepoTasks/RepoTasks.csproj
+    var project = Directory("./src/submodules/aspnetcore/eng/tools/RepoTasks") + File("RepoTasks.csproj");
+    DotNetCoreRestore(project);
+
     DotNetCoreRestore(parameters.Paths.Files.Solution.FullPath, new DotNetCoreRestoreSettings
     {
         Verbosity = DotNetCoreVerbosity.Minimal,
@@ -111,11 +111,30 @@ Task("Build")
     .IsDependentOn("Restore")
     .Does(() =>
 {
+    // Needed to force warnings to error on github build
+    // See https://github.com/dotnet/roslyn/issues/43051#issuecomment-758862927
+    // NOTE: Both /warnAsError and -warnAsError work
+    var extraArgs = "-warnAsError";
+
+    // TODO: For some unknown reason IDE0055 (Fix formatting) shows up on appveyor,
+    //       when there are no IDE0055 warnigns/errors on gihub/local build ????
+    //       See https://github.com/maxild/Domus/issues/46
+    // TODO: For some unknown reason NETSDK1023 shows up when -p:ContinuousIntegrationBuild=true
+    //       on appveyor (not appveyor specific, but /property:ContinuousIntegrationBuild=true
+    //       is only added when building on appveyor (see above).
+    //       See https://github.com/maxild/Domus/issues/43
+    // NOTE: NoWarn can only be used to disable built-in compiler/sdk warnings.
+    // NOTE: Both /nowarn:IDE0055;NETSDK1023 and -nowarn:IDE0055;NETSDK1023 work
+    if (parameters.IsRunningOnAppVeyor)
+        extraArgs += " -nowarn:IDE0055;NETSDK1023";
+
     DotNetCoreBuild(parameters.Paths.Files.Solution.FullPath, new DotNetCoreBuildSettings()
     {
         Configuration = parameters.Configuration,
         NoRestore = true,
-        MSBuildSettings = msBuildSettings
+        MSBuildSettings = msBuildSettings,
+
+        ArgumentCustomization = args => args.Append(extraArgs)
     });
 });
 
@@ -123,29 +142,18 @@ Task("Test")
     .IsDependentOn("Build")
     .Does(() =>
 {
-    var testProjects = GetFiles($"./{parameters.Paths.Directories.Test}/**/*.Tests.csproj") +
-                       GetFiles($"./{parameters.Paths.Directories.Test}/RazorLearningTests/RazorLearningTests.csproj");
-    foreach(var project in testProjects)
+    // Only testable projects (<IsTestProject>true</IsTestProject>) will be test-executed
+    // We do not need to exclude everything under 'src/submodules',
+    // because we use the single master solution
+    foreach (var tfm in new [] {"net5.0"})
     {
-        foreach (var tfm in new [] {"net472", "netcoreapp2.1"})
+        DotNetCoreTest(parameters.Paths.Files.Solution.FullPath, new DotNetCoreTestSettings
         {
-            DotNetCoreTest(project.ToString(), new DotNetCoreTestSettings
-            {
-                Framework = tfm,
-                NoBuild = true,
-                NoRestore = true,
-                Configuration = parameters.Configuration
-            });
-        }
-
-        // NOTE: .NET Framework / Mono (net472 on *nix and Mac OSX)
-        // ========================================================
-        // Microsoft does not officially support Mono via .NET Core SDK. Their support for .NET Core
-        // on Linux and OS X starts and ends with .NET Core. Anyway we test on Mono for now, and maybe
-        // remove Mono support soon.
-        //
-        // For Mono to support dotnet-xunit we have to put { "appDomain": "denied" } in config
-        // See https://github.com/xunit/xunit/issues/1357#issuecomment-314416426
+            Framework = tfm,
+            NoBuild = true,
+            NoRestore = true,
+            Configuration = parameters.Configuration
+        });
     }
 });
 
@@ -159,18 +167,16 @@ Task("Create-Packages")
     .IsDependentOn("Clear-Artifacts")
     .Does(() =>
 {
-    // Only packable projects will produce nupkg's
-    var projects = GetFiles($"{parameters.Paths.Directories.Src}/**/*.csproj");
-    foreach(var project in projects)
-    {
-        DotNetCorePack(project.FullPath, new DotNetCorePackSettings {
-            Configuration = parameters.Configuration,
-            OutputDirectory = parameters.Paths.Directories.Artifacts,
-            NoBuild = true,
-            NoRestore = true,
-            MSBuildSettings = msBuildSettings
-        });
-    }
+    // Only packable projects (<IsPackable>true</IsPackable>) will produce nupkg's
+    // We do not need to exclude everything under 'src/submodules',
+    // because we use the single master solution
+    DotNetCorePack(parameters.Paths.Files.Solution.FullPath, new DotNetCorePackSettings {
+        Configuration = parameters.Configuration,
+        OutputDirectory = parameters.Paths.Directories.Artifacts,
+        NoBuild = true,
+        NoRestore = true,
+        MSBuildSettings = msBuildSettings
+    });
 });
 
 Task("Publish")
@@ -188,10 +194,8 @@ Task("Upload-AppVeyor-Artifacts")
 Task("Generate-Git-Source-File")
     .Does(() =>
 {
-    // No heredocs in c#, so using verbatim string (cannot use $"", because of Cake version)
-    string contents = string.Format(@"using System;
-
-//------------------------------------------------------------------------------
+    // No heredocs in c#, so using verbatim string
+    string contents = $@"//------------------------------------------------------------------------------
 // <auto-generated>
 //     This code was generated by Cake.
 //
@@ -204,13 +208,17 @@ namespace Codegen
 {{
     public static class Git
     {{
-        private static readonly Lazy<Library.GitVersion> s_version = new Lazy<Library.GitVersion>(()
-            => new Library.GitVersion(""{0}"", ""{1}"", ""{2}"", ""{3}"", ""{4}"", ""{5}""));
+        private static readonly System.Lazy<Library.GitVersion> s_version = new System.Lazy<Library.GitVersion>(()
+            => new Library.GitVersion(
+                ""{parameters.VersionInfo.SemVer}"",
+                ""{parameters.VersionInfo.NuGetVersion}"",
+                ""{parameters.VersionInfo.BuildVersion}"",
+                ""{parameters.Git.Sha}"",
+                ""{parameters.Git.CommitDate}"",
+                ""{parameters.Git.Branch}""));
         public static Library.GitVersion CurrentVersion => s_version.Value;
     }}
-}}", parameters.VersionInfo.SemVer, parameters.VersionInfo.NuGetVersion, parameters.VersionInfo.BuildVersion,
-     parameters.Git.Sha, parameters.Git.CommitDate, parameters.Git.Branch);
-
+}}";
     var file = File("GitVersionInfo.cs");
     var path = parameters.Paths.Directories.Src.CombineWithFilePath(file);
     System.IO.File.WriteAllText(path.FullPath, contents, Encoding.UTF8);
@@ -354,40 +362,30 @@ Task("Generate-CommonAssemblyInfo")
     .Does(() =>
 {
     // No heredocs in c#, so using verbatim string (cannot use $"", because of Cake version)
-    string template = @"using System.Reflection;
-
-//------------------------------------------------------------------------------
+    string contents = $@"//------------------------------------------------------------------------------
 // <auto-generated>
 //     This code was generated by Cake.
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: AssemblyCompany(""BRFkredit a/s"")]
-[assembly: AssemblyCopyright(""Copyright BRFkredit a/s 2002-{0}. All rights reserved."")]
-[assembly: AssemblyProduct(""{1}"")]
-[assembly: AssemblyDescription(""Domus -- A Library for .NET Framework and .NET Core"")]
+[assembly: System.Reflection.AssemblyCompany(""BRFkredit a/s"")]
+[assembly: System.Reflection.AssemblyCopyright(""Copyright BRFkredit a/s 2002-{System.DateTime.Now.Year}. All rights reserved."")]
+[assembly: System.Reflection.AssemblyProduct(""{parameters.ProjectName}"")]
+[assembly: System.Reflection.AssemblyDescription(""Domus -- A Library for .NET Framework and .NET Core"")]
 
-[assembly: AssemblyVersion(""{2}"")]
-[assembly: AssemblyFileVersion(""{3}"")]
-[assembly: AssemblyInformationalVersion(""{4}"")]
+[assembly: System.Reflection.AssemblyVersion(""{parameters.VersionInfo.AssemblyVersion}"")]
+[assembly: System.Reflection.AssemblyFileVersion(""{parameters.VersionInfo.AssemblyFileVersion}"")]
+[assembly: System.Reflection.AssemblyInformationalVersion(""{parameters.VersionInfo.AssemblyInformationalVersion}"")]
 
 [assembly: System.Runtime.InteropServices.ComVisible(false)]
 [assembly: System.CLSCompliant(true)]
 
 #if DEBUG
-[assembly: AssemblyConfiguration(""Debug"")]
+[assembly: System.Reflection.AssemblyConfiguration(""Debug"")]
 #else
-[assembly: AssemblyConfiguration(""Release"")]
+[assembly: System.Reflection.AssemblyConfiguration(""Release"")]
 #endif
 ";
-
-string contents = string.Format(template,
-    DateTime.Now.Year,
-    parameters.ProjectName,
-    parameters.VersionInfo.AssemblyVersion,
-    parameters.VersionInfo.AssemblyFileVersion,
-    parameters.VersionInfo.AssemblyInformationalVersion);
-
     System.IO.File.WriteAllText(parameters.Paths.Files.CommonAssemblyInfo.FullPath, contents, Encoding.UTF8);
 });
 

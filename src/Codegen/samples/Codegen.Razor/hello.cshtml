@@ -1,0 +1,10 @@
+@using CSharpRazor;
+@using Codegen.Razor
+@inherits TemplateBase<MyModel>
+namespace World
+{
+    internal class Consts
+    {
+        const string s = "Hello '@Model.Name', welcome to Razor World!";
+    }
+}

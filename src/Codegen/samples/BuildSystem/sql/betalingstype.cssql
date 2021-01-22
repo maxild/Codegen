@@ -1,0 +1,13 @@
+@cg-Namespace Brf.Domus.Models
+@cg-TypeName Betalingstype
+@cg-XmlDoc Betalingstype angiver om der er tale om afdrag, renter etc.
+@cg-Template dataenum
+###
+SELECT BETALING_TYPE,BETALING_TYPE_TXT FROM Info.brfa.PA60_BETALING_TYPE ORDER BY BETALING_TYPE
+###
+using System.Collections.Generic;
+
+reader => new KeyValuePair<string, string>(
+    reader.GetString(reader.GetOrdinal("BETALING_TYPE")),
+    reader.GetString(reader.GetOrdinal("BETALING_TYPE_TXT")).Trim())
+
