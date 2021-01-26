@@ -16,7 +16,9 @@ namespace Codegen.Tests
             public string Key;
             public string Value;
 
+#pragma warning disable 659
             public override bool Equals(object? obj)
+#pragma warning restore 659
             {
                 return obj is RecordTuple recordTuple && Equals(recordTuple);
             }
@@ -48,6 +50,7 @@ namespace Codegen.Tests
                 @namespace: "Brf.Domus.Models",
                 typeName: "Betalingstype",
                 xmlDoc: "Betalingstype er en type fra Domus",
+                identifierPrefix: string.Empty,
                 queriedAt: new DateTimeOffset(datePart, timePart),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(KeyValuePair<string, string>).AssemblyQualifiedName!,
@@ -77,6 +80,7 @@ namespace Codegen.Tests
                 @namespace: "Brf.Domus.Models",
                 typeName: "Betalingstype",
                 xmlDoc: "Betalingstype er en type fra Domus",
+                identifierPrefix: string.Empty,
                 queriedAt: new DateTimeOffset(datePart, timePart),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
@@ -106,6 +110,7 @@ namespace Codegen.Tests
                 @namespace: "Brf.Domus.Models",
                 typeName: "Betalingstype",
                 xmlDoc: "Betalingstype er en type fra Domus",
+                identifierPrefix: string.Empty,
                 queriedAt: new DateTimeOffset(datePart, timePart),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
@@ -137,6 +142,7 @@ namespace Codegen.Tests
                 @namespace: "Brf.Domus.Models",
                 typeName: "Betalingstype",
                 xmlDoc: "Betalingstype er en type fra Domus.",
+                identifierPrefix: string.Empty,
                 queriedAt: new DateTimeOffset(datePart, offset),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
@@ -149,6 +155,7 @@ namespace Codegen.Tests
                 @namespace: "Brf.Domus.Models",
                 typeName: "Betalingstype",
                 xmlDoc: "Betalingstype er en type fra Domus.",
+                identifierPrefix: string.Empty,
                 queriedAt: new DateTimeOffset(datePart, offset),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
@@ -166,6 +173,7 @@ namespace Codegen.Tests
                 @"  ""Namespace"": ""Brf.Domus.Models"",",
                 @"  ""TypeName"": ""Betalingstype"",",
                 @"  ""XmlDoc"": ""Betalingstype er en type fra Domus."",",
+                @"  ""IdentifierPrefix"": """",",
                 @"  ""QueriedAt"": ""2019-03-08T12:24:36+01:00"",",
                 @"  ""SqlText"": ""SELECT * FROM SOME_TABLE"",",
                 @"  ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",",
@@ -195,6 +203,7 @@ namespace Codegen.Tests
   ""Namespace"": ""Brf.Domus.Models"",
   ""TypeName"": ""Betalingstype"",
   ""XmlDoc"": ""Betalingstype er en type fra Domus."",
+  ""IdentifierPrefix"": """",
   ""QueriedAt"": ""2019-03-08T12:24:36+01:00"",
   ""SqlText"": ""SELECT * FROM SOME_TABLE"",
   ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",
@@ -251,6 +260,7 @@ namespace Codegen.Tests
                 @namespace: "Brf.Domus.Models",
                 typeName: "Betalingstype",
                 xmlDoc: "Betalingstype er en type fra Domus",
+                identifierPrefix: string.Empty,
                 queriedAt: new DateTimeOffset(datePart, timePart),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,

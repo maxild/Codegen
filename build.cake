@@ -30,10 +30,10 @@ DotNetCoreMSBuildSettings msBuildSettings = null;
 Setup(context =>
 {
     msBuildSettings = new DotNetCoreMSBuildSettings()
-                        .WithProperty("RepositoryBranch", parameters.Git.Branch)        // gitflow branch
-                        .WithProperty("RepositoryCommit", parameters.Git.Sha)           // full sha
-                        //.WithProperty("Version", parameters.VersionInfo.SemVer)       // semver 2.0 compatible
-                        .WithProperty("Version", parameters.VersionInfo.NuGetVersion)   // padded with zeros, because of lexical nuget sort order
+                        .WithProperty("RepositoryBranch", parameters.Git.Branch)           // gitflow branch
+                        .WithProperty("RepositoryCommit", parameters.Git.Sha)              // full sha
+                        .WithProperty("Version", parameters.VersionInfo.SemVer.ToLower())  // semver 2.0 compatible
+                        //.WithProperty("Version", parameters.VersionInfo.NuGetVersion)    // padded with zeros, because of lexical nuget sort order
                         .WithProperty("AssemblyVersion", parameters.VersionInfo.AssemblyVersion)
                         .WithProperty("FileVersion", parameters.VersionInfo.AssemblyFileVersion);
                         //.WithProperty("PackageReleaseNotes", string.Concat("\"", releaseNotes, "\""));
@@ -44,7 +44,7 @@ Setup(context =>
     }
 
     Information("Building version {0} of {1} ({2}, {3}) using version {4} of Cake and '{5}' of GitVersion. (IsTagPush: {6})",
-        parameters.VersionInfo.SemVer,
+        parameters.VersionInfo.SemVer.ToLower(),
         parameters.ProjectName,
         parameters.Configuration,
         parameters.Target,
@@ -210,8 +210,8 @@ namespace Codegen
     {{
         private static readonly System.Lazy<Library.GitVersion> s_version = new System.Lazy<Library.GitVersion>(()
             => new Library.GitVersion(
-                ""{parameters.VersionInfo.SemVer}"",
-                ""{parameters.VersionInfo.NuGetVersion}"",
+                ""{parameters.VersionInfo.SemVer.ToLower()}"",
+                ""{parameters.VersionInfo.SemVer.ToLower()}"",
                 ""{parameters.VersionInfo.BuildVersion}"",
                 ""{parameters.Git.Sha}"",
                 ""{parameters.Git.CommitDate}"",
