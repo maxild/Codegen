@@ -193,7 +193,7 @@ namespace Codegen.Library.JsonConverters
 
         public static List<object> ReadListOfRecords(this JsonReader reader, JsonSerializer serializer, Type recordType)
         {
-            object listOfRecords = serializer.Deserialize(reader, typeof(IList<>).MakeGenericType(recordType));
+            object listOfRecords = serializer.Deserialize(reader, typeof(List<>).MakeGenericType(recordType));
             _ = reader.Read();
             var records = ((IEnumerable)listOfRecords).Cast<object>().ToList();
             return records;

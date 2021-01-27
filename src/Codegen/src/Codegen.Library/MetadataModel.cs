@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -89,7 +90,7 @@ namespace Codegen.Library
             DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
-            IList<object> records)
+            IReadOnlyList<object> records)
         {
             Type? rt = Type.GetType(recordTypeName);
             if (rt is null)
@@ -136,7 +137,7 @@ namespace Codegen.Library
             DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
-            IList<object> records)
+            IReadOnlyList<object> records)
         {
             return new(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix, queriedAt,
                 sqlText, recordTypeName, records);
@@ -153,7 +154,7 @@ namespace Codegen.Library
             DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
-            IList<object> records)
+            IReadOnlyList<object> records)
         {
             ToolVersion = toolVersion ?? throw new ArgumentNullException(nameof(toolVersion));
             QueryName = queryName ?? throw new ArgumentNullException(nameof(queryName));
@@ -205,7 +206,7 @@ namespace Codegen.Library
         /// </summary>
         public Type RecordType => Type.GetType(RecordTypeName) ?? throw new InvalidOperationException($"The {RecordTypeName} type cannot be found.");
 
-        public IEnumerable<object> Records { get; }
+        public IReadOnlyList<object> Records { get; }
 
         public bool Equals(MetadataModel? other)
         {
@@ -314,12 +315,37 @@ namespace Codegen.Library
             DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
-            IList<object> records)
+            IReadOnlyList<object> records)
             : base(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix, queriedAt, sqlText, recordTypeName, records)
         {
         }
 
-        public new IEnumerable<TRecord> Records => base.Records.Cast<TRecord>(); // NOTE: det er det eneste vigtige!!!!!
+        private IReadOnlyList<TRecord>? _records;
+        public new IReadOnlyList<TRecord> Records => _records ??= new Wrapper<TRecord>(base.Records); // NOTE: det er det eneste vigtige!!!!!
+
+        private class Wrapper<T> : IReadOnlyList<T>
+        {
+            private readonly IReadOnlyList<object> _records;
+
+            public Wrapper(IReadOnlyList<object> records)
+            {
+                _records = records;
+            }
+
+            public IEnumerator<T> GetEnumerator()
+            {
+                return _records.Cast<T>().GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public int Count => _records.Count;
+
+            public T this[int index] => (T)_records[index];
+        }
 
         public bool Equals(MetadataModel<TRecord>? other)
         {
