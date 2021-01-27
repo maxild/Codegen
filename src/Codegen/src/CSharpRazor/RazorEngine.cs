@@ -42,8 +42,9 @@ namespace CSharpRazor
         /// compiler pipeline if the template have not been compiled already.
         /// </summary>
         /// <param name="templatePath">Unique templatePath of the template.</param>
+        /// <param name="onRazorCompilerOutput">The caller is able to inspect the Razor compiler output (aka *.generated.cs file).</param>
         /// <returns>A compiled template that can render models into text.</returns>
-        public CompiledTemplate GetCompiledTemplate(string templatePath)
+        public CompiledTemplate GetCompiledTemplate(string templatePath, Action<string>? onRazorCompilerOutput = null)
         {
             // Compile
             CompiledTemplate? compiledTemplate;
@@ -51,10 +52,16 @@ namespace CSharpRazor
             {
                 if (!s_compiledTemplateCache.TryGetValue(templatePath, out compiledTemplate))
                 {
-                    // compile + emit
+                    // compile razor template
                     var compiledTemplateCSharpSource = RazorCompiler.CompileTemplate(templatePath);
+                    // enable caller to inspect the diagnostic <name>.generated.cs source
+                    if (onRazorCompilerOutput is not null)
+                    {
+                        onRazorCompilerOutput(compiledTemplateCSharpSource.SourceCSharpCode);
+                    }
+                    // compile + IL-emit
                     var compiledTemplateILSource = RoslynCompiler.CompileAndEmit(compiledTemplateCSharpSource);
-                    // load emitted code into new (anonymous) load context (ALC) and cache the thing
+                    // load emitted IL-code into new (anonymous) load context (ALC) and cache the thing
                     compiledTemplate = new CompiledTemplate(compiledTemplateILSource);
                     s_compiledTemplateCache.Add(templatePath, compiledTemplate);
                 }
@@ -76,11 +83,12 @@ namespace CSharpRazor
         /// </summary>
         /// <param name="templatePath">Unique templatePath of the template</param>
         /// <param name="model">The model instance</param>
+        /// <param name="onRazorCompilerOutput">The caller is able to inspect the Razor compiler output (aka *.generated.cs file).</param>
         /// <returns>Rendered template as a string result</returns>
-        public async Task<RenderResult> RenderTemplateAsync(string templatePath, object model)
+        public async Task<RenderResult> RenderTemplateAsync(string templatePath, object model, Action<string>? onRazorCompilerOutput = null)
         {
             // Compile
-            CompiledTemplate compiledTemplate = GetCompiledTemplate(templatePath);
+            CompiledTemplate compiledTemplate = GetCompiledTemplate(templatePath, onRazorCompilerOutput);
 
             // Render
             string cSharpCode = await compiledTemplate.RenderAsync(model);
