@@ -96,9 +96,10 @@ namespace Codegen.Database.CLI
                 const string CG_TYPENAME_DIRECTIVE = "@cg-TypeName";
                 const string CG_XMLDOC_DIRECTIVE = "@cg-XmlDoc";
                 const string CG_ID_PREFIX = "@cg-IdentifierPrefix";
+                const string CG_DOMUS_ID_PREFIX = "@cg-DomusIdentifierPrefix";
                 const string CG_TEMPLATE_DIRECTIVE = "@cg-Template";
 
-                string? cgNamespace = null, cgTypeName = null, cgXmlDoc = null, cgIdPrefix = null, cgTemplate = null;
+                string? cgNamespace = null, cgTypeName = null, cgXmlDoc = null, cgIdPrefix = null, cgDomusIdPrefix = null, cgTemplate = null;
                 using (var sr = new StringReader(segments[0]))
                 {
                     string? line;
@@ -119,6 +120,10 @@ namespace Codegen.Database.CLI
                         if (line.StartsWith(CG_ID_PREFIX))
                         {
                             cgIdPrefix = line[CG_ID_PREFIX.Length..].Trim();
+                        }
+                        if (line.StartsWith(CG_DOMUS_ID_PREFIX))
+                        {
+                            cgDomusIdPrefix = line[CG_DOMUS_ID_PREFIX.Length..].Trim();
                         }
                         if (line.StartsWith(CG_TEMPLATE_DIRECTIVE))
                         {
@@ -152,6 +157,7 @@ namespace Codegen.Database.CLI
                     Console.WriteLine($"{CG_TYPENAME_DIRECTIVE} {cgTypeName}");
                     Console.WriteLine($"{CG_XMLDOC_DIRECTIVE} {cgXmlDoc}");
                     Console.WriteLine($"{CG_ID_PREFIX} {cgIdPrefix}");
+                    Console.WriteLine($"{CG_DOMUS_ID_PREFIX} {cgDomusIdPrefix}");
                     Console.WriteLine($"{CG_TEMPLATE_DIRECTIVE} {cgTemplate}");
                     Console.WriteLine(SECTION_SEP);
                     Console.WriteLine(sqlText);
@@ -212,6 +218,7 @@ namespace Codegen.Database.CLI
                     typeName: cgTypeName ?? throw new InvalidOperationException($"The {CG_TYPENAME_DIRECTIVE} directive is missing."),
                     xmlDoc: cgXmlDoc ?? throw new InvalidOperationException($"The {CG_XMLDOC_DIRECTIVE} directive is missing."),
                     identifierPrefix: cgIdPrefix ?? string.Empty,
+                    domusIdentifierPrefix: cgDomusIdPrefix ?? string.Empty,
                     queriedAt: DateTimeOffset.Now, // TODO: Not pure
                     sqlText: sqlText,
                     recordType ?? throw new InvalidOperationException("The (runtime) recordType could not be resolved, because en empty recordset was received."),
