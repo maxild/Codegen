@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -73,6 +74,7 @@ namespace Codegen.Library
         /// <param name="namespace">The namespace of the generated type</param>
         /// <param name="typeName">The type name of the generated type.</param>
         /// <param name="xmlDoc">The xml-doc of the generated type.</param>
+        /// <param name="identifierPrefix">The prefix used when building identifiers.</param>
         /// <param name="queriedAt">The timestamp when the data was queried.</param>
         /// <param name="sqlText">The SQL expression that have generated the records.</param>
         /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
@@ -84,10 +86,11 @@ namespace Codegen.Library
             string @namespace,
             string typeName,
             string xmlDoc,
+            string identifierPrefix,
             DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
-            IList<object> records)
+            IReadOnlyList<object> records)
         {
             Type? rt = Type.GetType(recordTypeName);
             if (rt is null)
@@ -102,6 +105,7 @@ namespace Codegen.Library
                 @namespace,
                 typeName,
                 xmlDoc,
+                identifierPrefix,
                 queriedAt,
                 sqlText,
                 recordTypeName,
@@ -117,6 +121,7 @@ namespace Codegen.Library
         /// <param name="namespace">The namespace of the generated type</param>
         /// <param name="typeName">The type name of the generated type.</param>
         /// <param name="xmlDoc">The xml-doc of the generated type.</param>
+        /// <param name="identifierPrefix">The prefix to be used on identifiers.</param>
         /// <param name="queriedAt">The timestamp when the data was queried.</param>
         /// <param name="sqlText">The SQL expression that have generated the records.</param>
         /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
@@ -128,12 +133,13 @@ namespace Codegen.Library
             string @namespace,
             string typeName,
             string xmlDoc,
+            string identifierPrefix,
             DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
-            IList<object> records)
+            IReadOnlyList<object> records)
         {
-            return new(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, queriedAt,
+            return new(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix, queriedAt,
                 sqlText, recordTypeName, records);
         }
 
@@ -144,10 +150,11 @@ namespace Codegen.Library
             string @namespace,
             string typeName,
             string xmlDoc,
+            string identifierPrefix,
             DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
-            IList<object> records)
+            IReadOnlyList<object> records)
         {
             ToolVersion = toolVersion ?? throw new ArgumentNullException(nameof(toolVersion));
             QueryName = queryName ?? throw new ArgumentNullException(nameof(queryName));
@@ -155,6 +162,7 @@ namespace Codegen.Library
             Namespace = @namespace ?? throw new ArgumentNullException(nameof(@namespace));
             TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
             XmlDoc = xmlDoc ?? throw new ArgumentNullException(nameof(xmlDoc));
+            IdentifierPrefix = identifierPrefix;
             QueriedAt = queriedAt;
             SqlText = sqlText ?? throw new ArgumentNullException(nameof(sqlText));
             RecordTypeName = recordTypeName ?? throw new ArgumentNullException(nameof(recordTypeName));
@@ -164,7 +172,7 @@ namespace Codegen.Library
         public MetadataModel WithToolVersion(string version)
         {
             // TODO: Test that ToList create a deep copy??? should it?
-            return Create(version, QueryName, TemplateName, Namespace, TypeName, XmlDoc, QueriedAt, SqlText,
+            return Create(version, QueryName, TemplateName, Namespace, TypeName, XmlDoc, IdentifierPrefix, QueriedAt, SqlText,
                 RecordTypeName, Records.ToList());
         }
 
@@ -179,6 +187,8 @@ namespace Codegen.Library
         public string TypeName { get; }
 
         public string XmlDoc { get; }
+
+        public string IdentifierPrefix { get; }
 
         public DateTimeOffset QueriedAt { get; }
 
@@ -196,7 +206,7 @@ namespace Codegen.Library
         /// </summary>
         public Type RecordType => Type.GetType(RecordTypeName) ?? throw new InvalidOperationException($"The {RecordTypeName} type cannot be found.");
 
-        public IEnumerable<object> Records { get; }
+        public IReadOnlyList<object> Records { get; }
 
         public bool Equals(MetadataModel? other)
         {
@@ -265,6 +275,7 @@ namespace Codegen.Library
                           Namespace.Equals(other.Namespace, StringComparison.OrdinalIgnoreCase) &&
                           TypeName.Equals(other.TypeName, StringComparison.OrdinalIgnoreCase) &&
                           XmlDoc.Equals(other.XmlDoc, StringComparison.OrdinalIgnoreCase) &&
+                          IdentifierPrefix.Equals(other.IdentifierPrefix, StringComparison.OrdinalIgnoreCase) &&
                           QueriedAt.Equals(other.QueriedAt) &&
                           SqlText.Equals(other.SqlText, StringComparison.OrdinalIgnoreCase);
 
@@ -288,6 +299,7 @@ namespace Codegen.Library
         /// <param name="namespace">The namespace of the generated type</param>
         /// <param name="typeName">The type name of the generated type.</param>
         /// <param name="xmlDoc">The xml-doc of the generated type.</param>
+        /// <param name="identifierPrefix">The prefix to be used on the identifier.</param>
         /// <param name="queriedAt"></param>
         /// <param name="sqlText">The SQL expression that have generated the records.</param>
         /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
@@ -299,15 +311,41 @@ namespace Codegen.Library
             string @namespace,
             string typeName,
             string xmlDoc,
+            string identifierPrefix,
             DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
-            IList<object> records)
-            : base(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, queriedAt, sqlText, recordTypeName, records)
+            IReadOnlyList<object> records)
+            : base(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix, queriedAt, sqlText, recordTypeName, records)
         {
         }
 
-        public new IEnumerable<TRecord> Records => base.Records.Cast<TRecord>(); // NOTE: det er det eneste vigtige!!!!!
+        private IReadOnlyList<TRecord>? _records;
+        public new IReadOnlyList<TRecord> Records => _records ??= new Wrapper<TRecord>(base.Records); // NOTE: det er det eneste vigtige!!!!!
+
+        private class Wrapper<T> : IReadOnlyList<T>
+        {
+            private readonly IReadOnlyList<object> _records;
+
+            public Wrapper(IReadOnlyList<object> records)
+            {
+                _records = records;
+            }
+
+            public IEnumerator<T> GetEnumerator()
+            {
+                return _records.Cast<T>().GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public int Count => _records.Count;
+
+            public T this[int index] => (T)_records[index];
+        }
 
         public bool Equals(MetadataModel<TRecord>? other)
         {

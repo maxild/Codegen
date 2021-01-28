@@ -14,6 +14,7 @@ namespace CSharpRazor
             {
                 throw new ArgumentNullException(nameof(source));
             }
+
             TemplateName = source.TemplateName;
             TemplateFilename = source.TemplateFilename;
             TypeName = source.TypeName;

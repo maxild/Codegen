@@ -85,25 +85,39 @@ namespace Codegen.CSharp.CLI
 
                 WriteLineVerbose($"Rendering '{templateFilename}' ...");
 
-                // TODO: Investigate CR vs CRLF line-endings of SourceCSharpCode (*.g.cshtml.cs) and Content (*.generated.cs)
-                var renderResult = await engine.RenderTemplateAsync(templateFilename, model: metadata);
-
-                WriteLineVerbose("Rendering complete");
-
-                // Save <templateName>.g.cshtml.cs
+                string? diagPath = null;
                 if (optionDiagDir.HasValue())
                 {
                     string diagDir = optionDiagDir.Value() ?? throw new InvalidOperationException($"The required {optionDataDir.LongName} is missing.");
                     string diagFilename = Path.GetFileNameWithoutExtension(templateFilename) + ".g.cshtml.cs";
-                    string diagPath = Path.Combine(diagDir, diagFilename);
+                    diagPath = Path.Combine(diagDir, diagFilename);
                     _ = Directory.CreateDirectory(diagDir);
-                    await File.WriteAllTextAsync(diagPath, renderResult.SourceCSharpCode, Encoding.UTF8, cancellationToken);
                 }
 
-                // Save <name>.generated.cs
-                string csharpFilename = $"{name}.generated.cs";
-                string csharpPath = Path.Combine(optionOutDir.Value() ?? throw new InvalidOperationException($"The required {optionOutDir.LongName} is missing."), csharpFilename);
-                await File.WriteAllTextAsync(csharpPath, renderResult.Content, Encoding.UTF8, cancellationToken);
+                // TODO: Investigate CR vs CRLF line-endings of SourceCSharpCode (*.g.cshtml.cs) and Content (*.generated.cs)
+                string? razorSource = null;
+                RenderResult? renderResult = null;
+                try
+                {
+                    renderResult = await engine.RenderTemplateAsync(templateFilename, model: metadata, onRazorCompilerOutput: source => razorSource = source);
+                    WriteLineVerbose("Rendering complete");
+                }
+                finally
+                {
+                    // Save <templateName>.g.cshtml.cs
+                    if (!string.IsNullOrEmpty(diagPath) && !string.IsNullOrEmpty(razorSource))
+                    {
+                        await File.WriteAllTextAsync(diagPath, razorSource, Encoding.UTF8, cancellationToken);
+                    }
+                }
+
+                // Save the generated C# file
+                if (renderResult is not null)
+                {
+                    string csharpFilename = $"{name}.generated.cs";
+                    string csharpPath = Path.Combine(optionOutDir.Value() ?? throw new InvalidOperationException($"The required {optionOutDir.LongName} is missing."), csharpFilename);
+                    await File.WriteAllTextAsync(csharpPath, renderResult.Content, Encoding.UTF8, cancellationToken);
+                }
 
                 return 0;
             });
