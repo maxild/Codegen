@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace CSharpRazor
 {
-    // NOTE: The best place to look for documentation is in RazorPageBase
+    // NOTE: The best place to look for documentation is in RazorPageBase. Razor internals are undocumented
+    //       and the only way to learn is to read the aspnetcore source on github.
 
     /// <summary>
-    /// The abstract base class for all our 'Razor DSL' templates that acts both
-    /// as a 'global object' in every template (that can be accessed in C# mode: '@Model'),
-    /// and as a 'printer' type that can render (See <see cref="RenderAsync"/>) our
-    /// template to a string. In contrary to RazorPageBase all writing/printing is done
-    /// without HTML encoding (or any other encoding).
+    /// Represents the properties and methods that are needed in order to render a C# file using Razor syntax.
     /// </summary>
+    /// <remarks>
+    /// The cgcsharp user will write a *.cshtml template file that via the razor compiler will be compiled into a
+    /// so called printer class that derives from <see cref="TemplateBase"/>.
+    /// </remarks>
     public class TemplateBase
     {
         public TextWriter Output { get; private set; } = TextWriter.Null;
@@ -112,6 +113,7 @@ namespace CSharpRazor
             // null or false. Consequently defer the prefix generation until we encounter the attribute value.
             if (attributeValuesCount != 1)
             {
+                // The attribute name and the equal and starting double-quote ('cref="')
                 WriteLiteral(prefix);
             }
         }
@@ -164,6 +166,7 @@ namespace CSharpRazor
                     WriteLiteral(prefix);
                 }
 
+                // the attribute value
                 WriteLiteral(value);
             }
         }
@@ -175,6 +178,7 @@ namespace CSharpRazor
         {
             if (!_attributeInfo.Suppressed)
             {
+                // The ending double-quote ('"')
                 WriteLiteral(_attributeInfo.Suffix);
             }
         }
