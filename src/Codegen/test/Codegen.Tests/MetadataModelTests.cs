@@ -173,7 +173,6 @@ namespace Codegen.Tests
                 @"  ""Namespace"": ""Brf.Domus.Models"",",
                 @"  ""TypeName"": ""Betalingstype"",",
                 @"  ""XmlDoc"": ""Betalingstype er en type fra Domus."",",
-                @"  ""IdentifierPrefix"": """",",
                 @"  ""QueriedAt"": ""2019-03-08T12:24:36+01:00"",",
                 @"  ""SqlText"": ""SELECT * FROM SOME_TABLE"",",
                 @"  ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",",
@@ -222,12 +221,13 @@ namespace Codegen.Tests
             MetadataModel<RecordTuple> model2 = MetadataModel.Deserialize<RecordTuple>(json);
             MetadataModel<RecordTuple> model3 = (MetadataModel<RecordTuple>)MetadataModel.Deserialize(json, typeof(RecordTuple));
 
-            model3.ToolVersion.ShouldBe("0.1.0");
+            model1.ToolVersion.ShouldBe("0.1.0");
             model1.QueryName.ShouldBe("betalingstype");
             model1.TemplateName.ShouldBe("dataenum");
             model1.Namespace.ShouldBe("Brf.Domus.Models");
             model1.TypeName.ShouldBe("Betalingstype");
             model1.XmlDoc.ShouldBe("Betalingstype er en type fra Domus.");
+            model1.IdentifierPrefix.ShouldBeEmpty();
             model1.QueriedAt.ShouldBe(new DateTimeOffset(2019, 3, 8, 12, 24, 36, new TimeSpan(1, 0, 0)));
             model1.SqlText.ShouldBe("SELECT * FROM SOME_TABLE");
             model1.RecordTypeName.ShouldBe("Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
