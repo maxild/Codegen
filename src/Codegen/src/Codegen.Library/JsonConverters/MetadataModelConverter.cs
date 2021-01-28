@@ -47,8 +47,11 @@ namespace Codegen.Library.JsonConverters
                 writer.WritePropertyName(nameof(MetadataModel.XmlDoc));
                 writer.WriteValue(model.XmlDoc);
 
-                writer.WritePropertyName(nameof(MetadataModel.IdentifierPrefix));
-                writer.WriteValue(model.IdentifierPrefix);
+                if (!string.IsNullOrEmpty(model.IdentifierPrefix))
+                {
+                    writer.WritePropertyName(nameof(MetadataModel.IdentifierPrefix));
+                    writer.WriteValue(model.IdentifierPrefix);
+                }
 
                 writer.WritePropertyName(nameof(MetadataModel.QueriedAt));
                 writer.WriteValue(model.QueriedAt);
@@ -153,7 +156,7 @@ namespace Codegen.Library.JsonConverters
                 @namespace: @namespace ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.Namespace)} property."),
                 typeName: typeName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.TypeName)} property."),
                 xmlDoc: xmlDoc ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.XmlDoc)} property."),
-                identifierPrefix: identifierPrefix ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.IdentifierPrefix)} property."),
+                identifierPrefix: identifierPrefix ?? string.Empty,
                 queriedAt: queriedAt ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.QueriedAt)} property."),
                 sqlText: sqlText ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.SqlText)} property."),
                 recordTypeName: recordType ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.RecordTypeName)} property."),
