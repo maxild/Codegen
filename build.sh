@@ -92,7 +92,11 @@ read -r major minor feature patch < <(parse_sdk_version "$DOTNET_VERSION")
 read -r foundMajor foundMinor foundFeature foundPatch < <(parse_sdk_version "$DOTNET_INSTALLED_VERSION")
 
 # latestPatch roll forward policy
-if [[ "$major" != "$foundMajor" ]] || [[ "$minor" != "$foundMinor" ]] || [[ "$feature" != "$foundFeature" ]] || [[ "$patch" -lt "$foundPatch" ]]; then
+if [[ "$foundMajor" != "$major" ]] || \
+   [[ "$foundMinor" != "$minor" ]] || \
+   [[ "$foundFeature" != "$feature" ]] || \
+   [[ "$foundPatch" -lt "$patch" ]]; then
+
   echo "Installing .NET Core SDK version ${DOTNET_VERSION} ..."
   if [ ! -d "$SCRIPT_DIR/.dotnet" ]; then
     mkdir "$SCRIPT_DIR/.dotnet"
@@ -121,6 +125,7 @@ function install_tool() {
   if [ ! -d "$toolPath" ] || [ ! -f "$exePath" ]; then
 
     if [ -f "$exePath" ]; then
+
       if ! dotnet tool uninstall --tool-path "$TOOLS_DIR" "$packageId" >/dev/null 2>&1; then
         error_exit "Failed to uninstall ${packageId}"
       fi
