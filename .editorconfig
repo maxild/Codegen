@@ -111,6 +111,7 @@ dotnet_style_qualification_for_property = false:warning
 # https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0049
 dotnet_style_predefined_type_for_locals_parameters_members = true:warning
 dotnet_style_predefined_type_for_member_access = true:warning
+dotnet_diagnostic.IDE0049.severity = warning
 
 ## Modifier preferences (IDE0040, IDE0044)
 # https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/modifier-preferences#net-modifier-preferences
@@ -121,16 +122,20 @@ dotnet_style_readonly_field = true:warning
 
 ## Parentheses preferences (IDE0047 and IDE0048)
 # https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0047-ide0048
-dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:warning
-dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:warning
-dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:warning
+;dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:warning
+;dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:warning
+;dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:warning
+;dotnet_style_parentheses_in_other_operators = never_if_unnecessary:warning
 # TODO: I am a bit unsure if 'never_if_unnecessary' is better
-dotnet_style_parentheses_in_other_operators = never_if_unnecessary:warning
-# TODO: I am a bit unsure if 'never_if_unnecessary' is better
-# dotnet_style_parentheses_in_arithmetic_binary_operators                      = never_if_unnecessary : silent
-# dotnet_style_parentheses_in_other_binary_operators                           = never_if_unnecessary : silent
-# dotnet_style_parentheses_in_other_operators                                  = never_if_unnecessary : silent
-# dotnet_style_parentheses_in_relational_binary_operators                      = never_if_unnecessary : silent
+dotnet_style_parentheses_in_arithmetic_binary_operators                      = never_if_unnecessary : silent
+dotnet_style_parentheses_in_other_binary_operators                           = never_if_unnecessary : silent
+dotnet_style_parentheses_in_other_operators                                  = never_if_unnecessary : silent
+dotnet_style_parentheses_in_relational_binary_operators                      = never_if_unnecessary : silent
+
+# IDE0047: Remove unnecessary parentheses
+dotnet_diagnostic.IDE0047.severity = none
+# IDE0048: Add parentheses for clarity
+dotnet_diagnostic.IDE0048.severity = none
 
 ## Expression-level preferences (IDE0017, IDE0028, IDE0032, IDE0033, IDE0037, IDE0045, IDE0046, IDE0054, IDE0074, IDE0075)
 # https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/expression-level-preferences#net-expression-level-preferences
