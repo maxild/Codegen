@@ -12,15 +12,15 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNETTestSdkPackageVersion)" />
     <PackageReference Include="xunit" Version="$(XUnitPackageVersion)" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="$(XUnitPackageVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XUnitRunnerVisualStudioPackageVersion)">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <!-- <PackageReference Include="coverlet.collector" Version="$(CoverletCollectorPackageVersion)">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference> -->
     <PackageReference Include="Shouldly" Version="$(ShouldlyPackageVersion)" />
-  </ItemGroup>
-
-  <!-- Mono support for dotnet-xunit (hack) -->
-  <ItemGroup Condition=" $(IsTestProject) == 'true' ">
-    <Content Include="..\xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>
