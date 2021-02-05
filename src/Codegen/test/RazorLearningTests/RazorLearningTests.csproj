@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>../../../../build/Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>../../../../eng/Key.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
   </PropertyGroup>
 

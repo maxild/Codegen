@@ -170,3 +170,5 @@ fi
 
 echo "Running build script..."
 (exec "$CAKE_EXE" build.cake --bootstrap) && (exec "$CAKE_EXE" build.cake "$@")
+# Playing with using Cake.Frosting (I don't know if I like it, we have to try NUKE and Bullseyes/SimpleExec)
+# dotnet run --project ./eng/build/Build.csproj -- "$@"
