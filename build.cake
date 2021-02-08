@@ -42,23 +42,33 @@ Setup(context =>
         //     [--password <PASSWORD>] [--store-password-in-clear-text]
         //     [--valid-authentication-types <TYPES>] [--configfile <FILE>]
 
+        // Encryption is not supported on non-Windows platforms...
+        string encryption = string.Empty;
+        if (!parameters.IsRunningOnWindows)
+        {
+            // ...use a clear text password as a workaround.
+            encryption = " --store-password-in-clear-text";
+        }
+
         // Use SafeCommand to avoid "Unable to find any package source(s) matching name: Brf."
         parameters.GetTool("dotnet.exe", "dotnet")
-            .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4}",
+            .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4}{5}",
                 "Brf",
                 @"https://www.myget.org/F/brf/api/v3/index.json",
                 parameters.MyGet.UserName,
                 parameters.MyGet.GetRequiredPassword(),
-                "./NuGet.config");
+                "./NuGet.config",
+                encryption);
 
         // Use SafeCommand to avoid "Unable to find any package source(s) matching name: BrfCi."
         // parameters.GetTool("dotnet.exe", "dotnet")
-        //     .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4} --store-password-in-clear-text",
+        //     .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4}{5}",
         //         "BrfCi",
         //         @"https://www.myget.org/F/brf-ci/api/v3/index.json",
         //         parameters.MyGet.UserName,
         //         parameters.MyGet.GetRequiredPassword(),
-        //         "./NuGet.config");
+        //         "./NuGet.config",
+        //         encryption);
     }
 
     if (parameters.Git.IsMasterBranch && context.Log.Verbosity != Verbosity.Diagnostic) {
