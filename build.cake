@@ -43,7 +43,7 @@ Setup(context =>
     //     [--valid-authentication-types <TYPES>] [--configfile <FILE>]
 
         // Use SafeCommand to avoid "Unable to find any package source(s) matching name: Brf."
-        parameters.GetTool("dotnet")
+        parameters.GetTool("dotnet.exe", "dotnet")
             .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4} --store-password-in-clear-text",
                 "Brf",
                 @"https://www.myget.org/F/brf/api/v3/index.json",
@@ -52,7 +52,7 @@ Setup(context =>
                 "./NuGet.config");
 
         // Use SafeCommand to avoid "Unable to find any package source(s) matching name: BrfCi."
-        // parameters.GetTool("dotnet")
+        // parameters.GetTool("dotnet.exe", "dotnet")
         //     .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4} --store-password-in-clear-text",
         //         "BrfCi",
         //         @"https://www.myget.org/F/brf-ci/api/v3/index.json",
