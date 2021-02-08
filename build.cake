@@ -34,17 +34,17 @@ Setup(context =>
     if (!parameters.IsLocalBuild) {
         Information("Store credentials to private MyGet feed in local NuGet.config...");
 
-    // dotnet nuget add source <PACKAGE_SOURCE_PATH> [--name <SOURCE_NAME>] [--username <USER>]
-    //     [--password <PASSWORD>] [--store-password-in-clear-text]
-    //     [--valid-authentication-types <TYPES>] [--configfile <FILE>]
+        // dotnet nuget add source <PACKAGE_SOURCE_PATH> [--name <SOURCE_NAME>] [--username <USER>]
+        //     [--password <PASSWORD>] [--store-password-in-clear-text]
+        //     [--valid-authentication-types <TYPES>] [--configfile <FILE>]
 
-    // dotnet nuget update source <NAME> [--source <SOURCE>] [--username <USER>]
-    //     [--password <PASSWORD>] [--store-password-in-clear-text]
-    //     [--valid-authentication-types <TYPES>] [--configfile <FILE>]
+        // dotnet nuget update source <NAME> [--source <SOURCE>] [--username <USER>]
+        //     [--password <PASSWORD>] [--store-password-in-clear-text]
+        //     [--valid-authentication-types <TYPES>] [--configfile <FILE>]
 
         // Use SafeCommand to avoid "Unable to find any package source(s) matching name: Brf."
         parameters.GetTool("dotnet.exe", "dotnet")
-            .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4} --store-password-in-clear-text",
+            .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4}",
                 "Brf",
                 @"https://www.myget.org/F/brf/api/v3/index.json",
                 parameters.MyGet.UserName,
