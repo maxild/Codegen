@@ -34,9 +34,17 @@ Setup(context =>
     if (!parameters.IsLocalBuild) {
         Information("Store credentials to private MyGet feed in local nuget.config...");
 
+    // dotnet nuget add source <PACKAGE_SOURCE_PATH> [--name <SOURCE_NAME>] [--username <USER>]
+    //     [--password <PASSWORD>] [--store-password-in-clear-text]
+    //     [--valid-authentication-types <TYPES>] [--configfile <FILE>]
+
+    // dotnet nuget update source <NAME> [--source <SOURCE>] [--username <USER>]
+    //     [--password <PASSWORD>] [--store-password-in-clear-text]
+    //     [--valid-authentication-types <TYPES>] [--configfile <FILE>]
+
         // Use SafeCommand to avoid "Unable to find any package source(s) matching name: Brf."
-        parameters.GetTool("nuget.exe")
-            .SafeCommand("sources update -Name {0} -Source {1} -Username {2} -Password {3} -configFile {4}",
+        parameters.GetTool("dotnet")
+            .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4} --store-password-in-clear-text",
                 "Brf",
                 @"https://www.myget.org/F/brf/api/v3/index.json",
                 parameters.MyGet.UserName,
@@ -44,13 +52,13 @@ Setup(context =>
                 "./nuget.config");
 
         // Use SafeCommand to avoid "Unable to find any package source(s) matching name: BrfCi."
-        parameters.GetTool("nuget.exe")
-            .SafeCommand("sources update -Name {0} -Source {1} -Username {2} -Password {3} -configFile {4}",
-                "BrfCi",
-                @"https://www.myget.org/F/brf-ci/api/v3/index.json",
-                parameters.MyGet.UserName,
-                parameters.MyGet.GetRequiredPassword(),
-                "./nuget.config");
+        // parameters.GetTool("dotnet")
+        //     .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4} --store-password-in-clear-text",
+        //         "BrfCi",
+        //         @"https://www.myget.org/F/brf-ci/api/v3/index.json",
+        //         parameters.MyGet.UserName,
+        //         parameters.MyGet.GetRequiredPassword(),
+        //         "./nuget.config");
     }
 
     if (parameters.Git.IsMasterBranch && context.Log.Verbosity != Verbosity.Diagnostic) {
