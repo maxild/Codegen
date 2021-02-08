@@ -32,7 +32,7 @@ Setup(context =>
     // We patch the local nuget.config in the repo root with the encrypted
     // credentials in order to access private myget feed on appveyor
     if (!parameters.IsLocalBuild) {
-        Information("Store credentials to private MyGet feed in local nuget.config...");
+        Information("Store credentials to private MyGet feed in local NuGet.config...");
 
     // dotnet nuget add source <PACKAGE_SOURCE_PATH> [--name <SOURCE_NAME>] [--username <USER>]
     //     [--password <PASSWORD>] [--store-password-in-clear-text]
@@ -297,10 +297,9 @@ Task("Publish-CIFeed")
 {
     foreach (var package in GetFiles(parameters.Paths.Directories.Artifacts + "/*.nupkg"))
     {
-        NuGetPush(package.FullPath, new NuGetPushSettings {
+        DotNetCoreNuGetPush(package.FullPath, new DotNetCoreNuGetPushSettings {
             Source = parameters.CIFeed.SourceUrl,
-            ApiKey = parameters.CIFeed.ApiKey,
-            ArgumentCustomization = args => args.Append("-NoSymbols")
+            ApiKey = parameters.CIFeed.ApiKey
         });
     }
 })
@@ -319,10 +318,9 @@ Task("Publish-ProdFeed")
 {
     foreach (var package in GetFiles(parameters.Paths.Directories.Artifacts + "/*.nupkg"))
     {
-        NuGetPush(package.FullPath, new NuGetPushSettings {
+        DotNetCoreNuGetPush(package.FullPath, new DotNetCoreNuGetPushSettings {
             Source = parameters.ProdFeed.SourceUrl,
-            ApiKey = parameters.ProdFeed.ApiKey,
-            ArgumentCustomization = args => args.Append("-NoSymbols")
+            ApiKey = parameters.ProdFeed.ApiKey
         });
     }
 })
