@@ -29,6 +29,35 @@ DotNetCoreMSBuildSettings msBuildSettings = null;
 
 Setup(context =>
 {
+    // We patch the local nuget.config in the repo root with the encrypted
+    // credentials in order to access private myget feed on appveyor
+    if (!parameters.IsLocalBuild) {
+        Information("Store credentials to private MyGet feed in local nuget.config...");
+
+        // Use SafeCommand to avoid "Unable to find any package source(s) matching name: Brf."
+        parameters.GetTool("nuget.exe")
+            .SafeCommand("sources update -Name {0} -Source {1} -Username {2} -Password {3} -configFile {4}",
+                "Brf",
+                @"https://www.myget.org/F/brf/api/v3/index.json",
+                parameters.MyGet.UserName,
+                parameters.MyGet.GetRequiredPassword(),
+                "./nuget.config");
+
+        // Use SafeCommand to avoid "Unable to find any package source(s) matching name: BrfCi."
+        parameters.GetTool("nuget.exe")
+            .SafeCommand("sources update -Name {0} -Source {1} -Username {2} -Password {3} -configFile {4}",
+                "BrfCi",
+                @"https://www.myget.org/F/brf-ci/api/v3/index.json",
+                parameters.MyGet.UserName,
+                parameters.MyGet.GetRequiredPassword(),
+                "./nuget.config");
+    }
+
+    if (parameters.Git.IsMasterBranch && context.Log.Verbosity != Verbosity.Diagnostic) {
+        Information("Increasing verbosity to diagnostic.");
+        context.Log.Verbosity = Verbosity.Diagnostic;
+    }
+
     msBuildSettings = new DotNetCoreMSBuildSettings()
                         .WithProperty("RepositoryBranch", parameters.Git.Branch)           // gitflow branch
                         .WithProperty("RepositoryCommit", parameters.Git.Sha)              // full sha
@@ -36,7 +65,6 @@ Setup(context =>
                         //.WithProperty("Version", parameters.VersionInfo.NuGetVersion)    // padded with zeros, because of lexical nuget sort order
                         .WithProperty("AssemblyVersion", parameters.VersionInfo.AssemblyVersion)
                         .WithProperty("FileVersion", parameters.VersionInfo.AssemblyFileVersion);
-                        //.WithProperty("PackageReleaseNotes", string.Concat("\"", releaseNotes, "\""));
 
     // Deterministic builds: normalize stored file paths
     if (parameters.IsRunningOnAppVeyor) {
