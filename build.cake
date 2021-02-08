@@ -49,7 +49,7 @@ Setup(context =>
                 @"https://www.myget.org/F/brf/api/v3/index.json",
                 parameters.MyGet.UserName,
                 parameters.MyGet.GetRequiredPassword(),
-                "./nuget.config");
+                "./NuGet.config");
 
         // Use SafeCommand to avoid "Unable to find any package source(s) matching name: BrfCi."
         // parameters.GetTool("dotnet")
@@ -58,7 +58,7 @@ Setup(context =>
         //         @"https://www.myget.org/F/brf-ci/api/v3/index.json",
         //         parameters.MyGet.UserName,
         //         parameters.MyGet.GetRequiredPassword(),
-        //         "./nuget.config");
+        //         "./NuGet.config");
     }
 
     if (parameters.Git.IsMasterBranch && context.Log.Verbosity != Verbosity.Diagnostic) {
