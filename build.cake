@@ -143,12 +143,19 @@ Task("Restore")
     var project = Directory("./src/submodules/aspnetcore/eng/tools/RepoTasks") + File("RepoTasks.csproj");
     DotNetCoreRestore(project);
 
-    DotNetCoreRestore(parameters.Paths.Files.Solution.FullPath, new DotNetCoreRestoreSettings
+    var settings = new DotNetCoreRestoreSettings
     {
         Verbosity = DotNetCoreVerbosity.Minimal,
-        ConfigFile = "./NuGet.config",
         MSBuildSettings = msBuildSettings
-    });
+    };
+    if (parameters.IsLocalBuild)
+    {
+        // Unable to load the service index for source https://www.myget.org/F/brf/api/v3/index.json,
+        // or whatever. Give me a chance to store PAT in credential provider store.
+        settings.Interactive = true;
+    }
+
+    DotNetCoreRestore(parameters.Paths.Files.Solution.FullPath, settings);
 });
 
 Task("Build")
