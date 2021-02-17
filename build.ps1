@@ -25,7 +25,7 @@ http://cakebuild.net
 
 #>
 
-  [CmdletBinding()]
+[CmdletBinding()]
 Param(
   [string]$Target = "Default",
   [ValidateSet("Release", "Debug")]
@@ -50,11 +50,11 @@ if ((Test-Path $PSScriptRoot) -and (-not (Test-Path $TOOLS_DIR))) {
 # LOAD versions from build.config
 ###########################################################################
 
-[string]$DotNetSdkVersion = ''
-[string]$CakeVersion = ''
-[string]$CakeScriptsVersion = ''
-[string]$GitVersionVersion = ''
-[string]$GitReleaseManagerVersion = ''
+[string] $DotNetSdkVersion = ''
+[string] $CakeVersion = ''
+[string] $CakeScriptsVersion = ''
+[string] $GitVersionVersion = ''
+[string] $GitReleaseManagerVersion = ''
 foreach ($line in Get-Content (Join-Path $PSScriptRoot 'build.config')) {
   if ($line -like 'DOTNET_VERSION=*') {
     $DotNetSdkVersion = $line.SubString(15)
@@ -72,7 +72,6 @@ foreach ($line in Get-Content (Join-Path $PSScriptRoot 'build.config')) {
     $GitReleaseManagerVersion = $line.SubString(26)
   }
 }
-
 if ([string]::IsNullOrEmpty($DotNetSdkVersion)) {
   'Failed to parse .NET Core SDK version'
   exit 1
@@ -198,17 +197,33 @@ if (($ParsedFoundDotNetSdkVersion.Major -ne $ParsedDotNetSdkVersion.Major) -or `
 # Install CakeScripts
 ###########################################################################
 
-if (-not(Test-Path (Join-Path $TOOLS_DIR 'Maxfire.CakeScripts'))) {
+if (-not (Test-Path (Join-Path $TOOLS_DIR 'Maxfire.CakeScripts'))) {
   $NUGET_EXE = Join-Path $TOOLS_DIR 'nuget.exe'
-  if (($CakeScriptsVersion -eq "latest") -or [string]::IsNullOrWhitespace($CakeScriptsVersion)) {
-    & $NUGET_EXE install Maxfire.CakeScripts -ExcludeVersion -Prerelease -OutputDirectory `"$TOOLS_DIR`" -Source 'https://api.nuget.org/v3/index.json;https://www.myget.org/F/maxfire/api/v3/index.json' | Out-Null
+  # latest or empty string is interpreted as 'just use the latest' (floating version, not determinsitic)
+  if ( ($CakeScriptsVersion -eq "latest") -or [string]::IsNullOrWhitespace($CakeScriptsVersion) ) {
+    & $NUGET_EXE install Maxfire.CakeScripts -ExcludeVersion -Prerelease `
+      -OutputDirectory `"$TOOLS_DIR`" -Source 'https://api.nuget.org/v3/index.json;https://www.myget.org/F/maxfire/api/v3/index.json' | Out-Null
   }
   else {
-    & $NUGET_EXE install Maxfire.CakeScripts -Version $CakeScriptsVersion -ExcludeVersion -Prerelease -OutputDirectory `"$TOOLS_DIR`" -Source 'https://api.nuget.org/v3/index.json;https://www.myget.org/F/maxfire/api/v3/index.json' | Out-Null
+    & $NUGET_EXE install Maxfire.CakeScripts -Version $CakeScriptsVersion -ExcludeVersion -Prerelease `
+      -OutputDirectory `"$TOOLS_DIR`" -Source 'https://api.nuget.org/v3/index.json;https://www.myget.org/F/maxfire/api/v3/index.json' | Out-Null
   }
 
   if ($LASTEXITCODE -ne 0) {
     Throw "An error occured while restoring Maxfire.CakeScripts."
+  }
+}
+else {
+  # Maxfire.CakeScripts is already installed, check what version is installed
+  $versionTxtPath = Join-Path $TOOLS_DIR "Maxfire.CakeScripts" | Join-Path -ChildPath "content" | Join-Path -ChildPath "version.txt"
+  $CakeScriptsInstalledVersion = "$(Get-Content -Path $versionTxtPath -TotalCount 1 -Encoding ascii)".Trim()
+  Write-Host "Maxfire.CakeScripts version $CakeScriptsInstalledVersion found."
+  Write-Host "Maxfire.CakeScripts version $CakeScriptsVersion is required."
+
+  if ($CakeScriptsVersion -ne $CakeScriptsInstalledVersion) {
+    Write-Host "Upgrading to version $CakeScriptsVersion of Maxfire.CakeScripts..."
+    & $NUGET_EXE install Maxfire.CakeScripts -Version $CakeScriptsVersion -ExcludeVersion -Prerelease `
+      -OutputDirectory `"$TOOLS_DIR`" -Source 'https://api.nuget.org/v3/index.json;https://www.myget.org/F/maxfire/api/v3/index.json' | Out-Null
   }
 }
 
@@ -250,7 +265,7 @@ Function Install-NetCoreTool {
   return $ExePath
 }
 
-[string]$CakeExePath = Install-NetCoreTool -PackageId 'Cake.Tool' -ToolCommandName 'dotnet-cake' -Version $CakeVersion
+[string] $CakeExePath = Install-NetCoreTool -PackageId 'Cake.Tool' -ToolCommandName 'dotnet-cake' -Version $CakeVersion
 Install-NetCoreTool -PackageId 'GitVersion.Tool' -ToolCommandName 'dotnet-gitversion' -Version $GitVersionVersion | Out-Null
 Install-NetCoreTool -PackageId 'GitReleaseManager.Tool' -ToolCommandName 'dotnet-gitreleasemanager' -Version $GitReleaseManagerVersion | Out-Null
 
