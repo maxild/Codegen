@@ -61,14 +61,14 @@ Setup(context =>
                 encryption);
 
         // Use SafeCommand to avoid "Unable to find any package source(s) matching name: BrfCi."
-        // parameters.GetTool("dotnet.exe", "dotnet")
-        //     .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4}{5}",
-        //         "BrfCi",
-        //         @"https://www.myget.org/F/brf-ci/api/v3/index.json",
-        //         parameters.MyGet.UserName,
-        //         parameters.MyGet.GetRequiredPassword(),
-        //         "./NuGet.config",
-        //         encryption);
+        parameters.GetTool("dotnet.exe", "dotnet")
+            .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4}{5}",
+                "BrfCi",
+                @"https://www.myget.org/F/brf-ci/api/v3/index.json",
+                parameters.MyGet.UserName,
+                parameters.MyGet.GetRequiredPassword(),
+                "./NuGet.config",
+                encryption);
     }
 
     if (parameters.Git.IsMasterBranch && context.Log.Verbosity != Verbosity.Diagnostic) {
