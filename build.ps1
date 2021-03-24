@@ -32,6 +32,8 @@ Param(
   [string]$Configuration = "Release",
   [ValidateSet("Quiet", "Minimal", "Normal", "Verbose", "Diagnostic")]
   [string]$Verbosity = "Verbose",
+  [ValidateSet("true", "false", "")]
+  [string]$ReplacePackageReferences = "",
   [string]$NuGetVersion = "latest",
   [Parameter(Position = 0, Mandatory = $false, ValueFromRemainingArguments = $true)]
   [string[]]$ScriptArgs
@@ -282,11 +284,13 @@ Install-NetCoreTool -PackageId 'GitReleaseManager.Tool' -ToolCommandName 'dotnet
 
 # Build the argument list.
 $Arguments = @{
-  target        = $Target;
-  configuration = $Configuration;
-  verbosity     = $Verbosity;
-}.GetEnumerator() | ForEach-Object { "--{0}=`"{1}`"" -f $_.key, $_.value }
+  target                    = $Target;
+  configuration             = $Configuration;
+  verbosity                 = $Verbosity;
+  ReplacePackageReferences  = $ReplacePackageReferences;
+}.GetEnumerator() | ForEach-Object { if ("{0}" -f $_.value) { "--{0}=`"{1}`"" -f $_.key, $_.value } else {""} }
 
 Write-Host "Running build script..."
+Write-Host "$CakeExePath ./build.cake $Arguments $ScriptArgs"
 & "$CakeExePath" ./build.cake $Arguments $ScriptArgs
 exit $LASTEXITCODE
