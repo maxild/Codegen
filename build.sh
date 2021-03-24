@@ -186,4 +186,5 @@ fi
 ###########################################################################
 
 echo "Running build script..."
+echo "$CAKE_EXE build.cake $@"
 (exec "$CAKE_EXE" build.cake --bootstrap) && (exec "$CAKE_EXE" build.cake "$@")
