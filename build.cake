@@ -61,14 +61,14 @@ Setup(context =>
                 encryption);
 
         // Use SafeCommand to avoid "Unable to find any package source(s) matching name: BrfCi."
-        // parameters.GetTool("dotnet.exe", "dotnet")
-        //     .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4}{5}",
-        //         "BrfCi",
-        //         @"https://www.myget.org/F/brf-ci/api/v3/index.json",
-        //         parameters.MyGet.UserName,
-        //         parameters.MyGet.GetRequiredPassword(),
-        //         "./NuGet.config",
-        //         encryption);
+        parameters.GetTool("dotnet.exe", "dotnet")
+            .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4}{5}",
+                "BrfCi",
+                @"https://www.myget.org/F/brf-ci/api/v3/index.json",
+                parameters.MyGet.UserName,
+                parameters.MyGet.GetRequiredPassword(),
+                "./NuGet.config",
+                encryption);
     }
 
     if (parameters.Git.IsMasterBranch && context.Log.Verbosity != Verbosity.Diagnostic) {
@@ -83,6 +83,15 @@ Setup(context =>
                         //.WithProperty("Version", parameters.VersionInfo.NuGetVersion)    // padded with zeros, because of lexical nuget sort order
                         .WithProperty("AssemblyVersion", parameters.VersionInfo.AssemblyVersion)
                         .WithProperty("FileVersion", parameters.VersionInfo.AssemblyFileVersion);
+
+    if (context.HasArgument("ReplacePackageReferences") && !string.IsNullOrEmpty(context.Argument<string>("ReplacePackageReferences"))) {
+        Information("MSBuild properties enhanced with:");
+        Information("  ReplacePackageReferences: {0}", context.Argument<string>("ReplacePackageReferences"));
+        msBuildSettings.WithProperty("ReplacePackageReferences", context.Argument<string>("ReplacePackageReferences"));
+    }
+    else {
+        Information("INFO: ReplacePackageReferences will take on its default value.");
+    }
 
     // Deterministic builds: normalize stored file paths
     if (parameters.IsRunningOnAppVeyor) {
