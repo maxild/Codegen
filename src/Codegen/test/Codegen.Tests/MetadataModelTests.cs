@@ -40,9 +40,6 @@ namespace Codegen.Tests
                 new KeyValuePair<string, string>("key2", "value2")
             };
 
-            var datePart = new DateTime(2019, 3, 8);
-            var timePart = new TimeSpan();
-
             var metadata = MetadataModel.Create<KeyValuePair<string, string>>(
                 toolVersion: "0.1.0",
                 queryName: "betalingstype",
@@ -52,7 +49,6 @@ namespace Codegen.Tests
                 xmlDoc: "Betalingstype er en type fra Domus",
                 identifierPrefix: string.Empty,
                 domusIdentifierPrefix: "B",
-                queriedAt: new DateTimeOffset(datePart, timePart),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(KeyValuePair<string, string>).AssemblyQualifiedName!,
                 records);
@@ -71,9 +67,6 @@ namespace Codegen.Tests
                 new RecordTuple { Key = "key2", Value = "value2"}
             };
 
-            var datePart = new DateTime(2019, 3, 8);
-            var timePart = new TimeSpan();
-
             var metadata = MetadataModel.Create<RecordTuple>(
                 toolVersion: "0.1.0",
                 queryName: "betalingstype",
@@ -83,7 +76,6 @@ namespace Codegen.Tests
                 xmlDoc: "Betalingstype er en type fra Domus",
                 identifierPrefix: string.Empty,
                 domusIdentifierPrefix: "B",
-                queriedAt: new DateTimeOffset(datePart, timePart),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
                 records);
@@ -102,9 +94,6 @@ namespace Codegen.Tests
                 new RecordTuple { Key = "key2", Value = "value2"}
             };
 
-            var datePart = new DateTime(2019, 3, 8);
-            var timePart = new TimeSpan();
-
             var metadata = MetadataModel.Create<KeyValuePair<string, string>>(
                 toolVersion: "0.1.0",
                 queryName: "betalingstype",
@@ -114,7 +103,6 @@ namespace Codegen.Tests
                 xmlDoc: "Betalingstype er en type fra Domus",
                 identifierPrefix: string.Empty,
                 domusIdentifierPrefix: "B",
-                queriedAt: new DateTimeOffset(datePart, timePart),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
                 records);
@@ -135,9 +123,6 @@ namespace Codegen.Tests
                     new RecordTuple {Key = "key2", Value = "value2"}
                 };
 
-            var datePart = new DateTime(2019, 3, 8, 12, 24, 36);
-            var offset = new TimeSpan(1, 0, 0);
-
             MetadataModel model1 = MetadataModel.Create(
                 toolVersion: "0.1.0",
                 queryName: "betalingstype",
@@ -147,7 +132,6 @@ namespace Codegen.Tests
                 xmlDoc: "Betalingstype er en type fra Domus.",
                 identifierPrefix: string.Empty,
                 domusIdentifierPrefix: "B",
-                queriedAt: new DateTimeOffset(datePart, offset),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
                 records);
@@ -161,7 +145,6 @@ namespace Codegen.Tests
                 xmlDoc: "Betalingstype er en type fra Domus.",
                 identifierPrefix: string.Empty,
                 domusIdentifierPrefix: "B",
-                queriedAt: new DateTimeOffset(datePart, offset),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
                 records);
@@ -179,7 +162,6 @@ namespace Codegen.Tests
                 @"  ""TypeName"": ""Betalingstype"",",
                 @"  ""XmlDoc"": ""Betalingstype er en type fra Domus."",",
                 @"  ""DomusIdentifierPrefix"": ""B"",",
-                @"  ""QueriedAt"": ""2019-03-08T12:24:36+01:00"",",
                 @"  ""SqlText"": ""SELECT * FROM SOME_TABLE"",",
                 @"  ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",",
                 @"  ""Records"": [",
@@ -209,7 +191,6 @@ namespace Codegen.Tests
   ""TypeName"": ""Betalingstype"",
   ""XmlDoc"": ""Betalingstype er en type fra Domus."",
   ""IdentifierPrefix"": """",
-  ""QueriedAt"": ""2019-03-08T12:24:36+01:00"",
   ""SqlText"": ""SELECT * FROM SOME_TABLE"",
   ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",
   ""Records"": [
@@ -234,7 +215,6 @@ namespace Codegen.Tests
             model1.TypeName.ShouldBe("Betalingstype");
             model1.XmlDoc.ShouldBe("Betalingstype er en type fra Domus.");
             model1.IdentifierPrefix.ShouldBeEmpty();
-            model1.QueriedAt.ShouldBe(new DateTimeOffset(2019, 3, 8, 12, 24, 36, new TimeSpan(1, 0, 0)));
             model1.SqlText.ShouldBe("SELECT * FROM SOME_TABLE");
             model1.RecordTypeName.ShouldBe("Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
             model1.RecordType.ShouldBe(typeof(RecordTuple));
@@ -256,9 +236,6 @@ namespace Codegen.Tests
                 new RecordTuple { Key = "key2", Value = "value2"}
             };
 
-            var datePart = new DateTime(2019, 3, 8);
-            var timePart = new TimeSpan();
-
             MetadataModel<RecordTuple> model = MetadataModel.Create<RecordTuple>(
                 toolVersion: "0.1.0",
                 queryName: "betalingstype",
@@ -268,7 +245,6 @@ namespace Codegen.Tests
                 xmlDoc: "Betalingstype er en type fra Domus",
                 identifierPrefix: string.Empty,
                 domusIdentifierPrefix: "B",
-                queriedAt: new DateTimeOffset(datePart, timePart),
                 sqlText: "SELECT * FROM SOME_TABLE",
                 recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
                 records);

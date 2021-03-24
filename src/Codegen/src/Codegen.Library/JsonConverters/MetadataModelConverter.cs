@@ -59,9 +59,6 @@ namespace Codegen.Library.JsonConverters
                     writer.WriteValue(model.DomusIdentifierPrefix);
                 }
 
-                writer.WritePropertyName(nameof(MetadataModel.QueriedAt));
-                writer.WriteValue(model.QueriedAt);
-
                 writer.WritePropertyName(nameof(MetadataModel.SqlText));
                 writer.WriteValue(model.SqlText);
 
@@ -103,7 +100,6 @@ namespace Codegen.Library.JsonConverters
                 domusIdentifierPrefix = null,
                 sqlText = null,
                 recordType = null;
-            DateTimeOffset? queriedAt = null;
             List<object>? records = null;
 
             _ = reader.ReadStartObject();
@@ -136,9 +132,6 @@ namespace Codegen.Library.JsonConverters
                     case nameof(MetadataModel.DomusIdentifierPrefix):
                         domusIdentifierPrefix = reader.ReadPropertyValue<string>(serializer);
                         continue;
-                    case nameof(MetadataModel.QueriedAt):
-                        queriedAt = reader.ReadPropertyValue<DateTimeOffset>(serializer);
-                        continue;
                     case nameof(MetadataModel.SqlText):
                         sqlText = reader.ReadPropertyValue<string>(serializer);
                         continue;
@@ -168,7 +161,6 @@ namespace Codegen.Library.JsonConverters
                 xmlDoc: xmlDoc ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.XmlDoc)} property."),
                 identifierPrefix: identifierPrefix ?? string.Empty,
                 domusIdentifierPrefix: domusIdentifierPrefix ?? string.Empty,
-                queriedAt: queriedAt ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.QueriedAt)} property."),
                 sqlText: sqlText ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.SqlText)} property."),
                 recordTypeName: recordType ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.RecordTypeName)} property."),
                 records: records ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.Records)} property."));

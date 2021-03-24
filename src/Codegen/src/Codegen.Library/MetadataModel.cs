@@ -76,7 +76,6 @@ namespace Codegen.Library
         /// <param name="xmlDoc">The xml-doc of the generated type.</param>
         /// <param name="identifierPrefix">The prefix added to the C# identifier.</param>
         /// <param name="domusIdentifierPrefix">The prefix used by Domus.</param>
-        /// <param name="queriedAt">The timestamp when the data was queried.</param>
         /// <param name="sqlText">The SQL expression that have generated the records.</param>
         /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
         /// <param name="records">The list of records.</param>
@@ -89,7 +88,6 @@ namespace Codegen.Library
             string xmlDoc,
             string identifierPrefix,
             string domusIdentifierPrefix,
-            DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
             IReadOnlyList<object> records)
@@ -109,7 +107,6 @@ namespace Codegen.Library
                 xmlDoc,
                 identifierPrefix,
                 domusIdentifierPrefix,
-                queriedAt,
                 sqlText,
                 recordTypeName,
                 records)!;
@@ -126,7 +123,6 @@ namespace Codegen.Library
         /// <param name="xmlDoc">The xml-doc of the generated type.</param>
         /// <param name="identifierPrefix">The prefix to be added on the C# identifiers.</param>
         /// <param name="domusIdentifierPrefix">The prefix used by Domus.</param>
-        /// <param name="queriedAt">The timestamp when the data was queried.</param>
         /// <param name="sqlText">The SQL expression that have generated the records.</param>
         /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
         /// <param name="records">The list of records.</param>
@@ -139,14 +135,12 @@ namespace Codegen.Library
             string xmlDoc,
             string identifierPrefix,
             string domusIdentifierPrefix,
-            DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
             IReadOnlyList<object> records)
         {
             return new(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix,
-                domusIdentifierPrefix, queriedAt,
-                sqlText, recordTypeName, records);
+                domusIdentifierPrefix, sqlText, recordTypeName, records);
         }
 
         protected MetadataModel(
@@ -158,7 +152,6 @@ namespace Codegen.Library
             string xmlDoc,
             string identifierPrefix,
             string domusIdentifierPrefix,
-            DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
             IReadOnlyList<object> records)
@@ -171,7 +164,6 @@ namespace Codegen.Library
             XmlDoc = xmlDoc ?? throw new ArgumentNullException(nameof(xmlDoc));
             IdentifierPrefix = identifierPrefix;
             DomusIdentifierPrefix = domusIdentifierPrefix;
-            QueriedAt = queriedAt;
             SqlText = sqlText ?? throw new ArgumentNullException(nameof(sqlText));
             RecordTypeName = recordTypeName ?? throw new ArgumentNullException(nameof(recordTypeName));
             Records = records ?? throw new ArgumentNullException(nameof(records)); // TODO: ?? Enumerable.Empty<object>();
@@ -181,8 +173,7 @@ namespace Codegen.Library
         {
             // TODO: Test that ToList create a deep copy??? should it?
             return Create(version, QueryName, TemplateName, Namespace, TypeName, XmlDoc, IdentifierPrefix,
-                DomusIdentifierPrefix, QueriedAt, SqlText,
-                RecordTypeName, Records.ToList());
+                DomusIdentifierPrefix, SqlText, RecordTypeName, Records.ToList());
         }
 
         public string ToolVersion { get; }
@@ -200,10 +191,6 @@ namespace Codegen.Library
         public string IdentifierPrefix { get; }
 
         public string DomusIdentifierPrefix { get; }
-
-        public DateTimeOffset QueriedAt { get; }
-
-        public string QueriedAtText => QueriedAt.ToString("yyyy-MM-ddThh:mm:sszzz");
 
         public string SqlText { get; }
 
@@ -287,7 +274,6 @@ namespace Codegen.Library
                           TypeName.Equals(other.TypeName, StringComparison.OrdinalIgnoreCase) &&
                           XmlDoc.Equals(other.XmlDoc, StringComparison.OrdinalIgnoreCase) &&
                           IdentifierPrefix.Equals(other.IdentifierPrefix, StringComparison.OrdinalIgnoreCase) &&
-                          QueriedAt.Equals(other.QueriedAt) &&
                           SqlText.Equals(other.SqlText, StringComparison.OrdinalIgnoreCase);
 
             return simple;
@@ -312,7 +298,6 @@ namespace Codegen.Library
         /// <param name="xmlDoc">The xml-doc of the generated type.</param>
         /// <param name="identifierPrefix">The prefix to be added on the C# identifier.</param>
         /// <param name="domusIdentifierPrefix">The prefix used by Domus.</param>
-        /// <param name="queriedAt"></param>
         /// <param name="sqlText">The SQL expression that have generated the records.</param>
         /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
         /// <param name="records">The list of records.</param>
@@ -325,11 +310,10 @@ namespace Codegen.Library
             string xmlDoc,
             string identifierPrefix,
             string domusIdentifierPrefix,
-            DateTimeOffset queriedAt,
             string sqlText,
             string recordTypeName,
             IReadOnlyList<object> records)
-            : base(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix, domusIdentifierPrefix, queriedAt, sqlText, recordTypeName, records)
+            : base(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix, domusIdentifierPrefix, sqlText, recordTypeName, records)
         {
         }
 
