@@ -219,7 +219,6 @@ namespace Codegen.Database.CLI
                     xmlDoc: cgXmlDoc ?? throw new InvalidOperationException($"The {CG_XMLDOC_DIRECTIVE} directive is missing."),
                     identifierPrefix: cgIdPrefix ?? string.Empty,
                     domusIdentifierPrefix: cgDomusIdPrefix ?? string.Empty,
-                    queriedAt: DateTimeOffset.Now, // TODO: Not pure
                     sqlText: sqlText,
                     recordType ?? throw new InvalidOperationException("The (runtime) recordType could not be resolved, because en empty recordset was received."),
                     records);
