@@ -27,10 +27,10 @@ namespace Codegen.CSharp.CLI
                         .Accepts(v => v.ExistingDirectory());
 
             var optionTemplate =
-                app.Option("--template <PATH>", "Required. The path to the Razor template file.",
+                app.Option("--template <PATH>", "Required. The path to the Razor template directory, where the @cg-Template filename is to be found. If the path is to a file, then that file is used, and the @cg-Template value is ignored.",
                     CommandOptionType.SingleValue)
                         //.IsRequired()
-                        .Accepts(v => v.ExistingFile());
+                        .Accepts(v => v.ExistingFileOrDirectory());
 
             var optionDiagDir =
                 app.Option("--diagDir <DIAGDIR>",
@@ -64,26 +64,49 @@ namespace Codegen.CSharp.CLI
 
                 string name = optionName.Value() ?? throw new InvalidOperationException($"The required {optionName.LongName} is missing.");
 
-                WriteLineVerbose($"Reading {name} model/data from dir '{optionDataDir.Value()}'.");
+                WriteLineVerbose($"Reading '{name}.json' data from dir '{optionDataDir.Value()}'.");
                 // NOTE: cgcsharp does not know about concrete types of records...just a list of objects (anything)
-                MetadataModel metadata = MetadataModelUtils.ReadFile(optionDataDir.Value() ?? throw new InvalidOperationException($"The required {optionDataDir.LongName} is missing."), name)
+                MetadataModel metadata = MetadataModelUtils
+                    .ReadFile(
+                        optionDataDir.Value() ??
+                            throw new InvalidOperationException($"The required {optionDataDir.LongName} is missing."),
+                        name)
                     .WithToolVersion(Git.CurrentVersion.Version);
-                WriteLineVerbose($"Reading {name} model/data from dir '{optionDataDir.Value()}' completed.");
+                WriteLineVerbose($"Reading '{name}.json' data from dir '{optionDataDir.Value()}' completed.");
 
+                // Resolve template directory and filename
                 string templatePath = optionTemplate.Value() ?? throw new InvalidOperationException($"The required {optionTemplate.LongName} is missing.");
-                // The templateFilename is null if templatePath is null (The API have been annotated with [return: NotNullIfNotNull("path")]).
-                string templateFilename = Path.GetFileName(templatePath);
-                // templateDir is null if templatePath is null, empty, or a root (such as "\", "C:", or "\\server\share").
-                string? templateDir = Path.GetDirectoryName(templatePath);
-                string rootDir = templateDir ?? throw new InvalidOperationException($"The template directory cannot be null, empty, or a system root.");
+                string rootDir, templateFilename;
+                if (Directory.Exists(templatePath))
+                {
+                    // use filename from @cg-Template directive
+                    rootDir = templatePath;
+                    templateFilename = Path.HasExtension(metadata.TemplateName)
+                        ? metadata.TemplateName
+                        : $"{metadata.TemplateName}.cshtml";
 
-                WriteLineVerbose($"Initializing Razor engine with root directory : '{templateDir}");
+                }
+                else if (File.Exists(templatePath))
+                {
+                    // Override the @cg-Template directive with the commandline --template provided filename
+                    // The templateFilename is null if templatePath is null (The API have been annotated with [return: NotNullIfNotNull("path")]).
+                    templateFilename = Path.GetFileName(templatePath);
+                    // templateDir is null if templatePath is null, empty, or a root (such as "\", "C:", or "\\server\share").
+                    string? templateDir = Path.GetDirectoryName(templatePath);
+                    rootDir = templateDir ?? throw new InvalidOperationException($"The template directory cannot be null, empty, or a system root.");
+                }
+                else
+                {
+                    throw new InvalidOperationException($"The {optionTemplate.LongName} value does not exist.");
+                }
+
+                WriteLineVerbose($"Initializing Razor engine with root directory : '{rootDir}");
 
                 var engine = new RazorEngineBuilder()
                     .SetRootDirectory(rootDir)
                     .Build();
 
-                WriteLineVerbose($"Rendering '{templateFilename}' ...");
+                WriteLineVerbose($"Rendering '{templateFilename}'.");
 
                 string? diagPath = null;
                 if (optionDiagDir.HasValue())
@@ -100,7 +123,7 @@ namespace Codegen.CSharp.CLI
                 try
                 {
                     renderResult = await engine.RenderTemplateAsync(templateFilename, model: metadata, onRazorCompilerOutput: source => razorSource = source);
-                    WriteLineVerbose("Rendering complete");
+                    WriteLineVerbose($"Rendering '{templateFilename}' completed.");
                 }
                 finally
                 {
@@ -116,7 +139,9 @@ namespace Codegen.CSharp.CLI
                 {
                     string csharpFilename = $"{name}.generated.cs";
                     string csharpPath = Path.Combine(optionOutDir.Value() ?? throw new InvalidOperationException($"The required {optionOutDir.LongName} is missing."), csharpFilename);
+                    WriteLineVerbose($"Writing '{csharpFilename}' to '{optionOutDir.Value()}'.");
                     await File.WriteAllTextAsync(csharpPath, renderResult.Content, Encoding.UTF8, cancellationToken);
+                    WriteLineVerbose($"Writing '{csharpFilename}' to '{optionOutDir.Value()}' completed.");
                 }
 
                 return 0;
