@@ -97,6 +97,9 @@
     **IMPORTANT**: 2 and 3 are **NOT** fulfilled after (non-recursive) clone
 
     See also https://github.com/dotnet/sourcelink/blob/main/docs/README.md#minimal-git-repository-metadata
+
+    **IDEA**
+    <EnableSourceControlManagerQueries>$(EnableSourceLink)</EnableSourceControlManagerQueries>
   -->
   <PropertyGroup>
     <!-- Do not query source control manager for any information when submodules have not been initialized. -->
