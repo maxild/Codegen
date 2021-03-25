@@ -32,4 +32,75 @@
     </PackageReference>
   </ItemGroup>
 
+  <!-- SourceLink -->
+  <Choose>
+    <When Condition=" '$(IsTestProject)' != 'true' AND '$(IsPackable)' == 'true' ">
+      <PropertyGroup>
+        <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+        <!-- See also https://blog.nuget.org/20180827/Introducing-Source-Code-Link-for-NuGet-packages.html -->
+        <!-- NOTE: Repository props are defined above, therefore we uncomment here -->
+        <!-- <PublishRepositoryUrl>true</PublishRepositoryUrl> -->
+
+        <!-- Optional: Embed source files that are not tracked by the source control manager to the PDB (e.g. CommonAssemblyInfo.cs) -->
+        <!-- This is useful if you generate files during the build -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
+        <!-- Include the SourceLink'ed PDB in the built .nupkg because symbolsource.org does not support portable PDBs -->
+        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+
+        <!-- Embed symbols containing Source Link in the main file (exe/dll) -->
+        <DebugType>embedded</DebugType>
+      </PropertyGroup>
+
+      <!--
+      EnableSourceLink
+        This property is implicitly set to true by a Source Link package. Including a
+        Source Link package thus enables Source Link generation unless explicitly disabled
+        by the project by setting this property to false.
+      -->
+
+      <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(MicrosoftSourceLinkGitHubPackageVersion)">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+      </ItemGroup>
+    </When>
+  </Choose>
+
+  <!--
+    Fix:
+      warning : Could not find file '/home/maxfire/repos/github.com/maxild/DomusSlet/src/submodules/aspnetcore/.git'.
+      The source code won't be available via Source Link.
+
+    If a repository has submodules the following requirements must be fulfilled:
+
+    1. the file .gitmodules must be present in the repository root and must list the relative
+    paths of all submodules:
+
+      [submodule "submodule-name"]
+      path = submodule-path
+
+    2. The .git/config file must contain URLs of all initialized submodules:
+
+      [submodule "submodule-name"]
+      url = https://server.com/subrepo
+
+    3. The following additional files and directories must be present for each submodule:
+
+        - .git/modules/src/submodules/Lofus/HEAD      (text file containing a commit SHA of the submodule)
+        - .git/modules/src/submodules/aspnetcore/HEAD (text file containing a commit SHA of the submodule)
+
+        - src/submodules/Lofus/.git       (text file pointing to the submodule metadata, with the following contents: gitdir: ../../../.git/modules/src/submodules/Lofus)
+        - src/submodules/aspnetcore/.git  (text file pointing to the submodule metadata, with the following contents: gitdir: ../../../.git/modules/src/submodules/aspnetcore)
+
+    **IMPORTANT**: 2 and 3 are **NOT** fulfilled after (non-recursive) clone
+
+    See also https://github.com/dotnet/sourcelink/blob/main/docs/README.md#minimal-git-repository-metadata
+  -->
+  <PropertyGroup>
+    <!-- Do not query source control manager for any information when submodules have not been initialized. -->
+    <EnableSourceControlManagerQueries Condition="!Exists('src\submodules\Lofus\.git') or !Exists('src\submodules\aspnetcore\.git')">false</EnableSourceControlManagerQueries>
+  </PropertyGroup>
+
 </Project>
