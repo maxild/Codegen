@@ -1,5 +1,6 @@
 ## Codegen projektet
 
-Dette projekt indeholder koden til den tooling, der kan autogenerere C# kildefiler
-med de relevante typer, der repraesenterer koder/vaerdier paa alle kode tabellerne
-i Domus med betydning for `DomusProduktdata` typen.
+Dette projekt indeholder koden til den tooling, der kan autogenerere C#
+kildefiler paa bagrund af SQL.
+
+Hvordan denne koder bliver brugt er dokumenteret [her](../../docs/codegen/buildsystem.md)
