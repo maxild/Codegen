@@ -212,6 +212,12 @@ Task("Test")
         DotNetCoreTest(parameters.Paths.Files.Solution.FullPath, new DotNetCoreTestSettings
         {
             Framework = tfm,
+            // Skip all tests with either
+            //   DatabaseTest in namespace and/or typename
+            //               - or -
+            //   Trait("Category", "DatabaseTest")
+            // See https://docs.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests
+            Filter = "FullyQualifiedName!~DatabaseTests|Category!=DatabaseTest",
             NoBuild = true,
             NoRestore = true,
             Configuration = parameters.Configuration
