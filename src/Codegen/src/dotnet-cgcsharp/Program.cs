@@ -5,6 +5,24 @@ using Codegen.Library;
 using CSharpRazor;
 using McMaster.Extensions.CommandLineUtils;
 
+#if !GIT_VERSION_INFO_EXISTS
+namespace Codegen
+{
+    public static class Git
+    {
+        private static readonly Lazy<GitVersion> s_version = new(()
+            => new GitVersion(
+                "0.0.0-missing.commandline.build",
+                "0.0.0-missing.commandline.build",
+                "local",
+                "0000000000000000000000000000000000000000",
+                "1/1/0000 00:00:00 PM +00:00",
+                "unknown-branch"));
+        public static GitVersion CurrentVersion => s_version.Value;
+    }
+}
+#endif
+
 namespace Codegen.CSharp.CLI
 {
     internal static class Program

@@ -24,7 +24,11 @@
     <PackageOutputPath>./../../../../artifacts</PackageOutputPath>
   </PropertyGroup>
 
-  <ItemGroup>
+  <PropertyGroup>
+    <DefineConstants Condition="Exists('..\..\..\GitVersionInfo.cs')">$(DefineConstants);GIT_VERSION_INFO_EXISTS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('..\..\..\GitVersionInfo.cs')">
     <Compile Include="..\..\..\GitVersionInfo.cs" />
   </ItemGroup>
 
