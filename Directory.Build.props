@@ -12,6 +12,9 @@
     <!-- .NET code style analysis is disabled, by default -->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- MSBuildTreatWarningsAsErrors is undocumented. See https://github.com/dotnet/msbuild/pull/1928 -->
+    <MSBuildTreatWarningsAsErrors>true</MSBuildTreatWarningsAsErrors>
+    <MSBuildWarningsAsMessages></MSBuildWarningsAsMessages>
     <!--
       Compiler does not report unused imports when XML doc comments are disabled (https://github.com/dotnet/roslyn/issues/41640)
       Other tools (StyleCop) does enforce this too.
