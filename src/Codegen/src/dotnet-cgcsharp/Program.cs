@@ -6,7 +6,9 @@ using CSharpRazor;
 using McMaster.Extensions.CommandLineUtils;
 
 #if !GIT_VERSION_INFO_EXISTS
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Codegen
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     public static class Git
     {

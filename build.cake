@@ -84,15 +84,6 @@ Setup(context =>
                         .WithProperty("AssemblyVersion", parameters.VersionInfo.AssemblyVersion)
                         .WithProperty("FileVersion", parameters.VersionInfo.AssemblyFileVersion);
 
-    if (context.HasArgument("ReplacePackageReferences") && !string.IsNullOrEmpty(context.Argument<string>("ReplacePackageReferences"))) {
-        Information("MSBuild properties enhanced with:");
-        Information("  ReplacePackageReferences: {0}", context.Argument<string>("ReplacePackageReferences"));
-        msBuildSettings.WithProperty("ReplacePackageReferences", context.Argument<string>("ReplacePackageReferences"));
-    }
-    else {
-        Information("INFO: ReplacePackageReferences will take on its default value.");
-    }
-
     // Deterministic builds: normalize stored file paths
     if (parameters.IsRunningOnAppVeyor) {
         msBuildSettings = msBuildSettings.WithProperty("ContinuousIntegrationBuild", "true");
@@ -147,9 +138,9 @@ Task("Restore")
     .Does(() =>
 {
     // This is required in order to build RazorLearningTests that has a ProjectReference to
-    // ./submodules/aspnetcore/src/Razor/Microsoft.AspNetCore.Razor.Language/src/Microsoft.AspNetCore.Razor.Language.csproj
-    //       dotnet restore src/submodules/aspnetcore/eng/tools/RepoTasks/RepoTasks.csproj
-    // var project = Directory("./src/submodules/aspnetcore/eng/tools/RepoTasks") + File("RepoTasks.csproj");
+    // ./src/submodules/razor-compiler/src/Microsoft.AspNetCore.Razor.Language/src/Microsoft.AspNetCore.Razor.Language.csproj
+    //       dotnet restore src/submodules/razor-compiler/eng/tools/RepoTasks/RepoTasks.csproj
+    // var project = Directory("./src/submodules/razor-compiler/eng/tools/RepoTasks") + File("RepoTasks.csproj");
     // DotNetCoreRestore(project);
 
     var settings = new DotNetCoreRestoreSettings
@@ -207,16 +198,18 @@ Task("Test")
     // Only testable projects (<IsTestProject>true</IsTestProject>) will be test-executed
     // We do not need to exclude everything under 'src/submodules',
     // because we use the single master solution
-    foreach (var tfm in new [] {"net5.0"})
+    DotNetCoreTest(parameters.Paths.Files.Solution.FullPath, new DotNetCoreTestSettings
     {
-        DotNetCoreTest(parameters.Paths.Files.Solution.FullPath, new DotNetCoreTestSettings
-        {
-            Framework = tfm,
-            NoBuild = true,
-            NoRestore = true,
-            Configuration = parameters.Configuration
-        });
-    }
+        // Skip all tests with either
+        //   DatabaseTest in namespace and/or typename
+        //               - or -
+        //   Trait("Category", "DatabaseTest")
+        // See https://docs.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests
+        Filter = "FullyQualifiedName!~DatabaseTests|Category!=DatabaseTest",
+        NoBuild = true,
+        NoRestore = true,
+        Configuration = parameters.Configuration
+    });
 });
 
 Task("Package")

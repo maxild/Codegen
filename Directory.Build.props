@@ -4,14 +4,17 @@
 
   <!-- Compiler properties -->
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <LangVersion>9.0</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <!-- Turn on `/features:strict` ("strict mode" in roslyn) -->
     <Feature>strict</Feature>
     <!-- .NET code style analysis is disabled, by default -->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- MSBuildTreatWarningsAsErrors is undocumented. See https://github.com/dotnet/msbuild/pull/1928 -->
+    <MSBuildTreatWarningsAsErrors>true</MSBuildTreatWarningsAsErrors>
+    <MSBuildWarningsAsMessages></MSBuildWarningsAsMessages>
     <!--
       Compiler does not report unused imports when XML doc comments are disabled (https://github.com/dotnet/roslyn/issues/41640)
       Other tools (StyleCop) does enforce this too.
@@ -103,7 +106,7 @@
   -->
   <PropertyGroup>
     <!-- Do not query source control manager for any information when submodules have not been initialized. -->
-    <EnableSourceControlManagerQueries Condition="!Exists('src\submodules\Lofus\.git') or !Exists('src\submodules\aspnetcore\.git')">false</EnableSourceControlManagerQueries>
+    <EnableSourceControlManagerQueries Condition="!Exists('src\submodules\razor-compiler\src')">false</EnableSourceControlManagerQueries>
   </PropertyGroup>
 
 </Project>

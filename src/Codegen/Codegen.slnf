@@ -6,8 +6,7 @@
       "src\\Codegen\\src\\Codegen.Library\\Codegen.Library.csproj",
       "src\\Codegen\\src\\dotnet-cgcsharp\\dotnet-cgcsharp.csproj",
       "src\\Codegen\\src\\dotnet-cgdata\\dotnet-cgdata.csproj",
-      "src\\Codegen\\test\\Codegen.Tests\\Codegen.Tests.csproj",
-      "src\\Codegen\\test\\RazorLearningTests\\RazorLearningTests.csproj"
+      "src\\Codegen\\test\\Codegen.Tests\\Codegen.Tests.csproj"
     ]
   }
 }
