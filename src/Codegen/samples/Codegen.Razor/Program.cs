@@ -68,7 +68,7 @@ namespace Codegen.Razor
             string targetProjectDirectory = Directory.GetCurrentDirectory();
             int pos = targetProjectDirectory.LastIndexOf("bin", StringComparison.OrdinalIgnoreCase);
             string rootDirectory = pos > 0
-                ? targetProjectDirectory.Substring(0, pos - 1)
+                ? targetProjectDirectory[..(pos - 1)]
                 : targetProjectDirectory;
 
             var engine = new RazorEngineBuilder()
@@ -107,7 +107,7 @@ namespace Codegen.Razor
             string targetProjectDirectory = Directory.GetCurrentDirectory();
             int pos = targetProjectDirectory.LastIndexOf("bin", StringComparison.OrdinalIgnoreCase);
             string rootDirectory = pos > 0
-                ? targetProjectDirectory.Substring(0, pos - 1)
+                ? targetProjectDirectory[..(pos - 1)]
                 : targetProjectDirectory;
 
             const string TEMPLATE_PATH = "RazorSource.cshtml";
