@@ -198,22 +198,18 @@ Task("Test")
     // Only testable projects (<IsTestProject>true</IsTestProject>) will be test-executed
     // We do not need to exclude everything under 'src/submodules',
     // because we use the single master solution
-    foreach (var tfm in new [] {"net5.0"})
+    DotNetCoreTest(parameters.Paths.Files.Solution.FullPath, new DotNetCoreTestSettings
     {
-        DotNetCoreTest(parameters.Paths.Files.Solution.FullPath, new DotNetCoreTestSettings
-        {
-            Framework = tfm,
-            // Skip all tests with either
-            //   DatabaseTest in namespace and/or typename
-            //               - or -
-            //   Trait("Category", "DatabaseTest")
-            // See https://docs.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests
-            Filter = "FullyQualifiedName!~DatabaseTests|Category!=DatabaseTest",
-            NoBuild = true,
-            NoRestore = true,
-            Configuration = parameters.Configuration
-        });
-    }
+        // Skip all tests with either
+        //   DatabaseTest in namespace and/or typename
+        //               - or -
+        //   Trait("Category", "DatabaseTest")
+        // See https://docs.microsoft.com/en-us/dotnet/core/testing/selective-unit-tests
+        Filter = "FullyQualifiedName!~DatabaseTests|Category!=DatabaseTest",
+        NoBuild = true,
+        NoRestore = true,
+        Configuration = parameters.Configuration
+    });
 });
 
 Task("Package")
