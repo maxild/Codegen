@@ -138,9 +138,9 @@ Task("Restore")
     .Does(() =>
 {
     // This is required in order to build RazorLearningTests that has a ProjectReference to
-    // ./submodules/aspnetcore/src/Razor/Microsoft.AspNetCore.Razor.Language/src/Microsoft.AspNetCore.Razor.Language.csproj
-    //       dotnet restore src/submodules/aspnetcore/eng/tools/RepoTasks/RepoTasks.csproj
-    // var project = Directory("./src/submodules/aspnetcore/eng/tools/RepoTasks") + File("RepoTasks.csproj");
+    // ./src/submodules/razor-compiler/src/Microsoft.AspNetCore.Razor.Language/src/Microsoft.AspNetCore.Razor.Language.csproj
+    //       dotnet restore src/submodules/razor-compiler/eng/tools/RepoTasks/RepoTasks.csproj
+    // var project = Directory("./src/submodules/razor-compiler/eng/tools/RepoTasks") + File("RepoTasks.csproj");
     // DotNetCoreRestore(project);
 
     var settings = new DotNetCoreRestoreSettings
