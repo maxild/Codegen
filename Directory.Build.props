@@ -106,7 +106,7 @@
   -->
   <PropertyGroup>
     <!-- Do not query source control manager for any information when submodules have not been initialized. -->
-    <EnableSourceControlManagerQueries Condition="!Exists('src\submodules\Lofus\.git') or !Exists('src\submodules\aspnetcore\.git')">false</EnableSourceControlManagerQueries>
+    <EnableSourceControlManagerQueries Condition="!Exists('src\submodules\razor-compiler\src')">false</EnableSourceControlManagerQueries>
   </PropertyGroup>
 
 </Project>

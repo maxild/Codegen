@@ -84,15 +84,6 @@ Setup(context =>
                         .WithProperty("AssemblyVersion", parameters.VersionInfo.AssemblyVersion)
                         .WithProperty("FileVersion", parameters.VersionInfo.AssemblyFileVersion);
 
-    if (context.HasArgument("ReplacePackageReferences") && !string.IsNullOrEmpty(context.Argument<string>("ReplacePackageReferences"))) {
-        Information("MSBuild properties enhanced with:");
-        Information("  ReplacePackageReferences: {0}", context.Argument<string>("ReplacePackageReferences"));
-        msBuildSettings.WithProperty("ReplacePackageReferences", context.Argument<string>("ReplacePackageReferences"));
-    }
-    else {
-        Information("INFO: ReplacePackageReferences will take on its default value.");
-    }
-
     // Deterministic builds: normalize stored file paths
     if (parameters.IsRunningOnAppVeyor) {
         msBuildSettings = msBuildSettings.WithProperty("ContinuousIntegrationBuild", "true");

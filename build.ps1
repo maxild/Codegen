@@ -32,8 +32,6 @@ Param(
   [string]$Configuration = "Release",
   [ValidateSet("Quiet", "Minimal", "Normal", "Verbose", "Diagnostic")]
   [string]$Verbosity = "Verbose",
-  [ValidateSet("true", "false", "")]
-  [string]$ReplacePackageReferences = "",
   [string]$NuGetVersion = "latest",
   [Parameter(Position = 0, Mandatory = $false, ValueFromRemainingArguments = $true)]
   [string[]]$ScriptArgs
@@ -287,7 +285,6 @@ $Arguments = @{
   target                    = $Target;
   configuration             = $Configuration;
   verbosity                 = $Verbosity;
-  ReplacePackageReferences  = $ReplacePackageReferences;
 }.GetEnumerator() | ForEach-Object { if ("{0}" -f $_.value) { "--{0}=`"{1}`"" -f $_.key, $_.value } else {""} }
 
 Write-Host "Running build script..."
