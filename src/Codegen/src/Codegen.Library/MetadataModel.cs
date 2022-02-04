@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Codegen.Library.JsonConverters;
-using Newtonsoft.Json;
 
 namespace Codegen.Library
 {
@@ -15,54 +15,34 @@ namespace Codegen.Library
     /// and writing instances to disk --- only the dynamically invoked C#
     /// expressions and Razor templates will know the type of each record at runtime.
     /// </summary>
+    [JsonConverter(typeof(MetadataModelConverter))]
     public abstract class MetadataModel : IEquatable<MetadataModel>
     {
+        private static readonly JsonSerializerOptions s_writeOptions = new()
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = true
+        };
+
         public static string Serialize(MetadataModel metadataModel)
         {
-            //return JsonConvert.SerializeObject(metadataModel, new JsonSerializerSettings
-            //{
-            //    Formatting = Formatting.Indented,
-            //    Converters = {new MetadataModelConverter()}
-            //});
-
-            // Full control of indentation
-            var sb = new StringBuilder();
-            using (var sw = new StringWriter(sb))
-            using (var jtw = new JsonTextWriter(sw)
-            {
-                Formatting = Formatting.Indented,
-                Indentation = 2,
-                IndentChar = ' ',
-            })
-            {
-                new JsonSerializer { Converters = { new MetadataModelConverter() } }.Serialize(jtw, metadataModel);
-            }
-            return sb.ToString();
+            return JsonSerializer.Serialize(metadataModel, s_writeOptions);
         }
 
         public static MetadataModel Deserialize(string json)
         {
-            return JsonConvert.DeserializeObject<MetadataModel>(json, new JsonSerializerSettings
-            {
-                Converters = { new MetadataModelConverter() }
-            });
+            return JsonSerializer.Deserialize<MetadataModel>(json)!;
         }
 
         public static MetadataModel<TRecord> Deserialize<TRecord>(string json)
         {
-            return JsonConvert.DeserializeObject<MetadataModel<TRecord>>(json, new JsonSerializerSettings
-            {
-                Converters = { new MetadataModelConverter() }
-            });
+            return JsonSerializer.Deserialize<MetadataModel<TRecord>>(json)!;
         }
 
         public static object Deserialize(string json, Type recordType)
         {
             Type modelType = typeof(MetadataModel<>).MakeGenericType(recordType);
-            return JsonConvert.DeserializeObject(json, modelType, new JsonSerializerSettings
-            {
-                Converters = { new MetadataModelConverter() }
-            });
+            return JsonSerializer.Deserialize(json, modelType)!;
         }
 
         /// <summary>
@@ -97,6 +77,7 @@ namespace Codegen.Library
             {
                 throw new ArgumentException($"The {recordTypeName} type cannot be found.", nameof(recordTypeName));
             }
+
             Type t = typeof(MetadataModel<>).MakeGenericType(rt);
             return (MetadataModel)Activator.CreateInstance(t,
                 toolVersion,
@@ -166,7 +147,8 @@ namespace Codegen.Library
             DomusIdentifierPrefix = domusIdentifierPrefix;
             SqlText = sqlText ?? throw new ArgumentNullException(nameof(sqlText));
             RecordTypeName = recordTypeName ?? throw new ArgumentNullException(nameof(recordTypeName));
-            Records = records ?? throw new ArgumentNullException(nameof(records)); // TODO: ?? Enumerable.Empty<object>();
+            Records = records ??
+                      throw new ArgumentNullException(nameof(records)); // TODO: ?? Enumerable.Empty<object>();
         }
 
         public MetadataModel WithToolVersion(string version)
@@ -202,7 +184,8 @@ namespace Codegen.Library
         /// <summary>
         /// The <see cref="Type"/> of each record.
         /// </summary>
-        public Type RecordType => Type.GetType(RecordTypeName) ?? throw new InvalidOperationException($"The {RecordTypeName} type cannot be found.");
+        public Type RecordType => Type.GetType(RecordTypeName) ??
+                                  throw new InvalidOperationException($"The {RecordTypeName} type cannot be found.");
 
         public IReadOnlyList<object> Records { get; }
 
@@ -285,6 +268,7 @@ namespace Codegen.Library
     /// when the type of records are known --- this is the case in Razor template
     /// files where the @inherits directive will reference this model type.
     /// </summary>
+    [JsonConverter(typeof(MetadataModelConverter))]
     public class MetadataModel<TRecord> : MetadataModel, IEquatable<MetadataModel<TRecord>>
     {
         /// <summary>
@@ -313,12 +297,15 @@ namespace Codegen.Library
             string sqlText,
             string recordTypeName,
             IReadOnlyList<object> records)
-            : base(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix, domusIdentifierPrefix, sqlText, recordTypeName, records)
+            : base(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix,
+                domusIdentifierPrefix, sqlText, recordTypeName, records)
         {
         }
 
         private IReadOnlyList<TRecord>? _records;
-        public new IReadOnlyList<TRecord> Records => _records ??= new Wrapper<TRecord>(base.Records); // NOTE: det er det eneste vigtige!!!!!
+
+        public new IReadOnlyList<TRecord> Records =>
+            _records ??= new Wrapper<TRecord>(base.Records); // NOTE: det er det eneste vigtige!!!!!
 
         private class Wrapper<T> : IReadOnlyList<T>
         {

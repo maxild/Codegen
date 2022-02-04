@@ -1,94 +1,55 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Codegen.Library.JsonConverters
 {
-    public class MetadataModelConverter : JsonConverter
+    public class MetadataModelConverter : JsonConverter<MetadataModel>
     {
-        public override bool CanConvert(Type objectType)
+        public override void Write(Utf8JsonWriter writer, MetadataModel value, JsonSerializerOptions options)
         {
-            if (objectType.IsGenericType)
-            {
-                var genType = objectType.GetGenericTypeDefinition();
-                return typeof(MetadataModel<>).IsAssignableFrom(genType);
-            }
-            return typeof(MetadataModel).IsAssignableFrom(objectType);
+            writer.WriteStartObject();
+
+            writer.WriteString(nameof(MetadataModel.ToolVersion), value.ToolVersion);
+
+            writer.WriteString(nameof(MetadataModel.QueryName), value.QueryName);
+
+            writer.WriteString(nameof(MetadataModel.TemplateName), value.TemplateName);
+
+            writer.WriteString(nameof(MetadataModel.Namespace), value.Namespace);
+
+            writer.WriteString(nameof(MetadataModel.TypeName), value.TypeName);
+
+            writer.WriteString(nameof(MetadataModel.XmlDoc), value.XmlDoc);
+
+            if (!string.IsNullOrEmpty(value.IdentifierPrefix))
+                writer.WriteString(nameof(MetadataModel.IdentifierPrefix), value.IdentifierPrefix);
+
+            if (!string.IsNullOrEmpty(value.DomusIdentifierPrefix))
+                writer.WriteString(nameof(MetadataModel.DomusIdentifierPrefix), value.DomusIdentifierPrefix);
+
+            writer.WriteString(nameof(MetadataModel.SqlText), value.SqlText);
+
+            writer.WriteString(nameof(MetadataModel.RecordTypeName), value.RecordTypeName);
+
+            // Records
+            writer.WritePropertyName(nameof(MetadataModel.Records));
+            writer.WriteStartArray();
+            foreach (object record in value.Records)
+                JsonSerializer.Serialize(writer, record, options);
+            writer.WriteEndArray();
+
+            writer.WriteEndObject();
         }
 
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        public override MetadataModel Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions options)
         {
-            if (value is null)
-            {
-                writer.WriteNull();
-            }
-            else if (value is MetadataModel model)
-            {
-                writer.WriteStartObject();
-
-                writer.WritePropertyName(nameof(MetadataModel.ToolVersion));
-                writer.WriteValue(model.ToolVersion);
-
-                writer.WritePropertyName(nameof(MetadataModel.QueryName));
-                writer.WriteValue(model.QueryName);
-
-                writer.WritePropertyName(nameof(MetadataModel.TemplateName));
-                writer.WriteValue(model.TemplateName);
-
-                writer.WritePropertyName(nameof(MetadataModel.Namespace));
-                writer.WriteValue(model.Namespace);
-
-                writer.WritePropertyName(nameof(MetadataModel.TypeName));
-                writer.WriteValue(model.TypeName);
-
-                writer.WritePropertyName(nameof(MetadataModel.XmlDoc));
-                writer.WriteValue(model.XmlDoc);
-
-                if (!string.IsNullOrEmpty(model.IdentifierPrefix))
-                {
-                    writer.WritePropertyName(nameof(MetadataModel.IdentifierPrefix));
-                    writer.WriteValue(model.IdentifierPrefix);
-                }
-
-                if (!string.IsNullOrEmpty(model.DomusIdentifierPrefix))
-                {
-                    writer.WritePropertyName(nameof(MetadataModel.DomusIdentifierPrefix));
-                    writer.WriteValue(model.DomusIdentifierPrefix);
-                }
-
-                writer.WritePropertyName(nameof(MetadataModel.SqlText));
-                writer.WriteValue(model.SqlText);
-
-                writer.WritePropertyName(nameof(MetadataModel.RecordTypeName));
-                writer.WriteValue(model.RecordTypeName);
-
-                // Records
-                writer.WritePropertyName(nameof(MetadataModel.Records));
-                writer.WriteStartArray();
-                foreach (object record in model.Records)
-                {
-                    // TODO: Full control of ordering of record fields/props
-                    serializer.Serialize(writer, record); // TODO: recordType here and above
-                }
-                writer.WriteEndArray();
-
-                writer.WriteEndObject();
-            }
-            else
-            {
-                throw new JsonSerializationException($"Expected {typeof(MetadataModel).FullName} object value.");
-            }
-        }
-
-        public override object? ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
+            if (reader.TokenType != JsonTokenType.StartObject)
+                throw new InvalidOperationException("Expected StartObject token type.");
 
             string? toolVersion = null,
                 queryName = null,
@@ -99,110 +60,87 @@ namespace Codegen.Library.JsonConverters
                 identifierPrefix = null,
                 domusIdentifierPrefix = null,
                 sqlText = null,
-                recordType = null;
-            List<object>? records = null;
+                recordTypeName = null;
+            IReadOnlyList<object>? records = null;
 
-            _ = reader.ReadStartObject();
-
-            while (reader.ReadPropertyName(out string? propertyName))
+            while (true)
             {
+                // Read PropertyName or EndObject.
+                reader.Read();
+
+                JsonTokenType tokenType = reader.TokenType;
+
+                if (tokenType == JsonTokenType.EndObject)
+                    break;
+
+                // Read method would have thrown if otherwise.
+                Debug.Assert(tokenType == JsonTokenType.PropertyName);
+
+                string propertyName = reader.GetString()!;
+
+                // Read the property value
+                reader.Read();
+
                 switch (propertyName)
                 {
                     case nameof(MetadataModel.ToolVersion):
-                        toolVersion = reader.ReadPropertyValue<string>(serializer);
+                        toolVersion = reader.GetString();
                         continue;
                     case nameof(MetadataModel.QueryName):
-                        queryName = reader.ReadPropertyValue<string>(serializer);
+                        queryName = reader.GetString();
                         continue;
                     case nameof(MetadataModel.TemplateName):
-                        templateName = reader.ReadPropertyValue<string>(serializer);
+                        templateName = reader.GetString();
                         continue;
                     case nameof(MetadataModel.Namespace):
-                        @namespace = reader.ReadPropertyValue<string>(serializer);
+                        @namespace = reader.GetString();
                         continue;
                     case nameof(MetadataModel.TypeName):
-                        typeName = reader.ReadPropertyValue<string>(serializer);
+                        typeName = reader.GetString();
                         continue;
                     case nameof(MetadataModel.XmlDoc):
-                        xmlDoc = reader.ReadPropertyValue<string>(serializer);
+                        xmlDoc = reader.GetString();
                         continue;
                     case nameof(MetadataModel.IdentifierPrefix):
-                        identifierPrefix = reader.ReadPropertyValue<string>(serializer);
+                        identifierPrefix = reader.GetString();
                         continue;
                     case nameof(MetadataModel.DomusIdentifierPrefix):
-                        domusIdentifierPrefix = reader.ReadPropertyValue<string>(serializer);
+                        domusIdentifierPrefix = reader.GetString();
                         continue;
                     case nameof(MetadataModel.SqlText):
-                        sqlText = reader.ReadPropertyValue<string>(serializer);
+                        sqlText = reader.GetString();
                         continue;
                     case nameof(MetadataModel.RecordTypeName):
-                        recordType = reader.ReadPropertyValue<string>(serializer);
+                        recordTypeName = reader.GetString();
                         continue;
                     case nameof(MetadataModel.Records):
+                        if (recordTypeName is null)
+                            throw new InvalidOperationException($"{nameof(MetadataModel.RecordTypeName)} is missing.");
+                        Type? recordType = Type.GetType(recordTypeName);
                         if (recordType is null)
-                        {
-                            throw new InvalidOperationException($"{nameof(MetadataModel.RecordTypeName)} is missing");
-                        }
-                        records = reader.ReadListOfRecords(serializer, Type.GetType(recordType) ?? throw new InvalidOperationException($"The {recordType} type cannot be found."));
+                            throw new InvalidOperationException($"The record type '{recordTypeName}' in the metadata cannot be found.");
+                        Type listOfRecordsType = typeof(List<>).MakeGenericType(recordType);
+                        object listOfRecords = JsonSerializer.Deserialize(ref reader, listOfRecordsType, options)!;
+                        records = ((IEnumerable)listOfRecords).Cast<object>().ToList();
                         continue;
                     default:
-                        throw new InvalidOperationException($"The '{propertyName}' property could not be deserialized.");
+                        throw new InvalidOperationException(
+                            $"The '{propertyName}' property could not be deserialized.");
                 }
             }
-
-            _ = reader.ReadEndObject();
 
             return MetadataModel.Create(
                 toolVersion: toolVersion ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.ToolVersion)} property."),
                 queryName: queryName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.QueryName)} property."),
                 templateName: templateName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.TemplateName)} property."),
-                @namespace: @namespace ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.Namespace)} property."),
+                @namespace: @namespace ?? throw new InvalidOperationException($"Mi ssing {nameof(MetadataModel.Namespace)} property."),
                 typeName: typeName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.TypeName)} property."),
                 xmlDoc: xmlDoc ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.XmlDoc)} property."),
                 identifierPrefix: identifierPrefix ?? string.Empty,
                 domusIdentifierPrefix: domusIdentifierPrefix ?? string.Empty,
                 sqlText: sqlText ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.SqlText)} property."),
-                recordTypeName: recordType ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.RecordTypeName)} property."),
+                recordTypeName: recordTypeName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.RecordTypeName)} property."),
                 records: records ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.Records)} property."));
-        }
-    }
-
-    internal static class JsonReaderExtensions
-    {
-        public static bool ReadStartObject(this JsonReader reader)
-        {
-            return reader.TokenType == JsonToken.StartObject && reader.Read();
-        }
-
-        public static bool ReadEndObject(this JsonReader reader)
-        {
-            return reader.TokenType == JsonToken.EndObject && reader.Read();
-        }
-
-        public static bool ReadPropertyName(this JsonReader reader, [NotNullWhen(true)] out string? property)
-        {
-            if (reader.TokenType == JsonToken.PropertyName)
-            {
-                property = (string)reader.Value;
-                return reader.Read();
-            }
-            property = null;
-            return false;
-        }
-
-        public static T ReadPropertyValue<T>(this JsonReader reader, JsonSerializer serializer)
-        {
-            T value = reader.Value is T variable ? variable : serializer.Deserialize<T>(reader);
-            _ = reader.Read();
-            return value;
-        }
-
-        public static List<object> ReadListOfRecords(this JsonReader reader, JsonSerializer serializer, Type recordType)
-        {
-            object listOfRecords = serializer.Deserialize(reader, typeof(List<>).MakeGenericType(recordType));
-            _ = reader.Read();
-            var records = ((IEnumerable)listOfRecords).Cast<object>().ToList();
-            return records;
         }
     }
 }

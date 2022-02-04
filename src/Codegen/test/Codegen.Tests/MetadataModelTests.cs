@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Codegen.Library;
 using Shouldly;
 using Xunit;
@@ -10,11 +11,12 @@ namespace Codegen.Tests
     public class MetadataModelTests
     {
 #pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
-        private struct RecordTuple : IEquatable<RecordTuple>
+        private readonly struct RecordTuple : IEquatable<RecordTuple>
 #pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
         {
-            public string Key;
-            public string Value;
+            public string Key { get; init; }
+
+            public string Value { get; init; }
 
 #pragma warning disable 659
             public override bool Equals(object? obj)
@@ -152,30 +154,27 @@ namespace Codegen.Tests
             var json1 = MetadataModel.Serialize(model1);
             var json2 = MetadataModel.Serialize(model2);
 
-            string expectedJson = string.Join(Environment.NewLine, new[]
-            {
-                "{",
-                @"  ""ToolVersion"": ""0.1.0"",",
-                @"  ""QueryName"": ""betalingstype"",",
-                @"  ""TemplateName"": ""dataenum"",",
-                @"  ""Namespace"": ""Brf.Domus.Models"",",
-                @"  ""TypeName"": ""Betalingstype"",",
-                @"  ""XmlDoc"": ""Betalingstype er en type fra Domus."",",
-                @"  ""DomusIdentifierPrefix"": ""B"",",
-                @"  ""SqlText"": ""SELECT * FROM SOME_TABLE"",",
-                @"  ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",",
-                @"  ""Records"": [",
-                @"    {",
-                @"      ""Key"": ""key1"",",
-                @"      ""Value"": ""value1""",
-                @"    },",
-                @"    {",
-                @"      ""Key"": ""key2"",",
-                @"      ""Value"": ""value2""",
-                @"    }",
-                "  ]",
-                "}"
-            });
+            string expectedJson = @"{
+                                    |  ""ToolVersion"": ""0.1.0"",
+                                    |  ""QueryName"": ""betalingstype"",
+                                    |  ""TemplateName"": ""dataenum"",
+                                    |  ""Namespace"": ""Brf.Domus.Models"",
+                                    |  ""TypeName"": ""Betalingstype"",
+                                    |  ""XmlDoc"": ""Betalingstype er en type fra Domus."",
+                                    |  ""DomusIdentifierPrefix"": ""B"",
+                                    |  ""SqlText"": ""SELECT * FROM SOME_TABLE"",
+                                    |  ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",
+                                    |  ""Records"": [
+                                    |    {
+                                    |      ""Key"": ""key1"",
+                                    |      ""Value"": ""value1""
+                                    |    },
+                                    |    {
+                                    |      ""Key"": ""key2"",
+                                    |      ""Value"": ""value2""
+                                    |    }
+                                    |  ]
+                                    |}".ToMultiline();
             json1.ShouldBe(expectedJson);
             json2.ShouldBe(expectedJson);
         }
@@ -184,26 +183,27 @@ namespace Codegen.Tests
         public void Deserialize()
         {
             string json = @"{
-  ""ToolVersion"": ""0.1.0"",
-  ""QueryName"": ""betalingstype"",
-  ""TemplateName"": ""dataenum"",
-  ""Namespace"": ""Brf.Domus.Models"",
-  ""TypeName"": ""Betalingstype"",
-  ""XmlDoc"": ""Betalingstype er en type fra Domus."",
-  ""IdentifierPrefix"": """",
-  ""SqlText"": ""SELECT * FROM SOME_TABLE"",
-  ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",
-  ""Records"": [
-    {
-      ""Key"": ""key1"",
-      ""Value"": ""value1""
-    },
-    {
-      ""Key"": ""key2"",
-      ""Value"": ""value2""
-    }
-  ]
-}";
+                           |  ""ToolVersion"": ""0.1.0"",
+                           |  ""QueryName"": ""betalingstype"",
+                           |  ""TemplateName"": ""dataenum"",
+                           |  ""Namespace"": ""Brf.Domus.Models"",
+                           |  ""TypeName"": ""Betalingstype"",
+                           |  ""XmlDoc"": ""Betalingstype er en type fra Domus."",
+                           |  ""DomusIdentifierPrefix"": ""B"",
+                           |  ""SqlText"": ""SELECT * FROM SOME_TABLE"",
+                           |  ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",
+                           |  ""Records"": [
+                           |    {
+                           |      ""Key"": ""key1"",
+                           |      ""Value"": ""value1""
+                           |    },
+                           |    {
+                           |      ""Key"": ""key2"",
+                           |      ""Value"": ""value2""
+                           |    }
+                           |  ]
+                           |}".ToMultiline();
+
             MetadataModel model1 = MetadataModel.Deserialize(json);
             MetadataModel<RecordTuple> model2 = MetadataModel.Deserialize<RecordTuple>(json);
             MetadataModel<RecordTuple> model3 = (MetadataModel<RecordTuple>)MetadataModel.Deserialize(json, typeof(RecordTuple));
@@ -254,6 +254,113 @@ namespace Codegen.Tests
             MetadataModel<RecordTuple> copyOfModel = MetadataModel.Deserialize<RecordTuple>(json);
 
             copyOfModel.ShouldBe(model);
+        }
+    }
+
+    public enum NewlineKind
+    {
+        /// <summary>
+        /// Environment.Newline
+        /// </summary>
+        Platform,
+        /// <summary>
+        /// {'\r','\n'}
+        /// </summary>
+        Windows,
+        /// <summary>
+        /// '\n'
+        /// </summary>
+        Linux
+    }
+
+    public static class StringExtensions
+    {
+        // How do we escape the | character in the string? We don't need to, because...
+        // After newlines (any kind), | must be the first non-whitespace character, and following | characters
+        // are not ignored, and doesn't have to be escaped.
+        // The first non-whitespace character | is an invisible (zero-width, non-breaking) character,
+        // that is removed from the resulting string. It is only a start of line marker.
+        // Newlines must be normalized to System.Newline matching the newlines of the platform.
+        // NewlineKind is optional.
+        //
+        // public string json = $@"{{
+        //                        |  "FirstName": "Carole",
+        //                        |  "Age": {{carole.Age}},
+        //                        |  "Children": [
+        //                        |    "Kurt",
+        //                        |    "Ann"
+        //                        |  ]
+        //                        |}}".ToMultiline();
+        //
+        // PROBLEM: In a verbatim string literal, the characters between the delimiters are interpreted verbatim,
+        // the only exception being a quote_escape_sequence. Therefore line endings are defined by the source file.
+        // Running on Windows GIT will use \r\n, running on Linux, GIT will use \n.
+        public static string ToMultiline(this string s, NewlineKind kind = NewlineKind.Platform)
+        {
+            string newline = kind switch
+            {
+                NewlineKind.Platform => Environment.NewLine,
+                NewlineKind.Windows => "\r\n",
+                NewlineKind.Linux => "\n",
+                _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown newline kind.")
+            };
+
+            var sb = new StringBuilder();
+
+            string[] lines = s.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+            int lineNo = 0;
+            int? constIndent = null;
+
+            foreach (ReadOnlySpan<char> line in lines)
+            {
+                // last line should not have newline
+                if (lineNo > 0)
+                    sb.Append(newline);
+
+                // count all leading whitespace
+                int indent = 0;
+                while (indent < line.Length && char.IsWhiteSpace(line[indent])) indent += 1;
+
+                if (indent > 0)
+                {
+                    // constant indent
+                    if (constIndent != null)
+                    {
+                        if (indent != constIndent)
+                        {
+                            throw new FormatException(
+                                "The multiline string does not have a constant indent -- adjust the indent such that all the | characters align.");
+                        }
+                    }
+                    else
+                    {
+                        constIndent = indent;
+                    }
+
+                    // first non-whitespace character must be |
+                    if (indent >= line.Length || line[indent] != '|')
+                        throw new FormatException("All indented lines must begin with the '|' character.");
+
+                    sb.Append(line[(indent + 1)..]);
+                }
+                else
+                {
+                    // only first line can be unindented
+                    if (lineNo > 0)
+                    {
+                        throw new FormatException(
+                            "All lines except the first line must be indented -- indent the following lines and align the beginning | character with the \" of the first line.");
+                    }
+
+                    if (line.Length > 0)
+                        sb.Append(line);
+                }
+
+                lineNo += 1;
+            }
+
+            return sb.ToString();
         }
     }
 }
