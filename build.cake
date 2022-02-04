@@ -146,7 +146,6 @@ Task("Restore")
     var settings = new DotNetCoreRestoreSettings
     {
         Verbosity = DotNetCoreVerbosity.Minimal,
-        MSBuildSettings = msBuildSettings
     };
     if (parameters.IsLocalBuild)
     {
