@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -11,17 +10,6 @@ namespace Codegen.Library.JsonConverters
 {
     public class MetadataModelConverter : JsonConverter<MetadataModel>
     {
-        public override bool CanConvert(Type objectType)
-        {
-            if (objectType.IsGenericType)
-            {
-                var genType = objectType.GetGenericTypeDefinition();
-                return typeof(MetadataModel<>).IsAssignableFrom(genType);
-            }
-
-            return typeof(MetadataModel).IsAssignableFrom(objectType);
-        }
-
         public override void Write(Utf8JsonWriter writer, MetadataModel value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
@@ -127,10 +115,10 @@ namespace Codegen.Library.JsonConverters
                         continue;
                     case nameof(MetadataModel.Records):
                         if (recordTypeName is null)
-                            throw new InvalidOperationException($"{nameof(MetadataModel.RecordTypeName)} is missing");
+                            throw new InvalidOperationException($"{nameof(MetadataModel.RecordTypeName)} is missing.");
                         Type? recordType = Type.GetType(recordTypeName);
                         if (recordType is null)
-                            throw new InvalidComObjectException();
+                            throw new InvalidOperationException($"The record type '{recordTypeName}' in the metadata cannot be found.");
                         Type listOfRecordsType = typeof(List<>).MakeGenericType(recordType);
                         object listOfRecords = JsonSerializer.Deserialize(ref reader, listOfRecordsType, options)!;
                         records = ((IEnumerable)listOfRecords).Cast<object>().ToList();
