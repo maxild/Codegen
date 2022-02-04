@@ -10,6 +10,18 @@ namespace Codegen.Library.JsonConverters
 {
     public class MetadataModelConverter : JsonConverter<MetadataModel>
     {
+        // Because this converter can convert both MetadataModel and MetadataModel<TModel> we need to override CanConvert
+        public override bool CanConvert(Type objectType)
+        {
+            if (objectType.IsGenericType)
+            {
+                var genType = objectType.GetGenericTypeDefinition();
+                return typeof(MetadataModel<>).IsAssignableFrom(genType);
+            }
+
+            return typeof(MetadataModel).IsAssignableFrom(objectType);
+        }
+
         public override void Write(Utf8JsonWriter writer, MetadataModel value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
