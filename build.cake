@@ -44,7 +44,9 @@ Setup(context =>
 
         // Encryption is not supported on non-Windows platforms...
         string encryption = string.Empty;
-        if (!parameters.IsRunningOnWindows)
+        // FIXME: Remove uncommented platform/os check when SDK 6.0.202 is released and pinned
+        // See also https://github.com/dotnet/sdk/issues/23498#issuecomment-1068129131
+        // if (!parameters.IsRunningOnWindows)
         {
             // ...use a clear text password as a workaround.
             encryption = " --store-password-in-clear-text";
