@@ -71,42 +71,4 @@
     </When>
   </Choose>
 
-  <!--
-    Fix:
-      warning : Could not find file '/home/maxfire/repos/github.com/maxild/DomusSlet/src/submodules/aspnetcore/.git'.
-      The source code won't be available via Source Link.
-
-    If a repository has submodules the following requirements must be fulfilled:
-
-    1. the file .gitmodules must be present in the repository root and must list the relative
-    paths of all submodules:
-
-      [submodule "submodule-name"]
-      path = submodule-path
-
-    2. The .git/config file must contain URLs of all initialized submodules:
-
-      [submodule "submodule-name"]
-      url = https://server.com/subrepo
-
-    3. The following additional files and directories must be present for each submodule:
-
-        - .git/modules/src/submodules/Lofus/HEAD      (text file containing a commit SHA of the submodule)
-        - .git/modules/src/submodules/aspnetcore/HEAD (text file containing a commit SHA of the submodule)
-
-        - src/submodules/Lofus/.git       (text file pointing to the submodule metadata, with the following contents: gitdir: ../../../.git/modules/src/submodules/Lofus)
-        - src/submodules/aspnetcore/.git  (text file pointing to the submodule metadata, with the following contents: gitdir: ../../../.git/modules/src/submodules/aspnetcore)
-
-    **IMPORTANT**: 2 and 3 are **NOT** fulfilled after (non-recursive) clone
-
-    See also https://github.com/dotnet/sourcelink/blob/main/docs/README.md#minimal-git-repository-metadata
-
-    **IDEA**
-    <EnableSourceControlManagerQueries>$(EnableSourceLink)</EnableSourceControlManagerQueries>
-  -->
-  <PropertyGroup>
-    <!-- Do not query source control manager for any information when submodules have not been initialized. -->
-    <EnableSourceControlManagerQueries Condition="!Exists('src\submodules\razor-compiler\src')">false</EnableSourceControlManagerQueries>
-  </PropertyGroup>
-
 </Project>

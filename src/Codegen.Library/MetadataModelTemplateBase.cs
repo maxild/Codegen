@@ -38,7 +38,7 @@ public abstract class MetadataModelTemplateBase<TRecord> : TemplateBase<Metadata
     public int GetValue(string key)
     {
         CheckPrefix(key);
-        int c = Model.DomusIdentifierPrefix.Length;
+        int c = Model.DatabaseIdentifierPrefix.Length;
         return c < key.Length
             ? int.Parse(key[c..])
             : throw new System.InvalidOperationException($"The database identifier '{key}' cannot be converted to an integer value.");
@@ -60,9 +60,9 @@ public abstract class MetadataModelTemplateBase<TRecord> : TemplateBase<Metadata
 
     private void CheckPrefix(string key)
     {
-        if (!string.IsNullOrEmpty(Model.DomusIdentifierPrefix) && !key.StartsWith(Model.DomusIdentifierPrefix, System.StringComparison.Ordinal))
+        if (!string.IsNullOrEmpty(Model.DatabaseIdentifierPrefix) && !key.StartsWith(Model.DatabaseIdentifierPrefix, System.StringComparison.Ordinal))
         {
-            throw new System.InvalidOperationException($"The database identifier '{key}' does not have prefix '{Model.DomusIdentifierPrefix}'.");
+            throw new System.InvalidOperationException($"The database identifier '{key}' does not have prefix '{Model.DatabaseIdentifierPrefix}'.");
         }
     }
 

@@ -55,7 +55,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
     /// <param name="typeName">The type name of the generated type.</param>
     /// <param name="xmlDoc">The xml-doc of the generated type.</param>
     /// <param name="identifierPrefix">The prefix added to the C# identifier.</param>
-    /// <param name="domusIdentifierPrefix">The prefix used by Domus.</param>
+    /// <param name="databaseIdentifierPrefix">The prefix used by the database.</param>
     /// <param name="sqlText">The SQL expression that have generated the records.</param>
     /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
     /// <param name="records">The list of records.</param>
@@ -67,7 +67,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         string typeName,
         string xmlDoc,
         string identifierPrefix,
-        string domusIdentifierPrefix,
+        string databaseIdentifierPrefix,
         string sqlText,
         string recordTypeName,
         IReadOnlyList<object> records)
@@ -87,7 +87,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
             typeName,
             xmlDoc,
             identifierPrefix,
-            domusIdentifierPrefix,
+            databaseIdentifierPrefix,
             sqlText,
             recordTypeName,
             records)!;
@@ -103,7 +103,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
     /// <param name="typeName">The type name of the generated type.</param>
     /// <param name="xmlDoc">The xml-doc of the generated type.</param>
     /// <param name="identifierPrefix">The prefix to be added on the C# identifiers.</param>
-    /// <param name="domusIdentifierPrefix">The prefix used by Domus.</param>
+    /// <param name="databaseIdentifierPrefix">The prefix used by the database.</param>
     /// <param name="sqlText">The SQL expression that have generated the records.</param>
     /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
     /// <param name="records">The list of records.</param>
@@ -115,13 +115,13 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         string typeName,
         string xmlDoc,
         string identifierPrefix,
-        string domusIdentifierPrefix,
+        string databaseIdentifierPrefix,
         string sqlText,
         string recordTypeName,
         IReadOnlyList<object> records)
     {
         return new(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix,
-            domusIdentifierPrefix, sqlText, recordTypeName, records);
+            databaseIdentifierPrefix, sqlText, recordTypeName, records);
     }
 
     protected MetadataModel(
@@ -132,7 +132,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         string typeName,
         string xmlDoc,
         string identifierPrefix,
-        string domusIdentifierPrefix,
+        string databaseIdentifierPrefix,
         string sqlText,
         string recordTypeName,
         IReadOnlyList<object> records)
@@ -144,7 +144,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
         XmlDoc = xmlDoc ?? throw new ArgumentNullException(nameof(xmlDoc));
         IdentifierPrefix = identifierPrefix;
-        DomusIdentifierPrefix = domusIdentifierPrefix;
+        DatabaseIdentifierPrefix = databaseIdentifierPrefix;
         SqlText = sqlText ?? throw new ArgumentNullException(nameof(sqlText));
         RecordTypeName = recordTypeName ?? throw new ArgumentNullException(nameof(recordTypeName));
         Records = records ?? throw new ArgumentNullException(nameof(records));
@@ -153,7 +153,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
     public MetadataModel WithToolVersion(string version)
     {
         return Create(version, QueryName, TemplateName, Namespace, TypeName, XmlDoc, IdentifierPrefix,
-            DomusIdentifierPrefix, SqlText, RecordTypeName, Records.ToList());
+            DatabaseIdentifierPrefix, SqlText, RecordTypeName, Records.ToList());
     }
 
     public string ToolVersion { get; }
@@ -170,7 +170,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
 
     public string IdentifierPrefix { get; }
 
-    public string DomusIdentifierPrefix { get; }
+    public string DatabaseIdentifierPrefix { get; }
 
     public string SqlText { get; }
 
@@ -279,7 +279,7 @@ public class MetadataModel<TRecord> : MetadataModel, IEquatable<MetadataModel<TR
     /// <param name="typeName">The type name of the generated type.</param>
     /// <param name="xmlDoc">The xml-doc of the generated type.</param>
     /// <param name="identifierPrefix">The prefix to be added on the C# identifier.</param>
-    /// <param name="domusIdentifierPrefix">The prefix used by Domus.</param>
+    /// <param name="databaseIdentifierPrefix">The prefix used by the database.</param>
     /// <param name="sqlText">The SQL expression that have generated the records.</param>
     /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
     /// <param name="records">The list of records.</param>
@@ -291,12 +291,12 @@ public class MetadataModel<TRecord> : MetadataModel, IEquatable<MetadataModel<TR
         string typeName,
         string xmlDoc,
         string identifierPrefix,
-        string domusIdentifierPrefix,
+        string databaseIdentifierPrefix,
         string sqlText,
         string recordTypeName,
         IReadOnlyList<object> records)
         : base(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix,
-            domusIdentifierPrefix, sqlText, recordTypeName, records)
+            databaseIdentifierPrefix, sqlText, recordTypeName, records)
     {
     }
 

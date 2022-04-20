@@ -10,7 +10,7 @@ artifacts/
 
 **/Properties/launchSettings.json
 
-# Add nuget.exe to GIT (because of firewall/proxy issues in BRFkredit/Jyske bank)
+# Add nuget.exe to GIT
 tools/*
 !tools/nuget.exe
 

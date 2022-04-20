@@ -105,12 +105,6 @@ Task("Restore")
     {
         Verbosity = DotNetCoreVerbosity.Minimal,
     };
-    if (parameters.IsLocalBuild)
-    {
-        // Unable to load the service index for source https://www.myget.org/F/brf/api/v3/index.json,
-        // or whatever. Give me a chance to store PAT in credential provider store.
-        settings.Interactive = true;
-    }
 
     DotNetCoreRestore(parameters.Paths.Files.Solution.FullPath, settings);
 });
@@ -126,13 +120,6 @@ Task("Build")
     // NOTE: Both /warnAsError and -warnAsError work
     var extraArgs = "-warnAsError";
 
-    // TODO: For some unknown reason IDE0055 (Fix formatting) shows up on appveyor,
-    //       when there are no IDE0055 warnigns/errors on gihub/local build ????
-    //       See https://github.com/maxild/Domus/issues/46
-    // TODO: For some unknown reason NETSDK1023 shows up when -p:ContinuousIntegrationBuild=true
-    //       on appveyor (not appveyor specific, but /property:ContinuousIntegrationBuild=true
-    //       is only added when building on appveyor (see above).
-    //       See https://github.com/maxild/Domus/issues/43
     // NOTE: NoWarn can only be used to disable built-in compiler/sdk warnings.
     // NOTE: Both /nowarn:IDE0055;NETSDK1023 and -nowarn:IDE0055;NETSDK1023 work
     if (parameters.IsRunningOnAppVeyor)
@@ -306,23 +293,23 @@ Task("Upload-AppVeyor-Release-Artifacts")
 //     publishingError = true;
 // });
 
-// Task("Create-Release-Notes")
-//     .Does(() =>
+Task("Create-Release-Notes")
+    .Does(() =>
 
-// {
-//     // This is both the title and tagName of the release (title can be edited on github.com)
-//     string milestone = Environment.GetEnvironmentVariable("GitHubMilestone") ??
-//                        parameters.VersionInfo.Milestone;
-//     Information("Creating draft release of version '{0}' on GitHub", milestone);
-//     GitReleaseManagerCreate(parameters.GitHub.GetRequiredToken(),
-//                             parameters.GitHub.RepositoryOwner, parameters.GitHub.RepositoryName,
-//         new GitReleaseManagerCreateSettings
-//         {
-//             Milestone         = milestone,
-//             Prerelease        = false,
-//             TargetCommitish   = "master"
-//         });
-// });
+{
+    // This is both the title and tagName of the release (title can be edited on github.com)
+    string milestone = Environment.GetEnvironmentVariable("GitHubMilestone") ??
+                       parameters.VersionInfo.Milestone;
+    Information("Creating draft release of version '{0}' on GitHub", milestone);
+    GitReleaseManagerCreate(parameters.GitHub.GetRequiredToken(),
+                            parameters.GitHub.RepositoryOwner, parameters.GitHub.RepositoryName,
+        new GitReleaseManagerCreateSettings
+        {
+            Milestone         = milestone,
+            Prerelease        = false,
+            TargetCommitish   = "master"
+        });
+});
 
 // Invoked on AppVeyor after draft release have been published on github.com
 // Task("Publish-GitHub-Release")
@@ -378,10 +365,9 @@ Task("Generate-CommonAssemblyInfo")
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Reflection.AssemblyCompany(""BRFkredit a/s"")]
-[assembly: System.Reflection.AssemblyCopyright(""Copyright BRFkredit a/s 2002-{System.DateTime.Now.Year}. All rights reserved."")]
+[assembly: System.Reflection.AssemblyCopyright(""Copyright Morten Maxild 2002-{System.DateTime.Now.Year}. All rights reserved."")]
 [assembly: System.Reflection.AssemblyProduct(""{parameters.ProjectName}"")]
-[assembly: System.Reflection.AssemblyDescription(""Domus -- A Library for .NET Framework and .NET Core"")]
+[assembly: System.Reflection.AssemblyDescription(""Codegen -- A Library for .NET Framework and .NET Core"")]
 
 [assembly: System.Reflection.AssemblyVersion(""{parameters.VersionInfo.AssemblyVersion}"")]
 [assembly: System.Reflection.AssemblyFileVersion(""{parameters.VersionInfo.AssemblyFileVersion}"")]

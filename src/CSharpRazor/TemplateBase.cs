@@ -63,7 +63,7 @@ public class TemplateBase
     // --------------------------
     // In order to be able to emit xml doc strings with embedded xml
     //    /// <summary>
-    //    /// Create a <see cref="@Model.TypeName"/> value from the Domus text representation.
+    //    /// Create a <see cref="@Model.TypeName"/> value from the database text representation.
     //    /// </summary>
     // We need to provide BeginWriteAttribute, WriteAttributeValue and EndWriteAttribute APIs,
     // because the RazorCompiler in aspnetcore 5 will emit
@@ -72,7 +72,7 @@ public class TemplateBase
     // BeginWriteAttribute("cref", " cref=\"", 1604, "\"", 1626, 1);
     // WriteAttributeValue("", 1611, Model.TypeName, 1611, 15, false);
     // EndWriteAttribute();
-    // WriteLiteral(@"/> value from the Domus text representation.
+    // WriteLiteral(@"/> value from the database text representation.
     // </summary>");
 
     private AttributeInfo _attributeInfo;

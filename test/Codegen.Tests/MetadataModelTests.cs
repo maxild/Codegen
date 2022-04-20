@@ -46,11 +46,11 @@ public class MetadataModelTests
             toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
-            @namespace: "Brf.Domus.Models",
+            @namespace: "Acme.Models",
             typeName: "Betalingstype",
-            xmlDoc: "Betalingstype er en type fra Domus",
+            xmlDoc: "Betalingstype er en type fra databasen",
             identifierPrefix: string.Empty,
-            domusIdentifierPrefix: "B",
+            databaseIdentifierPrefix: "B",
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(KeyValuePair<string, string>).AssemblyQualifiedName!,
             records);
@@ -73,11 +73,11 @@ public class MetadataModelTests
             toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
-            @namespace: "Brf.Domus.Models",
+            @namespace: "Acme.Models",
             typeName: "Betalingstype",
-            xmlDoc: "Betalingstype er en type fra Domus",
+            xmlDoc: "Betalingstype er en type fra databasen",
             identifierPrefix: string.Empty,
-            domusIdentifierPrefix: "B",
+            databaseIdentifierPrefix: "B",
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
             records);
@@ -100,11 +100,11 @@ public class MetadataModelTests
             toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
-            @namespace: "Brf.Domus.Models",
+            @namespace: "Acme.Models",
             typeName: "Betalingstype",
-            xmlDoc: "Betalingstype er en type fra Domus",
+            xmlDoc: "Betalingstype er en type fra databasen",
             identifierPrefix: string.Empty,
-            domusIdentifierPrefix: "B",
+            databaseIdentifierPrefix: "B",
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
             records);
@@ -127,11 +127,11 @@ public class MetadataModelTests
             toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
-            @namespace: "Brf.Domus.Models",
+            @namespace: "Acme.Models",
             typeName: "Betalingstype",
-            xmlDoc: "Betalingstype er en type fra Domus.",
+            xmlDoc: "Betalingstype er en type fra databasen.",
             identifierPrefix: string.Empty,
-            domusIdentifierPrefix: "B",
+            databaseIdentifierPrefix: "B",
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
             records);
@@ -140,11 +140,11 @@ public class MetadataModelTests
             toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
-            @namespace: "Brf.Domus.Models",
+            @namespace: "Acme.Models",
             typeName: "Betalingstype",
-            xmlDoc: "Betalingstype er en type fra Domus.",
+            xmlDoc: "Betalingstype er en type fra databasen.",
             identifierPrefix: string.Empty,
-            domusIdentifierPrefix: "B",
+            databaseIdentifierPrefix: "B",
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
             records);
@@ -156,10 +156,10 @@ public class MetadataModelTests
                                     |  ""ToolVersion"": ""0.1.0"",
                                     |  ""QueryName"": ""betalingstype"",
                                     |  ""TemplateName"": ""dataenum"",
-                                    |  ""Namespace"": ""Brf.Domus.Models"",
+                                    |  ""Namespace"": ""Acme.Models"",
                                     |  ""TypeName"": ""Betalingstype"",
-                                    |  ""XmlDoc"": ""Betalingstype er en type fra Domus."",
-                                    |  ""DomusIdentifierPrefix"": ""B"",
+                                    |  ""XmlDoc"": ""Betalingstype er en type fra databasen."",
+                                    |  ""DatabaseIdentifierPrefix"": ""B"",
                                     |  ""SqlText"": ""SELECT * FROM SOME_TABLE"",
                                     |  ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",
                                     |  ""Records"": [
@@ -184,10 +184,10 @@ public class MetadataModelTests
                            |  ""ToolVersion"": ""0.1.0"",
                            |  ""QueryName"": ""betalingstype"",
                            |  ""TemplateName"": ""dataenum"",
-                           |  ""Namespace"": ""Brf.Domus.Models"",
+                           |  ""Namespace"": ""Acme.Models"",
                            |  ""TypeName"": ""Betalingstype"",
-                           |  ""XmlDoc"": ""Betalingstype er en type fra Domus."",
-                           |  ""DomusIdentifierPrefix"": ""B"",
+                           |  ""XmlDoc"": ""Betalingstype er en type fra databasen."",
+                           |  ""DatabaseIdentifierPrefix"": ""B"",
                            |  ""SqlText"": ""SELECT * FROM SOME_TABLE"",
                            |  ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",
                            |  ""Records"": [
@@ -209,9 +209,9 @@ public class MetadataModelTests
         model1.ToolVersion.ShouldBe("0.1.0");
         model1.QueryName.ShouldBe("betalingstype");
         model1.TemplateName.ShouldBe("dataenum");
-        model1.Namespace.ShouldBe("Brf.Domus.Models");
+        model1.Namespace.ShouldBe("Acme.Models");
         model1.TypeName.ShouldBe("Betalingstype");
-        model1.XmlDoc.ShouldBe("Betalingstype er en type fra Domus.");
+        model1.XmlDoc.ShouldBe("Betalingstype er en type fra databasen.");
         model1.IdentifierPrefix.ShouldBeEmpty();
         model1.SqlText.ShouldBe("SELECT * FROM SOME_TABLE");
         model1.RecordTypeName.ShouldBe("Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
@@ -238,11 +238,11 @@ public class MetadataModelTests
             toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
-            @namespace: "Brf.Domus.Models",
+            @namespace: "Acme.Models",
             typeName: "Betalingstype",
-            xmlDoc: "Betalingstype er en type fra Domus",
+            xmlDoc: "Betalingstype er en type fra databasen",
             identifierPrefix: string.Empty,
-            domusIdentifierPrefix: "B",
+            databaseIdentifierPrefix: "B",
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
             records);

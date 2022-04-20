@@ -41,8 +41,8 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
         if (!string.IsNullOrEmpty(value.IdentifierPrefix))
             writer.WriteString(nameof(MetadataModel.IdentifierPrefix), value.IdentifierPrefix);
 
-        if (!string.IsNullOrEmpty(value.DomusIdentifierPrefix))
-            writer.WriteString(nameof(MetadataModel.DomusIdentifierPrefix), value.DomusIdentifierPrefix);
+        if (!string.IsNullOrEmpty(value.DatabaseIdentifierPrefix))
+            writer.WriteString(nameof(MetadataModel.DatabaseIdentifierPrefix), value.DatabaseIdentifierPrefix);
 
         writer.WriteString(nameof(MetadataModel.SqlText), value.SqlText);
 
@@ -70,7 +70,7 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
             typeName = null,
             xmlDoc = null,
             identifierPrefix = null,
-            domusIdentifierPrefix = null,
+            databaseIdentifierPrefix = null,
             sqlText = null,
             recordTypeName = null;
         IReadOnlyList<object>? records = null;
@@ -116,8 +116,8 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
                 case nameof(MetadataModel.IdentifierPrefix):
                     identifierPrefix = reader.GetString();
                     continue;
-                case nameof(MetadataModel.DomusIdentifierPrefix):
-                    domusIdentifierPrefix = reader.GetString();
+                case nameof(MetadataModel.DatabaseIdentifierPrefix):
+                    databaseIdentifierPrefix = reader.GetString();
                     continue;
                 case nameof(MetadataModel.SqlText):
                     sqlText = reader.GetString();
@@ -149,7 +149,7 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
             typeName: typeName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.TypeName)} property."),
             xmlDoc: xmlDoc ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.XmlDoc)} property."),
             identifierPrefix: identifierPrefix ?? string.Empty,
-            domusIdentifierPrefix: domusIdentifierPrefix ?? string.Empty,
+            databaseIdentifierPrefix: databaseIdentifierPrefix ?? string.Empty,
             sqlText: sqlText ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.SqlText)} property."),
             recordTypeName: recordTypeName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.RecordTypeName)} property."),
             records: records ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.Records)} property."));
