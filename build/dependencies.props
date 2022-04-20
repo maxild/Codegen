@@ -22,7 +22,7 @@
         <!-- JetBrains.Annotations -->
         <JetBrainsAnnotationsPackageVersion>2022.1.0</JetBrainsAnnotationsPackageVersion>
 
-        <!-- TODO: Use System.Commandline...It will be out of beta alongside .NET 6.(https://github.com/dotnet/BenchmarkDotNet/pull/1037#issuecomment-886736360) -->
+        <!-- FIXME: Use System.Commandline...It will be out of beta alongside .NET 6.(https://github.com/dotnet/BenchmarkDotNet/pull/1037#issuecomment-886736360) -->
         <!-- McMaster.Extensions.CommandLineUtils -->
         <McMasterExtensionsCommandLineUtilsPackageVersion>3.0.0</McMasterExtensionsCommandLineUtilsPackageVersion>
 
@@ -30,13 +30,11 @@
         <MicrosoftDataSqlClientPackageVersion>4.1.0</MicrosoftDataSqlClientPackageVersion>
 
         <!-- Razor: Microsoft.AspNetCore.Razor.Language -->
-        <MicrosoftAspNetCoreRazorLanguagePackageVersion>6.0.1</MicrosoftAspNetCoreRazorLanguagePackageVersion>
+        <MicrosoftAspNetCoreRazorLanguagePackageVersion>6.0.4</MicrosoftAspNetCoreRazorLanguagePackageVersion>
 
-        <!-- TODO: The 2 packages have one common version -->
-        <!-- Roslyn: Microsoft.CodeAnalysis.CSharp -->
-        <MicrosoftCodeAnalysisCSharpPackageVersion>4.0.1</MicrosoftCodeAnalysisCSharpPackageVersion>
-        <!-- Roslyn: Microsoft.CodeAnalysis.CSharp.Scripting -->
-        <MicrosoftCodeAnalysisCSharpScriptingPackageVersion>4.0.1</MicrosoftCodeAnalysisCSharpScriptingPackageVersion>
+        <!-- Roslyn: Microsoft.CodeAnalysis.CSharp and Microsoft.CodeAnalysis.CSharp.Scripting -->
+        <MicrosoftCodeAnalysisCSharpPackageVersion>4.1.0</MicrosoftCodeAnalysisCSharpPackageVersion>
+        <MicrosoftCodeAnalysisCSharpScriptingPackageVersion>4.1.0</MicrosoftCodeAnalysisCSharpScriptingPackageVersion>
 
         <!-- Microsoft.Extensions.DependencyModel: reading deps.json files on .NET Core -->
         <MicrosoftExtensionsDependencyModelPackageVersion>6.0.0</MicrosoftExtensionsDependencyModelPackageVersion>
