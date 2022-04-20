@@ -1,0 +1,26 @@
+<Project>
+
+  <!-- When searching for a Directory.Build.props file, MSBuild walks the directory structure upwards from your project location  -->
+  <Import Project="..\Directory.Build.props" />
+
+  <PropertyGroup>
+    <IsTestProject>true</IsTestProject>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNETTestSdkPackageVersion)" />
+    <PackageReference Include="xunit" Version="$(XUnitPackageVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XUnitRunnerVisualStudioPackageVersion)">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <!-- <PackageReference Include="coverlet.collector" Version="$(CoverletCollectorPackageVersion)">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference> -->
+    <PackageReference Include="Shouldly" Version="$(ShouldlyPackageVersion)" />
+  </ItemGroup>
+
+</Project>

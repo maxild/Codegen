@@ -1,6 +1,6 @@
 <Project>
 
-  <Import Project="eng\dependencies.props" />
+  <Import Project="build\dependencies.props" />
 
   <!-- Compiler properties -->
   <PropertyGroup>

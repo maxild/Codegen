@@ -1,0 +1,45 @@
+<Project>
+    <PropertyGroup Label="Package Reference dependencies">
+
+        <!-- Microsoft.NET.Test.Sdk -->
+        <MicrosoftNETTestSdkPackageVersion>17.1.0</MicrosoftNETTestSdkPackageVersion>
+
+        <!-- xunit -->
+        <XUnitPackageVersion>2.4.1</XUnitPackageVersion>
+
+        <!-- xunit.runner.visualstudio -->
+        <XUnitRunnerVisualStudioPackageVersion>2.4.3</XUnitRunnerVisualStudioPackageVersion>
+
+        <!-- coverlet.collector -->
+        <CoverletCollectorPackageVersion>3.1.2</CoverletCollectorPackageVersion>
+
+        <!-- Shouldly -->
+        <ShouldlyPackageVersion>4.0.3</ShouldlyPackageVersion>
+
+        <!-- SourceLink -->
+        <MicrosoftSourceLinkGitHubPackageVersion>1.1.1</MicrosoftSourceLinkGitHubPackageVersion>
+
+        <!-- JetBrains.Annotations -->
+        <JetBrainsAnnotationsPackageVersion>2022.1.0</JetBrainsAnnotationsPackageVersion>
+
+        <!-- TODO: Use System.Commandline...It will be out of beta alongside .NET 6.(https://github.com/dotnet/BenchmarkDotNet/pull/1037#issuecomment-886736360) -->
+        <!-- McMaster.Extensions.CommandLineUtils -->
+        <McMasterExtensionsCommandLineUtilsPackageVersion>3.0.0</McMasterExtensionsCommandLineUtilsPackageVersion>
+
+        <!-- Microsoft.Data.SqlClient -->
+        <MicrosoftDataSqlClientPackageVersion>4.1.0</MicrosoftDataSqlClientPackageVersion>
+
+        <!-- Razor: Microsoft.AspNetCore.Razor.Language -->
+        <MicrosoftAspNetCoreRazorLanguagePackageVersion>6.0.1</MicrosoftAspNetCoreRazorLanguagePackageVersion>
+
+        <!-- TODO: The 2 packages have one common version -->
+        <!-- Roslyn: Microsoft.CodeAnalysis.CSharp -->
+        <MicrosoftCodeAnalysisCSharpPackageVersion>4.0.1</MicrosoftCodeAnalysisCSharpPackageVersion>
+        <!-- Roslyn: Microsoft.CodeAnalysis.CSharp.Scripting -->
+        <MicrosoftCodeAnalysisCSharpScriptingPackageVersion>4.0.1</MicrosoftCodeAnalysisCSharpScriptingPackageVersion>
+
+        <!-- Microsoft.Extensions.DependencyModel: reading deps.json files on .NET Core -->
+        <MicrosoftExtensionsDependencyModelPackageVersion>6.0.0</MicrosoftExtensionsDependencyModelPackageVersion>
+
+    </PropertyGroup>
+</Project>

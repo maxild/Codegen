@@ -11,6 +11,7 @@ var parameters = CakeScripts.GetParameters(
     BuildSystem,        // BuildSystem alias
     new BuildSettings
     {
+        // TODO: Change repo and publish url
         MainRepositoryOwner = "maxild",
         RepositoryName = "Domus",
         DeployToCIFeedUrl = "https://www.myget.org/F/brf-ci/api/v2/package", // MyGet CI feed url
@@ -18,7 +19,7 @@ var parameters = CakeScripts.GetParameters(
     },
     new BuildPathSettings
     {
-        SolutionFileName = "Brf.sln"
+        SolutionFileName = "Codegen.sln"
     });
 bool publishingError = false;
 DotNetCoreMSBuildSettings msBuildSettings = null;
@@ -29,50 +30,6 @@ DotNetCoreMSBuildSettings msBuildSettings = null;
 
 Setup(context =>
 {
-    // We patch the local nuget.config in the repo root with the encrypted
-    // credentials in order to access private myget feed on appveyor
-    if (!parameters.IsLocalBuild) {
-        Information("Store credentials to private MyGet feed in local NuGet.config...");
-
-        // dotnet nuget add source <PACKAGE_SOURCE_PATH> [--name <SOURCE_NAME>] [--username <USER>]
-        //     [--password <PASSWORD>] [--store-password-in-clear-text]
-        //     [--valid-authentication-types <TYPES>] [--configfile <FILE>]
-
-        // dotnet nuget update source <NAME> [--source <SOURCE>] [--username <USER>]
-        //     [--password <PASSWORD>] [--store-password-in-clear-text]
-        //     [--valid-authentication-types <TYPES>] [--configfile <FILE>]
-
-        // Encryption is not supported on non-Windows platforms...
-        string encryption = string.Empty;
-        // FIXME: Remove uncommented platform/os check when SDK 6.0.202 is released and pinned
-        // See also https://github.com/dotnet/sdk/issues/23498#issuecomment-1068129131
-        // if (!parameters.IsRunningOnWindows)
-        {
-            // ...use a clear text password as a workaround.
-            encryption = " --store-password-in-clear-text";
-        }
-
-        // Use SafeCommand to avoid "Unable to find any package source(s) matching name: Brf."
-        parameters.GetTool("dotnet.exe", "dotnet")
-            .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4}{5}",
-                "Brf",
-                @"https://www.myget.org/F/brf/api/v3/index.json",
-                parameters.MyGet.UserName,
-                parameters.MyGet.GetRequiredPassword(),
-                "./NuGet.config",
-                encryption);
-
-        // Use SafeCommand to avoid "Unable to find any package source(s) matching name: BrfCi."
-        parameters.GetTool("dotnet.exe", "dotnet")
-            .SafeCommand("nuget update source {0} --source {1} --username {2} --password {3} --configfile {4}{5}",
-                "BrfCi",
-                @"https://www.myget.org/F/brf-ci/api/v3/index.json",
-                parameters.MyGet.UserName,
-                parameters.MyGet.GetRequiredPassword(),
-                "./NuGet.config",
-                encryption);
-    }
-
     if (parameters.Git.IsMasterBranch && context.Log.Verbosity != Verbosity.Diagnostic) {
         Information("Increasing verbosity to diagnostic.");
         context.Log.Verbosity = Verbosity.Diagnostic;
