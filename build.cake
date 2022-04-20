@@ -11,11 +11,10 @@ var parameters = CakeScripts.GetParameters(
     BuildSystem,        // BuildSystem alias
     new BuildSettings
     {
-        // TODO: Change repo and publish url
         MainRepositoryOwner = "maxild",
-        RepositoryName = "Domus",
-        DeployToCIFeedUrl = "https://www.myget.org/F/brf-ci/api/v2/package", // MyGet CI feed url
-        DeployToProdFeedUrl = "https://www.myget.org/F/brf/api/v2/package"   // MyGet feed url
+        RepositoryName = "Codegen",
+        DeployToCIFeedUrl = "https://www.myget.org/F/maxfire-ci/api/v2/package", // MyGet feed url
+        DeployToProdFeedUrl = "https://www.nuget.org/api/v2/package"             // NuGet.org feed url
     },
     new BuildPathSettings
     {
@@ -192,10 +191,6 @@ Task("Create-Packages")
     });
 });
 
-Task("Publish")
-    .IsDependentOn("Publish-CIFeed")
-    .IsDependentOn("Publish-ProdFeed");
-
 Task("Upload-AppVeyor-Artifacts")
     .IsDependentOn("Upload-AppVeyor-Debug-Artifacts")
     .IsDependentOn("Upload-AppVeyor-Release-Artifacts");
@@ -265,90 +260,94 @@ Task("Upload-AppVeyor-Release-Artifacts")
     }
 });
 
+// Task("Publish")
+//     .IsDependentOn("Publish-CIFeed")
+//     .IsDependentOn("Publish-ProdFeed");
+
 // Debug builds are published to MyGet CI feed
-Task("Publish-CIFeed")
-    .IsDependentOn("Package")
-    .WithCriteria(() => parameters.ConfigurationIsDebug)
-    .WithCriteria(() => parameters.ShouldDeployToCIFeed)
-    .Does(() =>
-{
-    foreach (var package in GetFiles(parameters.Paths.Directories.Artifacts + "/*.nupkg"))
-    {
-        DotNetCoreNuGetPush(package.FullPath, new DotNetCoreNuGetPushSettings {
-            Source = parameters.CIFeed.SourceUrl,
-            ApiKey = parameters.CIFeed.ApiKey
-        });
-    }
-})
-.OnError(exception =>
-{
-    Information("Publish-MyGet Task failed, but continuing with next Task...");
-    publishingError = true;
-});
+// Task("Publish-CIFeed")
+//     .IsDependentOn("Package")
+//     .WithCriteria(() => parameters.ConfigurationIsDebug)
+//     .WithCriteria(() => parameters.ShouldDeployToCIFeed)
+//     .Does(() =>
+// {
+//     foreach (var package in GetFiles(parameters.Paths.Directories.Artifacts + "/*.nupkg"))
+//     {
+//         DotNetCoreNuGetPush(package.FullPath, new DotNetCoreNuGetPushSettings {
+//             Source = parameters.CIFeed.SourceUrl,
+//             ApiKey = parameters.CIFeed.ApiKey
+//         });
+//     }
+// })
+// .OnError(exception =>
+// {
+//     Information("Publish-MyGet Task failed, but continuing with next Task...");
+//     publishingError = true;
+// });
 
 // Release builds are published to MyGet production feed
-Task("Publish-ProdFeed")
-    .IsDependentOn("Package")
-    .WithCriteria(() => parameters.ConfigurationIsRelease)
-    .WithCriteria(() => parameters.ShouldDeployToProdFeed)
-    .Does(() =>
-{
-    foreach (var package in GetFiles(parameters.Paths.Directories.Artifacts + "/*.nupkg"))
-    {
-        DotNetCoreNuGetPush(package.FullPath, new DotNetCoreNuGetPushSettings {
-            Source = parameters.ProdFeed.SourceUrl,
-            ApiKey = parameters.ProdFeed.ApiKey
-        });
-    }
-})
-.OnError(exception =>
-{
-    Information("Publish-ProdFeed task failed, but continuing with next task...");
-    publishingError = true;
-});
+// Task("Publish-ProdFeed")
+//     .IsDependentOn("Package")
+//     .WithCriteria(() => parameters.ConfigurationIsRelease)
+//     .WithCriteria(() => parameters.ShouldDeployToProdFeed)
+//     .Does(() =>
+// {
+//     foreach (var package in GetFiles(parameters.Paths.Directories.Artifacts + "/*.nupkg"))
+//     {
+//         DotNetCoreNuGetPush(package.FullPath, new DotNetCoreNuGetPushSettings {
+//             Source = parameters.ProdFeed.SourceUrl,
+//             ApiKey = parameters.ProdFeed.ApiKey
+//         });
+//     }
+// })
+// .OnError(exception =>
+// {
+//     Information("Publish-ProdFeed task failed, but continuing with next task...");
+//     publishingError = true;
+// });
 
-Task("Create-Release-Notes")
-    .Does(() =>
+// Task("Create-Release-Notes")
+//     .Does(() =>
 
-{
-    // This is both the title and tagName of the release (title can be edited on github.com)
-    string milestone = Environment.GetEnvironmentVariable("GitHubMilestone") ??
-                       parameters.VersionInfo.Milestone;
-    Information("Creating draft release of version '{0}' on GitHub", milestone);
-    GitReleaseManagerCreate(parameters.GitHub.GetRequiredToken(),
-                            parameters.GitHub.RepositoryOwner, parameters.GitHub.RepositoryName,
-        new GitReleaseManagerCreateSettings
-        {
-            Milestone         = milestone,
-            Prerelease        = false,
-            TargetCommitish   = "master"
-        });
-});
+// {
+//     // This is both the title and tagName of the release (title can be edited on github.com)
+//     string milestone = Environment.GetEnvironmentVariable("GitHubMilestone") ??
+//                        parameters.VersionInfo.Milestone;
+//     Information("Creating draft release of version '{0}' on GitHub", milestone);
+//     GitReleaseManagerCreate(parameters.GitHub.GetRequiredToken(),
+//                             parameters.GitHub.RepositoryOwner, parameters.GitHub.RepositoryName,
+//         new GitReleaseManagerCreateSettings
+//         {
+//             Milestone         = milestone,
+//             Prerelease        = false,
+//             TargetCommitish   = "master"
+//         });
+// });
 
 // Invoked on AppVeyor after draft release have been published on github.com
-Task("Publish-GitHub-Release")
-    .IsDependentOn("Package")
-    .WithCriteria(() => parameters.ShouldDeployToProdFeed)
-    .WithCriteria(() => parameters.ConfigurationIsRelease)
-    .Does(() =>
-{
-    foreach (var package in GetFiles(parameters.Paths.Directories.Artifacts + "/*.nupkg"))
-    {
-        GitReleaseManagerAddAssets(parameters.GitHub.GetRequiredToken(),
-                                   parameters.GitHub.RepositoryOwner, parameters.GitHub.RepositoryName,
-                                   parameters.VersionInfo.Milestone, package.FullPath);
-    }
+// Task("Publish-GitHub-Release")
+//     .IsDependentOn("Package")
+//     .WithCriteria(() => parameters.ShouldDeployToProdFeed)
+//     .WithCriteria(() => parameters.ConfigurationIsRelease)
+//     .Does(() =>
+// {
+//     foreach (var package in GetFiles(parameters.Paths.Directories.Artifacts + "/*.nupkg"))
+//     {
+//         GitReleaseManagerAddAssets(parameters.GitHub.GetRequiredToken(),
+//                                    parameters.GitHub.RepositoryOwner, parameters.GitHub.RepositoryName,
+//                                    parameters.VersionInfo.Milestone, package.FullPath);
+//     }
 
-    // Close the milestone
-    GitReleaseManagerClose(parameters.GitHub.GetRequiredToken(),
-                           parameters.GitHub.RepositoryOwner, parameters.GitHub.RepositoryName,
-                           parameters.VersionInfo.Milestone);
-})
-.OnError(exception =>
-{
-    Information("Publish-GitHub-Release Task failed, but continuing with next Task...");
-    publishingError = true;
-});
+//     // Close the milestone
+//     GitReleaseManagerClose(parameters.GitHub.GetRequiredToken(),
+//                            parameters.GitHub.RepositoryOwner, parameters.GitHub.RepositoryName,
+//                            parameters.VersionInfo.Milestone);
+// })
+// .OnError(exception =>
+// {
+//     Information("Publish-GitHub-Release Task failed, but continuing with next Task...");
+//     publishingError = true;
+// });
 
 Task("Clear-Artifacts")
     .Does(() =>

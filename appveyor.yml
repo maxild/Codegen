@@ -1,0 +1,32 @@
+image: Visual Studio 2022
+
+# Environment shared by all build jobs
+environment:
+  # Needed for GitVersion to work better
+  IGNORE_NORMALISATION_GIT_HEAD_MOVE: 1
+  # 'appveyor build2' token
+  GITHUB_ACCESS_TOKEN:
+    secure: f6XWOyfjFS+fTkPWNoR2GbqOhhbu6KTbQdz0o+0yozD1DRA0XIci5xNJDDTtFUu1
+  # MyGet apikey
+  CI_DEPLOYMENT_API_KEY:
+    secure: EOVLFyiHRhh9Jij3/mITdSV5JH1SzT8JUbqqTIFtvOPndNeMme3mME01ws3+5nFB
+  # NuGet.org apikey
+  DEPLOYMENT_API_KEY:
+    secure: sodorJrPlumQEGdwwRYZ9E/+5Me1KiEessgorKXYchcSIY12v9TEF49jm2oe0ATn
+
+init:
+  - git config --global core.autocrlf true
+
+install:
+  - dotnet --info
+  # The last part will make CMD ignore any non-zero exit codes from 'dotnet --version'
+  - dotnet --version & exit 0
+
+build_script:
+  - git status
+  - ps: echo "IGNORE_NORMALISATION_GIT_HEAD_MOVE = ${env:IGNORE_NORMALISATION_GIT_HEAD_MOVE}"
+  - ps: .\build.ps1 -verbose -target AppVeyor -verbosity diagnostic
+
+test: off
+
+deploy: off
