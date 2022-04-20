@@ -68,8 +68,8 @@ charset = utf-8-bom
 dotnet_analyzer_diagnostic.category-Style.severity = warning
 # Default severity for all IDE code quality rules with category 'CodeQuality'
 dotnet_analyzer_diagnostic.category-CodeQuality.severity = warning
-; TODO: You can then selectively downgrade specific rules to a lower severity (none/silent/suggestion) as per your preference.
-; TODO: Every IDExxx rule or CAxxxx rule must be explicitly configured below to have severity none, silent or suggestion.
+; NOTE: You can then selectively downgrade specific rules to a lower severity (none/silent/suggestion) as per your preference.
+; NOTE: Every IDExxx rule or CAxxxx rule must be explicitly configured below to have severity none, silent or suggestion.
 
 #################################
 #### .NET Language rules     ####
@@ -126,7 +126,6 @@ dotnet_style_readonly_field = true:warning
 ;dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:warning
 ;dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:warning
 ;dotnet_style_parentheses_in_other_operators = never_if_unnecessary:warning
-# TODO: I am a bit unsure if 'never_if_unnecessary' is better
 dotnet_style_parentheses_in_arithmetic_binary_operators                      = never_if_unnecessary : silent
 dotnet_style_parentheses_in_other_binary_operators                           = never_if_unnecessary : silent
 dotnet_style_parentheses_in_other_operators                                  = never_if_unnecessary : silent
@@ -319,7 +318,7 @@ dotnet_remove_unnecessary_suppression_exclusions = none
 
 ## IDE0058: Unused value preferences
 # https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0058
-# TODO: Don't know id LHS dicards are idiomatic C# (ignore expresion from F#)
+# Don't know id LHS discards are idiomatic C# (ignore expression from F#)
 csharp_style_unused_value_expression_statement_preference = discard_variable:silent
 dotnet_diagnostic.IDE0058.severity = silent
 
@@ -425,7 +424,6 @@ dotnet_naming_style.type_parameter_style.required_prefix = T
 # Symbols
 ##########################################
 # Symbol specifications: 'applicable_accessibilities' (required), 'applicable_kinds' (required) and 'required_modifiers' (optional).
-# TODO: applicable_kinds is not required
 
 # private constants
 dotnet_naming_symbols.private_constants.applicable_accessibilities = private
@@ -481,9 +479,7 @@ dotnet_naming_symbols.all_members.applicable_kinds = *
 ##########################################
 # Naming rule specification: symbols (required), style (required), severity (required)
 
-# TODO: const => static
-
-# TODO: Haven't though about if we need any special rules for
+# Haven't though about if we need any special rules for
 #       Plain Old structs (where public fields are PascalCase)
 #       readonly structs
 
@@ -517,7 +513,7 @@ dotnet_naming_rule.static_fields_should_be_camel_case.symbols = private_static_f
 dotnet_naming_rule.static_fields_should_be_camel_case.style = static_field_style
 dotnet_naming_rule.static_fields_should_be_camel_case.severity = warning
 
-# Private instance (TODO: and maybe protected) fields are camelCase and start with _
+# Private fields are camelCase and start with _
 dotnet_naming_rule.instance_fields_should_be_camel_case.symbols = private_instance_fields
 dotnet_naming_rule.instance_fields_should_be_camel_case.style = instance_field_style
 dotnet_naming_rule.instance_fields_should_be_camel_case.severity = warning
@@ -538,7 +534,6 @@ dotnet_naming_rule.interface_rule.symbols = interfaces
 dotnet_naming_rule.interface_rule.style = interface_style
 dotnet_naming_rule.interface_rule.severity = warning
 
-# TODO: Don't know if Some<T, U> should be forbidden?
 # Generics Type Parameters use PascalCase and are prefixed with uppercase 'T'
 dotnet_naming_rule.type_parameter_rule.symbols = type_parameters
 dotnet_naming_rule.type_parameter_rule.style = type_parameter_style

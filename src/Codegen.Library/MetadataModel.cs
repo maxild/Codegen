@@ -147,13 +147,11 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         DomusIdentifierPrefix = domusIdentifierPrefix;
         SqlText = sqlText ?? throw new ArgumentNullException(nameof(sqlText));
         RecordTypeName = recordTypeName ?? throw new ArgumentNullException(nameof(recordTypeName));
-        Records = records ??
-                  throw new ArgumentNullException(nameof(records)); // TODO: ?? Enumerable.Empty<object>();
+        Records = records ?? throw new ArgumentNullException(nameof(records));
     }
 
     public MetadataModel WithToolVersion(string version)
     {
-        // TODO: Test that ToList create a deep copy??? should it?
         return Create(version, QueryName, TemplateName, Namespace, TypeName, XmlDoc, IdentifierPrefix,
             DomusIdentifierPrefix, SqlText, RecordTypeName, Records.ToList());
     }

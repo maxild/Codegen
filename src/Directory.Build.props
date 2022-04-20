@@ -9,13 +9,11 @@
   </PropertyGroup>
 
   <!-- NuGet metadata properties -->
-  <!-- TODO: Edit this -->
   <PropertyGroup>
-    <Product>BRFkredit Domus Libraries</Product>
+    <Product>Codegen Libraries</Product>
     <PackageId>$(AssemblyName)</PackageId>
-    <Copyright>Copyright BRFkredit a/s 2002-2016. All rights reserved.</Copyright>
+    <Copyright>Copyright Morten Maxild 2002-2016. All rights reserved.</Copyright>
     <Authors>Morten Maxild</Authors>
-    <Company>BRFkredit a/s</Company>
     <PackageTags>lofus</PackageTags>
     <!--
         <PackageIconUrl>A URL for a 64x64 image with transparent background to use as the icon for the package in UI display.</PackageIconUrl>
@@ -25,8 +23,8 @@
         -->
     <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
     <!-- Publish the repository URL in the built .nupkg. in the following *.nuspec element -->
-    <!--         <repository type="git" url="https://github.com/maxild/Lofus" />         -->
-    <RepositoryUrl>https://github.com/maxild/Domus</RepositoryUrl>
+    <!--         <repository type="git" url="https://github.com/maxild/Codegen" />         -->
+    <RepositoryUrl>https://github.com/maxild/Codegen</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 

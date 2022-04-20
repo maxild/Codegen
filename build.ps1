@@ -131,7 +131,6 @@ function ParseSdkVersion([string]$version) {
 
 $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = 1 # Caching packages on a temporary build machine is a waste of time.
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = 1       # opt out of telemetry
-$env:DOTNET_ROLL_FORWARD = "Major"
 
 $DotNetChannel = 'LTS'
 
@@ -282,12 +281,11 @@ Install-NetCoreTool -PackageId 'GitReleaseManager.Tool' -ToolCommandName 'dotnet
 
 # Build the argument list.
 $Arguments = @{
-  target                    = $Target;
-  configuration             = $Configuration;
-  verbosity                 = $Verbosity;
-}.GetEnumerator() | ForEach-Object { if ("{0}" -f $_.value) { "--{0}=`"{1}`"" -f $_.key, $_.value } else {""} }
+  target        = $Target;
+  configuration = $Configuration;
+  verbosity     = $Verbosity;
+}.GetEnumerator() | ForEach-Object { "--{0}=`"{1}`"" -f $_.key, $_.value }
 
 Write-Host "Running build script..."
-Write-Host "$CakeExePath ./build.cake $Arguments $ScriptArgs"
 & "$CakeExePath" ./build.cake $Arguments $ScriptArgs
 exit $LASTEXITCODE

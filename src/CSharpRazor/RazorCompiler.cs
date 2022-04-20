@@ -80,7 +80,7 @@ public class RazorCompiler
             builder.Features.Add(new SuppressChecksumOptionsFeature());
             builder.Features.Add(new SuppressMetadataAttributesFeature());
 
-            // TODO: Hvad er det?
+            // IR passes (registering MVC pieces on RazorEngine)
             //builder.Features.Remove(builder.Features.OfType<IRazorDocumentClassifierPass>().Single());
 
             // Den behoever vi ikke, da vi ikke benytter C# Scripting
@@ -94,10 +94,9 @@ public class RazorCompiler
 
     public string? BaseType { get; }
 
-    // TODO: Inline content for testing is not supported, only file content
     public CompiledTemplateCSharpSource CompileTemplate(string templatePath)
     {
-        // TODO: extension is hardcoded, should live in config/convention type
+        // NOTE: extension is hardcoded, should live in config/convention type
         var templatePathToUse = templatePath.EndsWith(".cshtml") ?
             templatePath :
             string.Concat(templatePath, ".cshtml");
@@ -106,7 +105,6 @@ public class RazorCompiler
         //   .razor -> "component"
         //   _Imports.razor -> "componentImport"
         //   _ (wildcard/other) -> "mvc"
-        // TODO: maybe create custom file kind?
         var razorProjectItem = _projectEngine.FileSystem.GetItem(templatePathToUse, null);
 
         // RazorCodeDocument contains the abstract representation of your template (AST)

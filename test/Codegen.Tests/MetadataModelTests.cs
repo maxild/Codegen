@@ -109,10 +109,8 @@ public class MetadataModelTests
             recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
             records);
 
-        _ = Assert.Throws<InvalidCastException>(() => metadata.Records.ElementAt(0).ShouldBe(new KeyValuePair<string, string>("key1", "value1")));
-
-        // TODO: message is different on .NET Framework and .NET Core
-        //.Message.ShouldBe("Unable to cast object of type 'RecordTuple' to type 'System.Collections.Generic.KeyValuePair`2[System.String,System.String]'.");
+        Assert.Throws<InvalidCastException>(() => metadata.Records.ElementAt(0).ShouldBe(new KeyValuePair<string, string>("key1", "value1")))
+            .Message.ShouldBe("Unable to cast object of type 'RecordTuple' to type 'System.Collections.Generic.KeyValuePair`2[System.String,System.String]'.");
     }
 
     [Fact]

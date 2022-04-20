@@ -60,9 +60,9 @@ public class RazorEngine
                     onRazorCompilerOutput(compiledTemplateCSharpSource.SourceCSharpCode);
                 }
                 // compile + IL-emit
-                var compiledTemplateILSource = RoslynCompiler.CompileAndEmit(compiledTemplateCSharpSource);
+                var compiledTemplateIlSource = RoslynCompiler.CompileAndEmit(compiledTemplateCSharpSource);
                 // load emitted IL-code into new (anonymous) load context (ALC) and cache the thing
-                compiledTemplate = new CompiledTemplate(compiledTemplateILSource);
+                compiledTemplate = new CompiledTemplate(compiledTemplateIlSource);
                 s_compiledTemplateCache.Add(templatePath, compiledTemplate);
             }
         }
@@ -95,7 +95,6 @@ public class RazorEngine
         return new RenderResult(compiledTemplate, cSharpCode);
     }
 
-    // TODO: Implement this one,closer to real printf/string.Format
     ///// <summary>
     ///// Compiles and renders a template. Template content is taken directly from <paramref name="content"/> parameter
     ///// </summary>
@@ -104,7 +103,7 @@ public class RazorEngine
     ///// <param name="model">Template model</param>
     //public Task<string> RenderTemplateStringAsync(string key, string content, object model)
     //{
-    //    // TODO: This one is for integration/functional testing without a file system, and caching
+    //    // This one is for integration/functional testing without a file system, and caching
     //    // Notes
     //    //   1. you cannot unload Assemblies
     //    //   2. That said, you can load the same Assembly again, even if the prior one was not unloaded

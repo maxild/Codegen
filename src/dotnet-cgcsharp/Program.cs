@@ -139,7 +139,7 @@ namespace Codegen.CSharp.CLI
 
                 // TODO: Investigate CR vs CRLF line-endings of SourceCSharpCode (*.g.cshtml.cs) and Content (*.generated.cs)
                 string? razorSource = null;
-                RenderResult? renderResult = null;
+                RenderResult? renderResult;
                 try
                 {
                     renderResult = await engine.RenderTemplateAsync(templateFilename, model: metadata, onRazorCompilerOutput: source => razorSource = source);
@@ -155,14 +155,15 @@ namespace Codegen.CSharp.CLI
                 }
 
                 // Save the generated C# file
-                if (renderResult is not null)
-                {
-                    string csharpFilename = $"{name}.generated.cs";
-                    string csharpPath = Path.Combine(optionOutDir.Value() ?? throw new InvalidOperationException($"The required {optionOutDir.LongName} is missing."), csharpFilename);
-                    WriteLineVerbose($"Writing '{csharpFilename}' to '{optionOutDir.Value()}'.");
-                    await File.WriteAllTextAsync(csharpPath, renderResult.Content, Encoding.UTF8, cancellationToken);
-                    WriteLineVerbose($"Writing '{csharpFilename}' to '{optionOutDir.Value()}' completed.");
-                }
+                string csharpFilename = $"{name}.generated.cs";
+                string csharpPath =
+                    Path.Combine(
+                        optionOutDir.Value() ??
+                        throw new InvalidOperationException($"The required {optionOutDir.LongName} is missing."),
+                        csharpFilename);
+                WriteLineVerbose($"Writing '{csharpFilename}' to '{optionOutDir.Value()}'.");
+                await File.WriteAllTextAsync(csharpPath, renderResult.Content, Encoding.UTF8, cancellationToken);
+                WriteLineVerbose($"Writing '{csharpFilename}' to '{optionOutDir.Value()}' completed.");
 
                 return 0;
             });

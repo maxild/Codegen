@@ -58,6 +58,14 @@ namespace Codegen.Database.CLI
                         //.IsRequired()
                         .Accepts(v => v.LegalFilePath());
 
+            var optionDbServer = app.Option("--db-server <SERVER>",
+                "Required. The name or network address of the SQL Server instance to connect to.",
+                CommandOptionType.SingleValue);
+
+            var optionDbName = app.Option("--db-name <DATABASE_NAME>",
+                "Required. The name of the database.",
+                CommandOptionType.SingleValue);
+
             var optionVerbose =
                 app.Option("-v|--verbose", "Verbose", CommandOptionType.NoValue);
 
@@ -84,17 +92,16 @@ namespace Codegen.Database.CLI
                         Console.WriteLine(msg);
                 }
 
-                string name = optionName.Value() ?? throw new InvalidOperationException($"The required {optionName.LongName} is missing");
+                string name = optionName.Value() ?? throw new InvalidOperationException($"The required {optionName.LongName} is missing.");
 
-                // TODO: Is "." a correct default, or should raise error
+                string dbServer = optionDbServer.Value() ?? throw new InvalidOperationException($"The required {optionDbServer.LongName} is missing.");
+
+                string dbName = optionName.Value() ?? throw new InvalidOperationException($"The required {optionDbName.LongName} is missing.");
+
                 var cssqlPath = Path.Combine(optionSqlDir.Value() ?? ".", name + ".cssql");
                 WriteLineVerbose($"Reading file {cssqlPath} ...");
                 var cssqlText = await File.ReadAllTextAsync(cssqlPath, cancellationToken);
                 WriteLineVerbose("Reading file completed.");
-
-                // ------------------------------------------
-                // TODO: Create type for parsing cssql files
-                // ------------------------------------------
 
                 const string SECTION_SEP = "###";
 
@@ -122,8 +129,7 @@ namespace Codegen.Database.CLI
                 string? cgNamespace = null, cgTypeName = null, cgXmlDoc = null, cgIdPrefix = null, cgDomusIdPrefix = null, cgTemplate = null;
                 using (var sr = new StringReader(segments[0]))
                 {
-                    string? line;
-                    while ((line = await sr.ReadLineAsync()) is not null)
+                    while (await sr.ReadLineAsync() is { } line)
                     {
                         if (line.StartsWith(CG_NAMESPACE_DIRECTIVE))
                         {
@@ -215,7 +221,7 @@ namespace Codegen.Database.CLI
 
                 // NOTE: cgdata does not know about concrete types of records...just a list of objects (anything)
                 List<object> records = SqlHelper.ExecuteProcedureReturnList(
-                    SqlConfig.GetDefaultConnectionString(), // TODO: Configurable using --db-server,--db-name
+                    SqlConfig.GetConnectionString(dbServer, dbName),
                     sqlText,
                     factoryFunc);
 
@@ -255,7 +261,7 @@ namespace Codegen.Database.CLI
         // TODO: Hvad med #r directive
         private static IEnumerable<MetadataReference> GetMetadataReferences()
         {
-            yield return MetadataReference.CreateFromFile(typeof(SqlDataReader).Assembly.Location);   // System.Data.SqlClient.dll
+            yield return MetadataReference.CreateFromFile(typeof(SqlDataReader).Assembly.Location);   // Microsoft.Data.SqlClient.dll
 
             //yield return MetadataReference.CreateFromFile(typeof(Action).Assembly.Location); // mscorlib or System.Private.Core
             //yield return MetadataReference.CreateFromFile(typeof(IQueryable).Assembly.Location); // System.Core or System.Linq.Expressions
