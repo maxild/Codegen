@@ -1,43 +1,42 @@
 <Project>
-    <PropertyGroup Label="Package Reference dependencies">
+  <PropertyGroup Label="Package Reference dependencies">
 
-        <!-- Microsoft.NET.Test.Sdk -->
-        <MicrosoftNETTestSdkPackageVersion>17.1.0</MicrosoftNETTestSdkPackageVersion>
+    <!-- Microsoft.NET.Test.Sdk -->
+    <MicrosoftNETTestSdkPackageVersion>17.1.0</MicrosoftNETTestSdkPackageVersion>
 
-        <!-- xunit -->
-        <XUnitPackageVersion>2.4.1</XUnitPackageVersion>
+    <!-- xunit -->
+    <XUnitPackageVersion>2.4.1</XUnitPackageVersion>
 
-        <!-- xunit.runner.visualstudio -->
-        <XUnitRunnerVisualStudioPackageVersion>2.4.3</XUnitRunnerVisualStudioPackageVersion>
+    <!-- xunit.runner.visualstudio -->
+    <XUnitRunnerVisualStudioPackageVersion>2.4.3</XUnitRunnerVisualStudioPackageVersion>
 
-        <!-- coverlet.collector -->
-        <CoverletCollectorPackageVersion>3.1.2</CoverletCollectorPackageVersion>
+    <!-- coverlet.collector -->
+    <CoverletCollectorPackageVersion>3.1.2</CoverletCollectorPackageVersion>
 
-        <!-- Shouldly -->
-        <ShouldlyPackageVersion>4.0.3</ShouldlyPackageVersion>
+    <!-- Shouldly -->
+    <ShouldlyPackageVersion>4.0.3</ShouldlyPackageVersion>
 
-        <!-- SourceLink -->
-        <MicrosoftSourceLinkGitHubPackageVersion>1.1.1</MicrosoftSourceLinkGitHubPackageVersion>
+    <!-- SourceLink -->
+    <MicrosoftSourceLinkGitHubPackageVersion>1.1.1</MicrosoftSourceLinkGitHubPackageVersion>
 
-        <!-- JetBrains.Annotations -->
-        <JetBrainsAnnotationsPackageVersion>2022.1.0</JetBrainsAnnotationsPackageVersion>
+    <!-- JetBrains.Annotations -->
+    <JetBrainsAnnotationsPackageVersion>2022.1.0</JetBrainsAnnotationsPackageVersion>
 
-        <!-- FIXME: Use System.Commandline...It will be out of beta alongside .NET 6.(https://github.com/dotnet/BenchmarkDotNet/pull/1037#issuecomment-886736360) -->
-        <!-- McMaster.Extensions.CommandLineUtils -->
-        <McMasterExtensionsCommandLineUtilsPackageVersion>3.0.0</McMasterExtensionsCommandLineUtilsPackageVersion>
+    <!-- System.CommandLine -->
+    <SystemCommandLinePackageVersion>2.0.0-*</SystemCommandLinePackageVersion>
 
-        <!-- Microsoft.Data.SqlClient -->
-        <MicrosoftDataSqlClientPackageVersion>4.1.0</MicrosoftDataSqlClientPackageVersion>
+    <!-- Microsoft.Data.SqlClient -->
+    <MicrosoftDataSqlClientPackageVersion>4.1.0</MicrosoftDataSqlClientPackageVersion>
 
-        <!-- Razor: Microsoft.AspNetCore.Razor.Language -->
-        <MicrosoftAspNetCoreRazorLanguagePackageVersion>6.0.4</MicrosoftAspNetCoreRazorLanguagePackageVersion>
+    <!-- Razor: Microsoft.AspNetCore.Razor.Language -->
+    <MicrosoftAspNetCoreRazorLanguagePackageVersion>6.0.4</MicrosoftAspNetCoreRazorLanguagePackageVersion>
 
-        <!-- Roslyn: Microsoft.CodeAnalysis.CSharp and Microsoft.CodeAnalysis.CSharp.Scripting -->
-        <MicrosoftCodeAnalysisCSharpPackageVersion>4.1.0</MicrosoftCodeAnalysisCSharpPackageVersion>
-        <MicrosoftCodeAnalysisCSharpScriptingPackageVersion>4.1.0</MicrosoftCodeAnalysisCSharpScriptingPackageVersion>
+    <!-- Roslyn: Microsoft.CodeAnalysis.CSharp and Microsoft.CodeAnalysis.CSharp.Scripting -->
+    <MicrosoftCodeAnalysisCSharpPackageVersion>4.1.0</MicrosoftCodeAnalysisCSharpPackageVersion>
+    <MicrosoftCodeAnalysisCSharpScriptingPackageVersion>4.1.0</MicrosoftCodeAnalysisCSharpScriptingPackageVersion>
 
-        <!-- Microsoft.Extensions.DependencyModel: reading deps.json files on .NET Core -->
-        <MicrosoftExtensionsDependencyModelPackageVersion>6.0.0</MicrosoftExtensionsDependencyModelPackageVersion>
+    <!-- Microsoft.Extensions.DependencyModel: reading deps.json files on .NET Core -->
+    <MicrosoftExtensionsDependencyModelPackageVersion>6.0.0</MicrosoftExtensionsDependencyModelPackageVersion>
 
-    </PropertyGroup>
+  </PropertyGroup>
 </Project>
