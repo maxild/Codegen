@@ -21,7 +21,6 @@
         <PackageLicenseUrl>An URL to the license that is applicable to the package.</PackageLicenseUrl>
         <PackageProjectUrl>An URL for the package's home page, often shown in UI displays as well as nuget.org.</PackageProjectUrl>
         -->
-    <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
     <!-- Publish the repository URL in the built .nupkg. in the following *.nuspec element -->
     <!--         <repository type="git" url="https://github.com/maxild/Codegen" />         -->
     <RepositoryUrl>https://github.com/maxild/Codegen</RepositoryUrl>
@@ -29,9 +28,8 @@
   </PropertyGroup>
 
   <!-- Common Assembly Information  -->
-  <!-- The Razor/Roslyn basde compiler is not CLS complient...codegen should be separated out -->
-  <!-- <ItemGroup Condition=" '$(IsTestProject)' != 'true' and '$(IsPackable)' != 'false' ">
-    <Compile Include="..\..\..\CommonAssemblyInfo.cs" />
-  </ItemGroup> -->
+  <ItemGroup Condition=" Exists('$(RepositoryRoot)src\CommonAssemblyInfo.cs') ">
+    <Compile Include="$(RepositoryRoot)src\CommonAssemblyInfo.cs" />
+  </ItemGroup>
 
 </Project>

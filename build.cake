@@ -367,14 +367,13 @@ Task("Generate-CommonAssemblyInfo")
 
 [assembly: System.Reflection.AssemblyCopyright(""Copyright Morten Maxild 2002-{System.DateTime.Now.Year}. All rights reserved."")]
 [assembly: System.Reflection.AssemblyProduct(""{parameters.ProjectName}"")]
-[assembly: System.Reflection.AssemblyDescription(""Codegen -- A Library for .NET Framework and .NET Core"")]
+[assembly: System.Reflection.AssemblyDescription(""Codegen -- A set of tools to generate C# code."")]
 
 [assembly: System.Reflection.AssemblyVersion(""{parameters.VersionInfo.AssemblyVersion}"")]
 [assembly: System.Reflection.AssemblyFileVersion(""{parameters.VersionInfo.AssemblyFileVersion}"")]
 [assembly: System.Reflection.AssemblyInformationalVersion(""{parameters.VersionInfo.AssemblyInformationalVersion}"")]
 
 [assembly: System.Runtime.InteropServices.ComVisible(false)]
-[assembly: System.CLSCompliant(true)]
 
 #if DEBUG
 [assembly: System.Reflection.AssemblyConfiguration(""Debug"")]
