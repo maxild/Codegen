@@ -76,7 +76,7 @@ internal static class Program
 
             string dbServer = optionDbServer.Value() ?? throw new InvalidOperationException($"The required {optionDbServer.LongName} is missing.");
 
-            string dbName = optionName.Value() ?? throw new InvalidOperationException($"The required {optionDbName.LongName} is missing.");
+            string dbName = optionDbName.Value() ?? throw new InvalidOperationException($"The required {optionDbName.LongName} is missing.");
 
             var cssqlPath = Path.Combine(optionSqlDir.Value() ?? ".", name + ".cssql");
             WriteLineVerbose($"Reading file {cssqlPath} ...");
