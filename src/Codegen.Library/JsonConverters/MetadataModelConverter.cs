@@ -26,8 +26,6 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
     {
         writer.WriteStartObject();
 
-        writer.WriteString(nameof(MetadataModel.ToolVersion), value.ToolVersion);
-
         writer.WriteString(nameof(MetadataModel.QueryName), value.QueryName);
 
         writer.WriteString(nameof(MetadataModel.TemplateName), value.TemplateName);
@@ -63,8 +61,7 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
         if (reader.TokenType != JsonTokenType.StartObject)
             throw new InvalidOperationException("Expected StartObject token type.");
 
-        string? toolVersion = null,
-            queryName = null,
+        string? queryName = null,
             templateName = null,
             @namespace = null,
             typeName = null,
@@ -95,9 +92,6 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
 
             switch (propertyName)
             {
-                case nameof(MetadataModel.ToolVersion):
-                    toolVersion = reader.GetString();
-                    continue;
                 case nameof(MetadataModel.QueryName):
                     queryName = reader.GetString();
                     continue;
@@ -142,7 +136,6 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
         }
 
         return MetadataModel.Create(
-            toolVersion: toolVersion ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.ToolVersion)} property."),
             queryName: queryName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.QueryName)} property."),
             templateName: templateName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.TemplateName)} property."),
             @namespace: @namespace ?? throw new InvalidOperationException($"Mi ssing {nameof(MetadataModel.Namespace)} property."),

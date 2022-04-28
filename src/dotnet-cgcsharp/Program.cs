@@ -102,9 +102,7 @@ public static class Program
 
         WriteLineVerbose($"Reading '{name}.json' data from dir '{dataDir.FullName}'.");
         // NOTE: cgcsharp does not know about concrete types of records...just a list of objects (anything)
-        MetadataModel metadata = MetadataModelUtils
-            .ReadFile(dataDir.FullName, name)
-            .WithToolVersion(Git.CurrentVersion.Version);
+        MetadataModel metadata = MetadataModelUtils.ReadFile(dataDir.FullName, name);
         WriteLineVerbose($"Reading '{name}.json' data from dir '{dataDir.FullName}' completed.");
 
         // Resolve template directory and filename

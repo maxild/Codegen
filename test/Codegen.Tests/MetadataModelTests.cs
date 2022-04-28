@@ -43,7 +43,6 @@ public class MetadataModelTests
         };
 
         var metadata = MetadataModel.Create<KeyValuePair<string, string>>(
-            toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
             @namespace: "Acme.Models",
@@ -70,7 +69,6 @@ public class MetadataModelTests
         };
 
         var metadata = MetadataModel.Create<RecordTuple>(
-            toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
             @namespace: "Acme.Models",
@@ -97,7 +95,6 @@ public class MetadataModelTests
         };
 
         var metadata = MetadataModel.Create<KeyValuePair<string, string>>(
-            toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
             @namespace: "Acme.Models",
@@ -124,7 +121,6 @@ public class MetadataModelTests
         };
 
         MetadataModel model1 = MetadataModel.Create(
-            toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
             @namespace: "Acme.Models",
@@ -137,7 +133,6 @@ public class MetadataModelTests
             records);
 
         MetadataModel<RecordTuple> model2 = MetadataModel.Create<RecordTuple>(
-            toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
             @namespace: "Acme.Models",
@@ -153,7 +148,6 @@ public class MetadataModelTests
         var json2 = MetadataModel.Serialize(model2);
 
         string expectedJson = @"{
-                                    |  ""ToolVersion"": ""0.1.0"",
                                     |  ""QueryName"": ""betalingstype"",
                                     |  ""TemplateName"": ""dataenum"",
                                     |  ""Namespace"": ""Acme.Models"",
@@ -181,7 +175,6 @@ public class MetadataModelTests
     public void Deserialize()
     {
         string json = @"{
-                           |  ""ToolVersion"": ""0.1.0"",
                            |  ""QueryName"": ""betalingstype"",
                            |  ""TemplateName"": ""dataenum"",
                            |  ""Namespace"": ""Acme.Models"",
@@ -206,7 +199,6 @@ public class MetadataModelTests
         MetadataModel<RecordTuple> model2 = MetadataModel.Deserialize<RecordTuple>(json);
         MetadataModel<RecordTuple> model3 = (MetadataModel<RecordTuple>)MetadataModel.Deserialize(json, typeof(RecordTuple));
 
-        model1.ToolVersion.ShouldBe("0.1.0");
         model1.QueryName.ShouldBe("betalingstype");
         model1.TemplateName.ShouldBe("dataenum");
         model1.Namespace.ShouldBe("Acme.Models");
@@ -235,7 +227,6 @@ public class MetadataModelTests
         };
 
         MetadataModel<RecordTuple> model = MetadataModel.Create<RecordTuple>(
-            toolVersion: "0.1.0",
             queryName: "betalingstype",
             templateName: "dataenum",
             @namespace: "Acme.Models",
