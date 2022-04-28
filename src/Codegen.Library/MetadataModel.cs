@@ -48,7 +48,6 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
     /// <summary>
     /// Initializes a new instance of the <see cref="MetadataModel"/> type.
     /// </summary>
-    /// <param name="toolVersion"></param>
     /// <param name="queryName">The name of the cssql file</param>
     /// <param name="templateName">The name of the cshtml file</param>
     /// <param name="namespace">The namespace of the generated type</param>
@@ -60,7 +59,6 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
     /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
     /// <param name="records">The list of records.</param>
     public static MetadataModel Create(
-        string toolVersion,
         string queryName,
         string templateName,
         string @namespace,
@@ -80,7 +78,6 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
 
         Type t = typeof(MetadataModel<>).MakeGenericType(rt);
         return (MetadataModel)Activator.CreateInstance(t,
-            toolVersion,
             queryName,
             templateName,
             @namespace,
@@ -96,7 +93,6 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
     /// <summary>
     /// Initializes a new instance of the <see cref="MetadataModel"/> type.
     /// </summary>
-    /// <param name="toolVersion"></param>
     /// <param name="queryName">The name of the cssql file</param>
     /// <param name="templateName">The name of the cshtml file</param>
     /// <param name="namespace">The namespace of the generated type</param>
@@ -108,7 +104,6 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
     /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
     /// <param name="records">The list of records.</param>
     public static MetadataModel<TRecord> Create<TRecord>(
-        string toolVersion,
         string queryName,
         string templateName,
         string @namespace,
@@ -120,12 +115,11 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         string recordTypeName,
         IReadOnlyList<object> records)
     {
-        return new(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix,
+        return new(queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix,
             databaseIdentifierPrefix, sqlText, recordTypeName, records);
     }
 
     protected MetadataModel(
-        string toolVersion,
         string queryName,
         string templateName,
         string @namespace,
@@ -137,7 +131,6 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         string recordTypeName,
         IReadOnlyList<object> records)
     {
-        ToolVersion = toolVersion ?? throw new ArgumentNullException(nameof(toolVersion));
         QueryName = queryName ?? throw new ArgumentNullException(nameof(queryName));
         TemplateName = templateName ?? throw new ArgumentNullException(nameof(templateName));
         Namespace = @namespace ?? throw new ArgumentNullException(nameof(@namespace));
@@ -149,14 +142,6 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         RecordTypeName = recordTypeName ?? throw new ArgumentNullException(nameof(recordTypeName));
         Records = records ?? throw new ArgumentNullException(nameof(records));
     }
-
-    public MetadataModel WithToolVersion(string version)
-    {
-        return Create(version, QueryName, TemplateName, Namespace, TypeName, XmlDoc, IdentifierPrefix,
-            DatabaseIdentifierPrefix, SqlText, RecordTypeName, Records.ToList());
-    }
-
-    public string ToolVersion { get; }
 
     public string QueryName { get; }
 
@@ -248,8 +233,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
     protected bool SimpleEquals(MetadataModel other)
     {
         // simple fields comparison (all fields are non-null)
-        bool simple = ToolVersion.Equals(other.ToolVersion, StringComparison.OrdinalIgnoreCase) &&
-                      QueryName.Equals(other.QueryName, StringComparison.OrdinalIgnoreCase) &&
+        bool simple = QueryName.Equals(other.QueryName, StringComparison.OrdinalIgnoreCase) &&
                       TemplateName.Equals(other.TemplateName, StringComparison.OrdinalIgnoreCase) &&
                       Namespace.Equals(other.Namespace, StringComparison.OrdinalIgnoreCase) &&
                       TypeName.Equals(other.TypeName, StringComparison.OrdinalIgnoreCase) &&
@@ -272,7 +256,6 @@ public class MetadataModel<TRecord> : MetadataModel, IEquatable<MetadataModel<TR
     /// <summary>
     /// Initializes a new instance of the <see cref="MetadataModel{TRecord}"/> type.
     /// </summary>
-    /// <param name="toolVersion"></param>
     /// <param name="queryName">The name of the cssql file</param>
     /// <param name="templateName">The name of the cshtml file</param>
     /// <param name="namespace">The namespace of the generated type</param>
@@ -284,7 +267,6 @@ public class MetadataModel<TRecord> : MetadataModel, IEquatable<MetadataModel<TR
     /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
     /// <param name="records">The list of records.</param>
     public MetadataModel(
-        string toolVersion,
         string queryName,
         string templateName,
         string @namespace,
@@ -295,7 +277,7 @@ public class MetadataModel<TRecord> : MetadataModel, IEquatable<MetadataModel<TR
         string sqlText,
         string recordTypeName,
         IReadOnlyList<object> records)
-        : base(toolVersion, queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix,
+        : base(queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix,
             databaseIdentifierPrefix, sqlText, recordTypeName, records)
     {
     }

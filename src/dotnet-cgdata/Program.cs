@@ -261,7 +261,6 @@ public static class Program
         _ = Directory.CreateDirectory(outDirFullPath); // Ensure directories are created
         WriteLineVerbose($"Writing {name} model/data to dir '{outDirFullPath}'.");
         var metadata = MetadataModel.Create(
-            toolVersion: Git.CurrentVersion.Version,
             queryName: name,
             templateName: cgTemplate ??
                           throw new InvalidOperationException($"The {CG_TEMPLATE_DIRECTIVE} directive is missing."),
