@@ -25,6 +25,10 @@ install:
   # The last part will make CMD ignore any non-zero exit codes from 'dotnet --version'
   - dotnet --version & exit 0
 
+before_build:
+  # GitHub does not yet support anonymous access to public NuGet repositories.
+  - ps: dotnet nuget add source "https://nuget.pkg.github.com/maxild/index.json" --username maxild --password $env:GITHUB_TOKEN --store-password-in-clear-text --name github-maxild --configfile NuGet.config
+
 build_script:
   - git status
   - ps: echo "IGNORE_NORMALISATION_GIT_HEAD_MOVE = ${env:IGNORE_NORMALISATION_GIT_HEAD_MOVE}"
