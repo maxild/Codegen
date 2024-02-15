@@ -13,6 +13,9 @@ environment:
   # NuGet.org apikey
   DEPLOYMENT_API_KEY:
     secure: sodorJrPlumQEGdwwRYZ9E/+5Me1KiEessgorKXYchcSIY12v9TEF49jm2oe0ATn
+  # 'packages_pat_public' PAT (classic)
+  GITHUB_TOKEN:
+    secure: ESUR8UUfZGeT7sNRirn7b3q1TlUrivATlUpdIlpa2iuf86oKj47cBWPowG3nJP8w
 
 init:
   - git config --global core.autocrlf true
@@ -21,6 +24,10 @@ install:
   - dotnet --info
   # The last part will make CMD ignore any non-zero exit codes from 'dotnet --version'
   - dotnet --version & exit 0
+
+before_build:
+  # GitHub does not yet support anonymous access to public NuGet repositories.
+  - ps: dotnet nuget add source "https://nuget.pkg.github.com/maxild/index.json" --username maxild --password $env:GITHUB_TOKEN --store-password-in-clear-text --name github-maxild --configfile NuGet.config
 
 build_script:
   - git status

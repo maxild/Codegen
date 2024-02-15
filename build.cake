@@ -21,7 +21,7 @@ var parameters = CakeScripts.GetParameters(
         SolutionFileName = "Codegen.sln"
     });
 bool publishingError = false;
-DotNetCoreMSBuildSettings msBuildSettings = null;
+DotNetMSBuildSettings msBuildSettings = null;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -34,7 +34,7 @@ Setup(context =>
         context.Log.Verbosity = Verbosity.Diagnostic;
     }
 
-    msBuildSettings = new DotNetCoreMSBuildSettings()
+    msBuildSettings = new DotNetMSBuildSettings()
                         .WithProperty("RepositoryBranch", parameters.Git.Branch)           // gitflow branch
                         .WithProperty("RepositoryCommit", parameters.Git.Sha)              // full sha
                         .WithProperty("Version", parameters.VersionInfo.SemVer.ToLower())  // semver 2.0 compatible
@@ -67,10 +67,6 @@ Task("Default")
 Task("Setup")
     .IsDependentOn("Generate-CommonAssemblyInfo");
 
-Task("Travis")
-    .IsDependentOn("Show-Info")
-    .IsDependentOn("Test");
-
 Task("AppVeyor")
     .IsDependentOn("Show-Info")
     .IsDependentOn("Print-AppVeyor-Environment-Variables")
@@ -86,6 +82,9 @@ Task("AppVeyor")
     }
 });
 
+Task("GithubActions")
+    .IsDependentOn("Package");
+
 Task("ReleaseNotes")
     .IsDependentOn("Create-Release-Notes");
 
@@ -99,14 +98,14 @@ Task("Restore")
     // ./src/submodules/razor-compiler/src/Microsoft.AspNetCore.Razor.Language/src/Microsoft.AspNetCore.Razor.Language.csproj
     //       dotnet restore src/submodules/razor-compiler/eng/tools/RepoTasks/RepoTasks.csproj
     // var project = Directory("./src/submodules/razor-compiler/eng/tools/RepoTasks") + File("RepoTasks.csproj");
-    // DotNetCoreRestore(project);
+    // DotNetRestore(project);
 
-    var settings = new DotNetCoreRestoreSettings
+    var settings = new DotNetRestoreSettings
     {
-        Verbosity = DotNetCoreVerbosity.Minimal,
+        Verbosity = DotNetVerbosity.Minimal,
     };
 
-    DotNetCoreRestore(parameters.Paths.Files.Solution.FullPath, settings);
+    DotNetRestore(parameters.Paths.Files.Solution.FullPath, settings);
 });
 
 Task("Build")
@@ -125,7 +124,7 @@ Task("Build")
     if (parameters.IsRunningOnAppVeyor)
         extraArgs += " -nowarn:IDE0055;NETSDK1023";
 
-    DotNetCoreBuild(parameters.Paths.Files.Solution.FullPath, new DotNetCoreBuildSettings()
+    DotNetBuild(parameters.Paths.Files.Solution.FullPath, new DotNetBuildSettings()
     {
         Configuration = parameters.Configuration,
         NoRestore = true,
@@ -142,7 +141,7 @@ Task("Test")
     // Only testable projects (<IsTestProject>true</IsTestProject>) will be test-executed
     // We do not need to exclude everything under 'src/submodules',
     // because we use the single master solution
-    DotNetCoreTest(parameters.Paths.Files.Solution.FullPath, new DotNetCoreTestSettings
+    DotNetTest(parameters.Paths.Files.Solution.FullPath, new DotNetTestSettings
     {
         // Skip all tests with either
         //   DatabaseTest in namespace and/or typename
@@ -169,7 +168,7 @@ Task("Create-Packages")
     // Only packable projects (<IsPackable>true</IsPackable>) will produce nupkg's
     // We do not need to exclude everything under 'src/submodules',
     // because we use the single master solution
-    DotNetCorePack(parameters.Paths.Files.Solution.FullPath, new DotNetCorePackSettings {
+    DotNetPack(parameters.Paths.Files.Solution.FullPath, new DotNetPackSettings {
         Configuration = parameters.Configuration,
         OutputDirectory = parameters.Paths.Directories.Artifacts,
         NoBuild = true,
@@ -260,7 +259,7 @@ Task("Upload-AppVeyor-Release-Artifacts")
 // {
 //     foreach (var package in GetFiles(parameters.Paths.Directories.Artifacts + "/*.nupkg"))
 //     {
-//         DotNetCoreNuGetPush(package.FullPath, new DotNetCoreNuGetPushSettings {
+//         DotNetNuGetPush(package.FullPath, new DotNetNuGetPushSettings {
 //             Source = parameters.CIFeed.SourceUrl,
 //             ApiKey = parameters.CIFeed.ApiKey
 //         });
@@ -281,7 +280,7 @@ Task("Upload-AppVeyor-Release-Artifacts")
 // {
 //     foreach (var package in GetFiles(parameters.Paths.Directories.Artifacts + "/*.nupkg"))
 //     {
-//         DotNetCoreNuGetPush(package.FullPath, new DotNetCoreNuGetPushSettings {
+//         DotNetNuGetPush(package.FullPath, new DotNetNuGetPushSettings {
 //             Source = parameters.ProdFeed.SourceUrl,
 //             ApiKey = parameters.ProdFeed.ApiKey
 //         });

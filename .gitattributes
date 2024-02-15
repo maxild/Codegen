@@ -15,7 +15,6 @@ tools/nuget.exe binary
 # Note: This is only used by command line
 ###############################################################################
 *.cs     diff=csharp text
-
 ###############################################################################
 # Set the merge driver for project and solution files
 #
@@ -38,7 +37,6 @@ tools/nuget.exe binary
 #*.modelproj merge=binary
 #*.sqlproj   merge=binary
 #*.wwaproj   merge=binary
-
 ###############################################################################
 # behavior for image files
 #
@@ -47,7 +45,6 @@ tools/nuget.exe binary
 #*.jpg   binary
 #*.png   binary
 #*.gif   binary
-
 ###############################################################################
 # diff behavior for common document formats
 #
