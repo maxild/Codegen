@@ -82,6 +82,9 @@ Task("AppVeyor")
     }
 });
 
+Task("GithubActions")
+    .IsDependentOn("Package");
+
 Task("ReleaseNotes")
     .IsDependentOn("Create-Release-Notes");
 
