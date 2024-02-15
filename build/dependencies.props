@@ -2,44 +2,44 @@
   <PropertyGroup Label="Package Reference dependencies">
 
     <!-- Microsoft.NET.Test.Sdk -->
-    <MicrosoftNETTestSdkPackageVersion>17.1.0</MicrosoftNETTestSdkPackageVersion>
+    <MicrosoftNETTestSdkPackageVersion>17.9.0</MicrosoftNETTestSdkPackageVersion>
 
     <!-- xunit -->
-    <XUnitPackageVersion>2.4.1</XUnitPackageVersion>
+    <XUnitPackageVersion>2.6.6</XUnitPackageVersion>
 
     <!-- xunit.runner.visualstudio -->
-    <XUnitRunnerVisualStudioPackageVersion>2.4.3</XUnitRunnerVisualStudioPackageVersion>
+    <XUnitRunnerVisualStudioPackageVersion>2.5.6</XUnitRunnerVisualStudioPackageVersion>
 
     <!-- coverlet.collector -->
-    <CoverletCollectorPackageVersion>3.1.2</CoverletCollectorPackageVersion>
+    <CoverletCollectorPackageVersion>6.0.0</CoverletCollectorPackageVersion>
 
     <!-- Shouldly -->
-    <ShouldlyPackageVersion>4.0.3</ShouldlyPackageVersion>
+    <ShouldlyPackageVersion>4.2.1</ShouldlyPackageVersion>
 
-    <!-- SourceLink -->
+    <!-- Microsoft.SourceLink.GitHub -->
     <MicrosoftSourceLinkGitHubPackageVersion>1.1.1</MicrosoftSourceLinkGitHubPackageVersion>
 
     <!-- JetBrains.Annotations -->
-    <JetBrainsAnnotationsPackageVersion>2022.1.0</JetBrainsAnnotationsPackageVersion>
+    <JetBrainsAnnotationsPackageVersion>2023.3.0</JetBrainsAnnotationsPackageVersion>
 
     <!-- System.CommandLine -->
     <SystemCommandLinePackageVersion>2.0.0-beta4.22272.1</SystemCommandLinePackageVersion>
-
-    <!-- Microsoft.Extensions.DependencyInjection -->
-    <MicrosoftExtensionsDependencyInjectionPackageVersion>6.0.0</MicrosoftExtensionsDependencyInjectionPackageVersion>
 
     <!-- Microsoft.Data.SqlClient -->
     <MicrosoftDataSqlClientPackageVersion>5.1.5</MicrosoftDataSqlClientPackageVersion>
 
     <!-- Razor: Microsoft.AspNetCore.Razor.Language -->
-    <MicrosoftAspNetCoreRazorLanguagePackageVersion>6.0.4</MicrosoftAspNetCoreRazorLanguagePackageVersion>
+    <MicrosoftAspNetCoreRazorLanguagePackageVersion>6.0.27</MicrosoftAspNetCoreRazorLanguagePackageVersion>
 
     <!-- Roslyn: Microsoft.CodeAnalysis.CSharp and Microsoft.CodeAnalysis.CSharp.Scripting -->
-    <MicrosoftCodeAnalysisCSharpPackageVersion>4.1.0</MicrosoftCodeAnalysisCSharpPackageVersion>
-    <MicrosoftCodeAnalysisCSharpScriptingPackageVersion>4.1.0</MicrosoftCodeAnalysisCSharpScriptingPackageVersion>
+    <MicrosoftCodeAnalysisCSharpPackageVersion>4.8.0</MicrosoftCodeAnalysisCSharpPackageVersion>
+    <MicrosoftCodeAnalysisCSharpScriptingPackageVersion>4.8.0</MicrosoftCodeAnalysisCSharpScriptingPackageVersion>
 
     <!-- Microsoft.Extensions.DependencyModel: reading deps.json files on .NET Core -->
     <MicrosoftExtensionsDependencyModelPackageVersion>6.0.0</MicrosoftExtensionsDependencyModelPackageVersion>
+
+    <!-- Microsoft.Extensions.DependencyInjection -->
+    <MicrosoftExtensionsDependencyInjectionPackageVersion>6.0.0</MicrosoftExtensionsDependencyInjectionPackageVersion>
 
   </PropertyGroup>
 </Project>

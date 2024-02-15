@@ -7,10 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <!-- https://github.com/dotnet/razor-compiler or https://github.com/maxild/razor-compiler (fork) need to be a submodule -->
     <ProjectReference Include="..\..\..\submodules\razor-compiler\src\Microsoft.AspNetCore.Razor.Language\src\Microsoft.AspNetCore.Razor.Language.csproj" />
   </ItemGroup>
 
