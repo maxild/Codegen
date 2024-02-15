@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Codegen.Library\Codegen.Library.csproj" />
+    <ProjectReference Include="..\..\app\Codegen.Library\Codegen.Library.csproj" />
   </ItemGroup>
 
   <ItemGroup>
