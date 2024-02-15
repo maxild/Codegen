@@ -197,19 +197,19 @@ if (($ParsedFoundDotNetSdkVersion.Major -ne $ParsedDotNetSdkVersion.Major) -or `
 ###########################################################################
 
 if (-not (Test-Path (Join-Path $TOOLS_DIR 'Maxfire.CakeScripts'))) {
+  Write-Host "Installing version $CakeScriptsVersion of Maxfire.CakeScripts..."
   $NUGET_EXE = Join-Path $TOOLS_DIR 'nuget.exe'
   # latest or empty string is interpreted as 'just use the latest' (floating version, not determinsitic)
   if ( ($CakeScriptsVersion -eq "latest") -or [string]::IsNullOrWhitespace($CakeScriptsVersion) ) {
     & $NUGET_EXE install Maxfire.CakeScripts -ExcludeVersion -Prerelease `
-      -OutputDirectory `"$TOOLS_DIR`" -Source 'https://api.nuget.org/v3/index.json;https://www.myget.org/F/maxfire/api/v3/index.json' | Out-Null
+      -OutputDirectory "$TOOLS_DIR" -Source 'https://nuget.pkg.github.com/maxild/index.json' | Out-Null
   }
   else {
     & $NUGET_EXE install Maxfire.CakeScripts -Version $CakeScriptsVersion -ExcludeVersion -Prerelease `
-      -OutputDirectory `"$TOOLS_DIR`" -Source 'https://api.nuget.org/v3/index.json;https://www.myget.org/F/maxfire/api/v3/index.json' | Out-Null
+      -OutputDirectory "$TOOLS_DIR" -Source 'https://nuget.pkg.github.com/maxild/index.json' | Out-Null
   }
-
   if ($LASTEXITCODE -ne 0) {
-    Throw "An error occured while restoring Maxfire.CakeScripts."
+    Throw "Failed to install Maxfire.CakeScripts."
   }
 }
 else {
@@ -226,7 +226,10 @@ else {
     $NUGET_EXE = Join-Path $TOOLS_DIR 'nuget.exe'
     Write-Host "Upgrading to version $CakeScriptsVersion of Maxfire.CakeScripts..."
     & $NUGET_EXE install Maxfire.CakeScripts -Version $CakeScriptsVersion -ExcludeVersion -Prerelease `
-      -OutputDirectory `"$TOOLS_DIR`" -Source 'https://api.nuget.org/v3/index.json;https://www.myget.org/F/maxfire/api/v3/index.json' | Out-Null
+      -OutputDirectory "$TOOLS_DIR" -Source 'https://nuget.pkg.github.com/maxild/index.json' | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+      Throw "Failed to install Maxfire.CakeScripts."
+    }
   }
 }
 
@@ -256,7 +259,7 @@ Function Install-NetCoreTool {
       & dotnet tool uninstall --tool-path $TOOLS_DIR $PackageId | Out-Null
     }
 
-    & dotnet tool install --tool-path $TOOLS_DIR --version $Version --configfile NuGet.public.config $PackageId | Out-Null
+    & dotnet tool install --tool-path $TOOLS_DIR --version $Version $PackageId | Out-Null
     if ($LASTEXITCODE -ne 0) {
       "Failed to install $PackageId"
       exit $LASTEXITCODE

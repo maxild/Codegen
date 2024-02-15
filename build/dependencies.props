@@ -23,10 +23,13 @@
     <JetBrainsAnnotationsPackageVersion>2022.1.0</JetBrainsAnnotationsPackageVersion>
 
     <!-- System.CommandLine -->
-    <SystemCommandLinePackageVersion>2.0.0-*</SystemCommandLinePackageVersion>
+    <SystemCommandLinePackageVersion>2.0.0-beta4.22272.1</SystemCommandLinePackageVersion>
+
+    <!-- Microsoft.Extensions.DependencyInjection -->
+    <MicrosoftExtensionsDependencyInjectionPackageVersion>6.0.0</MicrosoftExtensionsDependencyInjectionPackageVersion>
 
     <!-- Microsoft.Data.SqlClient -->
-    <MicrosoftDataSqlClientPackageVersion>4.1.0</MicrosoftDataSqlClientPackageVersion>
+    <MicrosoftDataSqlClientPackageVersion>5.1.5</MicrosoftDataSqlClientPackageVersion>
 
     <!-- Razor: Microsoft.AspNetCore.Razor.Language -->
     <MicrosoftAspNetCoreRazorLanguagePackageVersion>6.0.4</MicrosoftAspNetCoreRazorLanguagePackageVersion>

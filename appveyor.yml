@@ -13,6 +13,9 @@ environment:
   # NuGet.org apikey
   DEPLOYMENT_API_KEY:
     secure: sodorJrPlumQEGdwwRYZ9E/+5Me1KiEessgorKXYchcSIY12v9TEF49jm2oe0ATn
+  # 'packages_pat_public' PAT (classic)
+  GITHUB_TOKEN:
+    secure: ESUR8UUfZGeT7sNRirn7b3q1TlUrivATlUpdIlpa2iuf86oKj47cBWPowG3nJP8w
 
 init:
   - git config --global core.autocrlf true

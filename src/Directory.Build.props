@@ -20,7 +20,7 @@
         <PackageReleaseNotes>Release notes for the package.</PackageReleaseNotes>
         <PackageLicenseUrl>An URL to the license that is applicable to the package.</PackageLicenseUrl>
         <PackageProjectUrl>An URL for the package's home page, often shown in UI displays as well as nuget.org.</PackageProjectUrl>
-        -->
+    -->
     <!-- Publish the repository URL in the built .nupkg. in the following *.nuspec element -->
     <!--         <repository type="git" url="https://github.com/maxild/Codegen" />         -->
     <RepositoryUrl>https://github.com/maxild/Codegen</RepositoryUrl>

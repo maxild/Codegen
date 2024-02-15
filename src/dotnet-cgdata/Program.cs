@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.Binding;
 using System.CommandLine.Builder;
+using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Data;
 using System.IO;
@@ -12,6 +14,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Codegen.Database.CLI;
 
@@ -79,12 +82,12 @@ public static class Program
                 optionVerbose
             };
 
-        rootCommand.SetHandler(async (string name, DirectoryInfo sqlDir, DirectoryInfo outDir, string dbServer,
-                string dbName, bool verbose, CancellationToken cancellationToken) =>
+        rootCommand.SetHandler(async (name, sqlDir, outDir, dbServer, dbName, verbose, context) =>
             {
-                await DoMain(name, sqlDir, outDir, dbServer, dbName, verbose, cancellationToken);
+                await DoMain(name, sqlDir, outDir, dbServer, dbName, verbose, context);
             },
-            optionName, optionSqlDir, optionOutDir, optionDbServer, optionDbName, optionVerbose);
+            optionName, optionSqlDir, optionOutDir, optionDbServer, optionDbName, optionVerbose,
+            Bind.FromServiceProvider<InvocationContext>());
 
         var parser = new CommandLineBuilder(rootCommand)
             .UseDefaults()
@@ -95,8 +98,10 @@ public static class Program
     }
 
     private static async Task DoMain(string name, DirectoryInfo sqlDir, DirectoryInfo outDir, string dbServer,
-        string dbName, bool verbose, CancellationToken cancellationToken)
+        string dbName, bool verbose, InvocationContext context)
     {
+        CancellationToken cancellationToken = context.GetCancellationToken();
+
         // TODO: Make --info work (tests...)
         // if (optionInfo.HasValue())
         // {
@@ -305,5 +310,37 @@ public static class Program
         //{
         //    yield return MetadataReference.CreateFromFile(reference.Location);
         //}
+    }
+}
+
+// Beta 4 removed the service provider fallback and therefore led to more ceremony for accessing injected objects.
+// This utility class (Bind) is a solution to this problem.
+//
+// In the beta2 version of SetHandler, parameters of commonly-used types such as ParseResult, CancellationToken,
+// and IConsole would be implicitly bound from the service provider. The beta 4 version requires that the
+// IValueDescriptor<T> parameter count match the generic type parameter count
+// (e.g. public static void SetHandler<T1, T2>(this Command command, Action<T1, T2> handle, IValueDescriptor<T1> symbol1, IValueDescriptor<T2> symbol2).
+// This makes it unclear what to pass to get instances of these other types. This can be done by implementing
+// a custom BinderBase<T> but this also requires too much ceremony.
+//
+// See also https://github.com/dotnet/command-line-api/issues/1570#issuecomment-1170100340
+//
+// testCommand.SetHandler((intOption, boolOption, fileOption, console) => // 👈 parameter types are now inferred
+// {
+//     // ...
+// }, optionInt, optionBool, optionFile, Bind.FromServiceProvider<IConsole>()); // 👈 call service provider binder here
+//
+// See https://github.com/dotnet/command-line-api/issues/1750#issuecomment-1152707726
+
+internal static class Bind
+{
+    // No need to implement a custom BinderBase<T>
+    public static ServiceProviderBinder<T> FromServiceProvider<T>() => ServiceProviderBinder<T>.Instance;
+
+    internal class ServiceProviderBinder<T> : BinderBase<T>
+    {
+        public static ServiceProviderBinder<T> Instance { get; } = new();
+
+        protected override T GetBoundValue(BindingContext bindingContext) => (T)bindingContext.GetRequiredService(typeof(T));
     }
 }
