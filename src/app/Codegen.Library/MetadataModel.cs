@@ -24,20 +24,14 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         WriteIndented = true
     };
 
-    public static string Serialize(MetadataModel metadataModel)
-    {
-        return JsonSerializer.Serialize(metadataModel, s_writeOptions);
-    }
+    public static string Serialize(MetadataModel metadataModel) =>
+        JsonSerializer.Serialize(metadataModel, s_writeOptions);
 
-    public static MetadataModel Deserialize(string json)
-    {
-        return JsonSerializer.Deserialize<MetadataModel>(json)!;
-    }
+    public static MetadataModel Deserialize(string json) =>
+        JsonSerializer.Deserialize<MetadataModel>(json)!;
 
-    public static MetadataModel<TRecord> Deserialize<TRecord>(string json)
-    {
-        return JsonSerializer.Deserialize<MetadataModel<TRecord>>(json)!;
-    }
+    public static MetadataModel<TRecord> Deserialize<TRecord>(string json) =>
+        JsonSerializer.Deserialize<MetadataModel<TRecord>>(json)!;
 
     public static object Deserialize(string json, Type recordType)
     {
@@ -54,7 +48,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
     /// <param name="typeName">The type name of the generated type.</param>
     /// <param name="xmlDoc">The xml-doc of the generated type.</param>
     /// <param name="identifierPrefix">The prefix added to the C# identifier.</param>
-    /// <param name="databaseIdentifierPrefix">The prefix used by the database.</param>
+    /// <param name="databaseIdentifierPrefixes">The prefixes used by the database.</param>
     /// <param name="sqlText">The SQL expression that have generated the records.</param>
     /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
     /// <param name="records">The list of records.</param>
@@ -65,16 +59,14 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         string typeName,
         string xmlDoc,
         string identifierPrefix,
-        string databaseIdentifierPrefix,
+        IReadOnlyDictionary<string, int> databaseIdentifierPrefixes,
         string sqlText,
         string recordTypeName,
         IReadOnlyList<object> records)
     {
-        Type? rt = Type.GetType(recordTypeName);
+        var rt = Type.GetType(recordTypeName);
         if (rt is null)
-        {
             throw new ArgumentException($"The {recordTypeName} type cannot be found.", nameof(recordTypeName));
-        }
 
         Type t = typeof(MetadataModel<>).MakeGenericType(rt);
         return (MetadataModel)Activator.CreateInstance(t,
@@ -84,7 +76,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
             typeName,
             xmlDoc,
             identifierPrefix,
-            databaseIdentifierPrefix,
+            databaseIdentifierPrefixes,
             sqlText,
             recordTypeName,
             records)!;
@@ -99,7 +91,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
     /// <param name="typeName">The type name of the generated type.</param>
     /// <param name="xmlDoc">The xml-doc of the generated type.</param>
     /// <param name="identifierPrefix">The prefix to be added on the C# identifiers.</param>
-    /// <param name="databaseIdentifierPrefix">The prefix used by the database.</param>
+    /// <param name="databaseIdentifierPrefixes">The prefixes used by the database.</param>
     /// <param name="sqlText">The SQL expression that have generated the records.</param>
     /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
     /// <param name="records">The list of records.</param>
@@ -110,13 +102,13 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         string typeName,
         string xmlDoc,
         string identifierPrefix,
-        string databaseIdentifierPrefix,
+        IReadOnlyDictionary<string, int> databaseIdentifierPrefixes,
         string sqlText,
         string recordTypeName,
         IReadOnlyList<object> records)
     {
         return new(queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix,
-            databaseIdentifierPrefix, sqlText, recordTypeName, records);
+            databaseIdentifierPrefixes, sqlText, recordTypeName, records);
     }
 
     protected MetadataModel(
@@ -126,7 +118,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         string typeName,
         string xmlDoc,
         string identifierPrefix,
-        string databaseIdentifierPrefix,
+        IReadOnlyDictionary<string, int> databaseIdentifierPrefixes,
         string sqlText,
         string recordTypeName,
         IReadOnlyList<object> records)
@@ -137,7 +129,7 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
         XmlDoc = xmlDoc ?? throw new ArgumentNullException(nameof(xmlDoc));
         IdentifierPrefix = identifierPrefix;
-        DatabaseIdentifierPrefix = databaseIdentifierPrefix;
+        DatabaseIdentifierPrefixes = databaseIdentifierPrefixes;
         SqlText = sqlText ?? throw new ArgumentNullException(nameof(sqlText));
         RecordTypeName = recordTypeName ?? throw new ArgumentNullException(nameof(recordTypeName));
         Records = records ?? throw new ArgumentNullException(nameof(records));
@@ -155,7 +147,10 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
 
     public string IdentifierPrefix { get; }
 
-    public string DatabaseIdentifierPrefix { get; }
+    /// <summary>
+    /// Associative list of prefixes with corresponding prefixBase values
+    /// </summary>
+    public IReadOnlyDictionary<string, int> DatabaseIdentifierPrefixes { get; }
 
     public string SqlText { get; }
 
@@ -200,30 +195,28 @@ public abstract class MetadataModel : IEquatable<MetadataModel>
         //    }
         //}
 
-        using (var thisIter = Records.GetEnumerator())
-        using (var otherIter = other.Records.GetEnumerator())
+        using IEnumerator<object> thisIter = Records.GetEnumerator();
+        using IEnumerator<object> otherIter = other.Records.GetEnumerator();
+        while (true)
         {
-            while (true)
+            bool thisCanRead = thisIter.MoveNext();
+            bool otherCanRead = otherIter.MoveNext();
+            if (thisCanRead != otherCanRead)
             {
-                bool thisCanRead = thisIter.MoveNext();
-                bool otherCanRead = otherIter.MoveNext();
-                if (thisCanRead != otherCanRead)
-                {
-                    return false; // different count
-                }
+                return false; // different count
+            }
 
-                if (!thisCanRead)
-                {
-                    break; // both sequences are finished
-                }
+            if (!thisCanRead)
+            {
+                break; // both sequences are finished
+            }
 
-                object thisValue = thisIter.Current;
-                object otherValue = otherIter.Current;
-                // We cannot use equality comparer and use Object.Equals, because of System.Object record type
-                if (!Equals(thisValue, otherValue))
-                {
-                    return false; // different values
-                }
+            object thisValue = thisIter.Current;
+            object otherValue = otherIter.Current;
+            // We cannot use equality comparer and use Object.Equals, because of System.Object record type
+            if (!Equals(thisValue, otherValue))
+            {
+                return false; // different values
             }
         }
 
@@ -262,7 +255,7 @@ public class MetadataModel<TRecord> : MetadataModel, IEquatable<MetadataModel<TR
     /// <param name="typeName">The type name of the generated type.</param>
     /// <param name="xmlDoc">The xml-doc of the generated type.</param>
     /// <param name="identifierPrefix">The prefix to be added on the C# identifier.</param>
-    /// <param name="databaseIdentifierPrefix">The prefix used by the database.</param>
+    /// <param name="databaseIdentifierPrefixes">The prefixes used by the database.</param>
     /// <param name="sqlText">The SQL expression that have generated the records.</param>
     /// <param name="recordTypeName">The assembly-qualified name of the record type.</param>
     /// <param name="records">The list of records.</param>
@@ -273,12 +266,12 @@ public class MetadataModel<TRecord> : MetadataModel, IEquatable<MetadataModel<TR
         string typeName,
         string xmlDoc,
         string identifierPrefix,
-        string databaseIdentifierPrefix,
+        IReadOnlyDictionary<string, int> databaseIdentifierPrefixes,
         string sqlText,
         string recordTypeName,
         IReadOnlyList<object> records)
         : base(queryName, templateName, @namespace, typeName, xmlDoc, identifierPrefix,
-            databaseIdentifierPrefix, sqlText, recordTypeName, records)
+            databaseIdentifierPrefixes, sqlText, recordTypeName, records)
     {
     }
 
@@ -296,15 +289,9 @@ public class MetadataModel<TRecord> : MetadataModel, IEquatable<MetadataModel<TR
             _records = records;
         }
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            return _records.Cast<T>().GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => _records.Cast<T>().GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public int Count => _records.Count;
 
@@ -338,29 +325,27 @@ public class MetadataModel<TRecord> : MetadataModel, IEquatable<MetadataModel<TR
         //    }
         //}
 
-        using (var thisIter = Records.GetEnumerator())
-        using (var otherIter = other.Records.GetEnumerator())
+        using IEnumerator<TRecord> thisIter = Records.GetEnumerator();
+        using IEnumerator<TRecord> otherIter = other.Records.GetEnumerator();
+        while (true)
         {
-            while (true)
+            bool thisCanRead = thisIter.MoveNext();
+            bool otherCanRead = otherIter.MoveNext();
+            if (thisCanRead != otherCanRead)
             {
-                bool thisCanRead = thisIter.MoveNext();
-                bool otherCanRead = otherIter.MoveNext();
-                if (thisCanRead != otherCanRead)
-                {
-                    return false; // different count
-                }
+                return false; // different count
+            }
 
-                if (!thisCanRead)
-                {
-                    break; // both sequences are finished
-                }
+            if (!thisCanRead)
+            {
+                break; // both sequences are finished
+            }
 
-                TRecord thisValue = thisIter.Current;
-                TRecord otherValue = otherIter.Current;
-                if (!EqualityComparer<TRecord>.Default.Equals(thisValue, otherValue))
-                {
-                    return false; // different values
-                }
+            TRecord thisValue = thisIter.Current;
+            TRecord otherValue = otherIter.Current;
+            if (!EqualityComparer<TRecord>.Default.Equals(thisValue, otherValue))
+            {
+                return false; // different values
             }
         }
 

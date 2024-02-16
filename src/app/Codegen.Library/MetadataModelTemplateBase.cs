@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using CSharpRazor;
 
 namespace Codegen.Library;
@@ -22,11 +25,10 @@ public abstract class MetadataModelTemplateBase<TRecord> : TemplateBase<Metadata
     public string GetIdentifier(string key)
     {
         static string Sanitize(string s) =>
-            s.Replace("-", "_", System.StringComparison.Ordinal);
+            s.Replace("-", "_", StringComparison.Ordinal);
 
-        CheckPrefix(key);
-        // IDE0049 should be a warning here
-        // return String.Concat(Model.IdentifierPrefix, Sanitize(key));
+        CheckPrefixOfKey(key);
+
         return string.Concat(Model.IdentifierPrefix, Sanitize(key));
     }
 
@@ -37,11 +39,19 @@ public abstract class MetadataModelTemplateBase<TRecord> : TemplateBase<Metadata
     /// <returns>The int value.</returns>
     public int GetValue(string key)
     {
-        CheckPrefix(key);
-        int c = Model.DatabaseIdentifierPrefix.Length;
-        return c < key.Length
-            ? int.Parse(key[c..])
-            : throw new System.InvalidOperationException($"The database identifier '{key}' cannot be converted to an integer value.");
+        CheckPrefixOfKey(key);
+
+        // Without any prefixes match = { null, 0 } which is fine, see below
+        KeyValuePair<string, int> match =
+            Model.DatabaseIdentifierPrefixes.FirstOrDefault(kvp => key.StartsWith(kvp.Key, StringComparison.Ordinal));
+
+        int prefixLength = match.Key?.Length ?? 0;
+        int prefixBase = match.Value;
+        int prefixNumber = prefixLength < key.Length
+            ? int.Parse(key[prefixLength..])
+            : throw new InvalidOperationException($"The database identifier '{key}' cannot be converted to an integer value.");
+
+        return prefixBase + prefixNumber;
     }
 
     /// <summary>
@@ -49,22 +59,24 @@ public abstract class MetadataModelTemplateBase<TRecord> : TemplateBase<Metadata
     /// </summary>
     /// <param name="s">The text to xml encode.</param>
     /// <returns>Xml encoded text.</returns>
-    protected static string XmlDocString(string s)
-    {
-        return s.Replace("'", "&apos;", System.StringComparison.Ordinal)
-            .Replace("\"", "&quot;", System.StringComparison.Ordinal)
-            .Replace("&", "&amp;", System.StringComparison.Ordinal)
-            .Replace("<", "&lt;", System.StringComparison.Ordinal)
-            .Replace(">", "&gt;", System.StringComparison.Ordinal);
-    }
+    protected static string XmlDocString(string s) =>
+        s.Replace("'", "&apos;", StringComparison.Ordinal)
+            .Replace("\"", "&quot;", StringComparison.Ordinal)
+            .Replace("&", "&amp;", StringComparison.Ordinal)
+            .Replace("<", "&lt;", StringComparison.Ordinal)
+            .Replace(">", "&gt;", StringComparison.Ordinal);
 
-    private void CheckPrefix(string key)
+    /// <summary>
+    /// Check that the database identifier (key) has a valid database prefix, if
+    /// the @cg-DatabaseIdentifierPrefixes directive have been used to configure any prefixes.
+    /// </summary>
+    private void CheckPrefixOfKey(string key)
     {
-        if (!string.IsNullOrEmpty(Model.DatabaseIdentifierPrefix) && !key.StartsWith(Model.DatabaseIdentifierPrefix, System.StringComparison.Ordinal))
+        if (Model.DatabaseIdentifierPrefixes.Count > 0 &&
+            Model.DatabaseIdentifierPrefixes.Keys.All(prefix => !key.StartsWith(prefix, StringComparison.Ordinal)))
         {
-            throw new System.InvalidOperationException($"The database identifier '{key}' does not have prefix '{Model.DatabaseIdentifierPrefix}'.");
+            throw new InvalidOperationException(
+                $"The database identifier '{key}' does not have a prefix in the set {{'{string.Join(',', Model.DatabaseIdentifierPrefixes.Keys)}}}'.");
         }
     }
-
-
 }

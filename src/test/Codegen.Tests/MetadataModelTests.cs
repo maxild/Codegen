@@ -49,7 +49,7 @@ public class MetadataModelTests
             typeName: "Betalingstype",
             xmlDoc: "Betalingstype er en type fra databasen",
             identifierPrefix: string.Empty,
-            databaseIdentifierPrefix: "B",
+            databaseIdentifierPrefixes: new Dictionary<string, int> { { "B", 1 } },
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(KeyValuePair<string, string>).AssemblyQualifiedName!,
             records);
@@ -75,7 +75,7 @@ public class MetadataModelTests
             typeName: "Betalingstype",
             xmlDoc: "Betalingstype er en type fra databasen",
             identifierPrefix: string.Empty,
-            databaseIdentifierPrefix: "B",
+            databaseIdentifierPrefixes: new Dictionary<string, int> { { "B", 1 } },
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
             records);
@@ -101,7 +101,7 @@ public class MetadataModelTests
             typeName: "Betalingstype",
             xmlDoc: "Betalingstype er en type fra databasen",
             identifierPrefix: string.Empty,
-            databaseIdentifierPrefix: "B",
+            databaseIdentifierPrefixes: new Dictionary<string, int> { { "B", 1 } },
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
             records);
@@ -127,7 +127,7 @@ public class MetadataModelTests
             typeName: "Betalingstype",
             xmlDoc: "Betalingstype er en type fra databasen.",
             identifierPrefix: string.Empty,
-            databaseIdentifierPrefix: "B",
+            databaseIdentifierPrefixes: new Dictionary<string, int> { { "B", 1 } },
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
             records);
@@ -139,7 +139,7 @@ public class MetadataModelTests
             typeName: "Betalingstype",
             xmlDoc: "Betalingstype er en type fra databasen.",
             identifierPrefix: string.Empty,
-            databaseIdentifierPrefix: "B",
+            databaseIdentifierPrefixes: new Dictionary<string, int> { { "B", 1 } },
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
             records);
@@ -153,7 +153,7 @@ public class MetadataModelTests
                                     |  ""Namespace"": ""Acme.Models"",
                                     |  ""TypeName"": ""Betalingstype"",
                                     |  ""XmlDoc"": ""Betalingstype er en type fra databasen."",
-                                    |  ""DatabaseIdentifierPrefix"": ""B"",
+                                    |  ""DatabaseIdentifierPrefixes"": ""B=1"",
                                     |  ""SqlText"": ""SELECT * FROM SOME_TABLE"",
                                     |  ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",
                                     |  ""Records"": [
@@ -180,7 +180,7 @@ public class MetadataModelTests
                            |  ""Namespace"": ""Acme.Models"",
                            |  ""TypeName"": ""Betalingstype"",
                            |  ""XmlDoc"": ""Betalingstype er en type fra databasen."",
-                           |  ""DatabaseIdentifierPrefix"": ""B"",
+                           |  ""DatabaseIdentifierPrefixes"": ""B=1"",
                            |  ""SqlText"": ""SELECT * FROM SOME_TABLE"",
                            |  ""RecordTypeName"": ""Codegen.Tests.MetadataModelTests+RecordTuple, Codegen.Tests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"",
                            |  ""Records"": [
@@ -233,7 +233,7 @@ public class MetadataModelTests
             typeName: "Betalingstype",
             xmlDoc: "Betalingstype er en type fra databasen",
             identifierPrefix: string.Empty,
-            databaseIdentifierPrefix: "B",
+            databaseIdentifierPrefixes: new Dictionary<string, int> { { "B", 1 } },
             sqlText: "SELECT * FROM SOME_TABLE",
             recordTypeName: typeof(RecordTuple).AssemblyQualifiedName!,
             records);
