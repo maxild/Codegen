@@ -42,8 +42,8 @@ public static class DatabaseIdentifierPrefixesUtils
         bool notFirst = false;
         foreach (KeyValuePair<string, int> kvp in databaseIdentifierPrefixes)
         {
-            sb.Append(kvp.Key).Append('=').Append(kvp.Value);
             if (notFirst) sb.Append('|');
+            sb.Append(kvp.Key).Append('=').Append(kvp.Value);
             notFirst = true;
         }
         return sb.ToString();
