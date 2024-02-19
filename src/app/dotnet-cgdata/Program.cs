@@ -179,7 +179,7 @@ public static class Program
 
                 if (line.StartsWith(CG_DATABASE_ID_PREFIXES))
                 {
-                    cgDatabaseIdPrefixes = DatabaseIdentifierPrefixesUtils.Split(line[CG_DATABASE_ID_PREFIXES.Length..]);
+                    cgDatabaseIdPrefixes = DatabaseIdentifierPrefixesUtils.Parse(line[CG_DATABASE_ID_PREFIXES.Length..]);
                 }
 
                 if (line.StartsWith(CG_TEMPLATE_DIRECTIVE))

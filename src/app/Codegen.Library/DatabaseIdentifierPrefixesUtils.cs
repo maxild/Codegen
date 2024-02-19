@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Codegen.Library;
 
-// FIXME: Tests
 // NOTE: Prefixes are case-sensitive
 public static class DatabaseIdentifierPrefixesUtils
 {
-    // Parse
-    public static IReadOnlyDictionary<string, int>? Split(string? s)
+    public static IReadOnlyDictionary<string, int>? Parse(string? s)
     {
         if (s is null) return null;
 
@@ -35,12 +34,11 @@ public static class DatabaseIdentifierPrefixesUtils
         return result;
     }
 
-    // Format
-    public static string Join(IReadOnlyDictionary<string, int> databaseIdentifierPrefixes)
+    public static string Format(IReadOnlyDictionary<string, int> databaseIdentifierPrefixes)
     {
         StringBuilder sb = new();
         bool notFirst = false;
-        foreach (KeyValuePair<string, int> kvp in databaseIdentifierPrefixes)
+        foreach (KeyValuePair<string, int> kvp in databaseIdentifierPrefixes.OrderBy(kvp => kvp.Key, StringComparer.OrdinalIgnoreCase))
         {
             if (notFirst) sb.Append('|');
             sb.Append(kvp.Key).Append('=').Append(kvp.Value);

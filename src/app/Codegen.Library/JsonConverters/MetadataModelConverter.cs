@@ -41,7 +41,7 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
             writer.WriteString(nameof(MetadataModel.IdentifierPrefix), value.IdentifierPrefix);
 
         if (value.DatabaseIdentifierPrefixes.Count > 0)
-            writer.WriteString(nameof(MetadataModel.DatabaseIdentifierPrefixes), DatabaseIdentifierPrefixesUtils.Join(value.DatabaseIdentifierPrefixes));
+            writer.WriteString(nameof(MetadataModel.DatabaseIdentifierPrefixes), DatabaseIdentifierPrefixesUtils.Format(value.DatabaseIdentifierPrefixes));
 
         writer.WriteString(nameof(MetadataModel.SqlText), value.SqlText);
 
@@ -112,7 +112,7 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
                     identifierPrefix = reader.GetString();
                     continue;
                 case nameof(MetadataModel.DatabaseIdentifierPrefixes):
-                    databaseIdentifierPrefixes = DatabaseIdentifierPrefixesUtils.Split(reader.GetString());
+                    databaseIdentifierPrefixes = DatabaseIdentifierPrefixesUtils.Parse(reader.GetString());
                     continue;
                 case nameof(MetadataModel.SqlText):
                     sqlText = reader.GetString();
