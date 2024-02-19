@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
@@ -15,7 +16,7 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
     {
         if (objectType.IsGenericType)
         {
-            var genType = objectType.GetGenericTypeDefinition();
+            Type genType = objectType.GetGenericTypeDefinition();
             return typeof(MetadataModel<>).IsAssignableFrom(genType);
         }
 
@@ -39,8 +40,8 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
         if (!string.IsNullOrEmpty(value.IdentifierPrefix))
             writer.WriteString(nameof(MetadataModel.IdentifierPrefix), value.IdentifierPrefix);
 
-        if (!string.IsNullOrEmpty(value.DatabaseIdentifierPrefix))
-            writer.WriteString(nameof(MetadataModel.DatabaseIdentifierPrefix), value.DatabaseIdentifierPrefix);
+        if (value.DatabaseIdentifierPrefixes.Count > 0)
+            writer.WriteString(nameof(MetadataModel.DatabaseIdentifierPrefixes), DatabaseIdentifierPrefixesUtils.Join(value.DatabaseIdentifierPrefixes));
 
         writer.WriteString(nameof(MetadataModel.SqlText), value.SqlText);
 
@@ -67,9 +68,9 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
             typeName = null,
             xmlDoc = null,
             identifierPrefix = null,
-            databaseIdentifierPrefix = null,
             sqlText = null,
             recordTypeName = null;
+        IReadOnlyDictionary<string, int>? databaseIdentifierPrefixes = null;
         IReadOnlyList<object>? records = null;
 
         while (true)
@@ -110,8 +111,8 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
                 case nameof(MetadataModel.IdentifierPrefix):
                     identifierPrefix = reader.GetString();
                     continue;
-                case nameof(MetadataModel.DatabaseIdentifierPrefix):
-                    databaseIdentifierPrefix = reader.GetString();
+                case nameof(MetadataModel.DatabaseIdentifierPrefixes):
+                    databaseIdentifierPrefixes = DatabaseIdentifierPrefixesUtils.Split(reader.GetString());
                     continue;
                 case nameof(MetadataModel.SqlText):
                     sqlText = reader.GetString();
@@ -122,7 +123,7 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
                 case nameof(MetadataModel.Records):
                     if (recordTypeName is null)
                         throw new InvalidOperationException($"{nameof(MetadataModel.RecordTypeName)} is missing.");
-                    Type? recordType = Type.GetType(recordTypeName);
+                    var recordType = Type.GetType(recordTypeName);
                     if (recordType is null)
                         throw new InvalidOperationException($"The record type '{recordTypeName}' in the metadata cannot be found.");
                     Type listOfRecordsType = typeof(List<>).MakeGenericType(recordType);
@@ -138,11 +139,11 @@ public class MetadataModelConverter : JsonConverter<MetadataModel>
         return MetadataModel.Create(
             queryName: queryName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.QueryName)} property."),
             templateName: templateName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.TemplateName)} property."),
-            @namespace: @namespace ?? throw new InvalidOperationException($"Mi ssing {nameof(MetadataModel.Namespace)} property."),
+            @namespace: @namespace ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.Namespace)} property."),
             typeName: typeName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.TypeName)} property."),
             xmlDoc: xmlDoc ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.XmlDoc)} property."),
             identifierPrefix: identifierPrefix ?? string.Empty,
-            databaseIdentifierPrefix: databaseIdentifierPrefix ?? string.Empty,
+            databaseIdentifierPrefixes: databaseIdentifierPrefixes ?? ImmutableDictionary<string, int>.Empty,
             sqlText: sqlText ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.SqlText)} property."),
             recordTypeName: recordTypeName ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.RecordTypeName)} property."),
             records: records ?? throw new InvalidOperationException($"Missing {nameof(MetadataModel.Records)} property."));

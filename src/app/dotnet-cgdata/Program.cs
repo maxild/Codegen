@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.CommandLine;
 using System.CommandLine.Binding;
 using System.CommandLine.Builder;
@@ -141,7 +142,7 @@ public static class Program
         const string CG_TYPENAME_DIRECTIVE = "@cg-TypeName";
         const string CG_XMLDOC_DIRECTIVE = "@cg-XmlDoc";
         const string CG_ID_PREFIX = "@cg-IdentifierPrefix";
-        const string CG_DATABASE_ID_PREFIX = "@cg-DatabaseIdentifierPrefix";
+        const string CG_DATABASE_ID_PREFIXES = "@cg-DatabaseIdentifierPrefixes";
         const string CG_TEMPLATE_DIRECTIVE = "@cg-Template";
 
         string? cgNamespace = null,
@@ -150,6 +151,7 @@ public static class Program
             cgIdPrefix = null,
             cgDatabaseIdPrefix = null,
             cgTemplate = null;
+        IReadOnlyDictionary<string, int>? cgDatabaseIdPrefixes = null;
 
         using (var sr = new StringReader(segments[0]))
         {
@@ -175,9 +177,9 @@ public static class Program
                     cgIdPrefix = line[CG_ID_PREFIX.Length..].Trim();
                 }
 
-                if (line.StartsWith(CG_DATABASE_ID_PREFIX))
+                if (line.StartsWith(CG_DATABASE_ID_PREFIXES))
                 {
-                    cgDatabaseIdPrefix = line[CG_DATABASE_ID_PREFIX.Length..].Trim();
+                    cgDatabaseIdPrefixes = DatabaseIdentifierPrefixesUtils.Split(line[CG_DATABASE_ID_PREFIXES.Length..]);
                 }
 
                 if (line.StartsWith(CG_TEMPLATE_DIRECTIVE))
@@ -212,7 +214,7 @@ public static class Program
             Console.WriteLine($"{CG_TYPENAME_DIRECTIVE} {cgTypeName}");
             Console.WriteLine($"{CG_XMLDOC_DIRECTIVE} {cgXmlDoc}");
             Console.WriteLine($"{CG_ID_PREFIX} {cgIdPrefix}");
-            Console.WriteLine($"{CG_DATABASE_ID_PREFIX} {cgDatabaseIdPrefix}");
+            Console.WriteLine($"{CG_DATABASE_ID_PREFIXES} {cgDatabaseIdPrefix}");
             Console.WriteLine($"{CG_TEMPLATE_DIRECTIVE} {cgTemplate}");
             Console.WriteLine(SECTION_SEP);
             Console.WriteLine(sqlText);
@@ -275,7 +277,7 @@ public static class Program
                       throw new InvalidOperationException($"The {CG_TYPENAME_DIRECTIVE} directive is missing."),
             xmlDoc: cgXmlDoc ?? throw new InvalidOperationException($"The {CG_XMLDOC_DIRECTIVE} directive is missing."),
             identifierPrefix: cgIdPrefix ?? string.Empty,
-            databaseIdentifierPrefix: cgDatabaseIdPrefix ?? string.Empty,
+            databaseIdentifierPrefixes: cgDatabaseIdPrefixes ?? ImmutableDictionary<string, int>.Empty,
             sqlText: sqlText,
             recordType ?? throw new InvalidOperationException(
                 "The (runtime) recordType could not be resolved, because en empty recordset was received."),
